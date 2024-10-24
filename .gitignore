@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 app/build
+app/bin
 
 # Ignore vscode specific project files
 .vscode/
