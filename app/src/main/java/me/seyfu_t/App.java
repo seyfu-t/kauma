@@ -3,8 +3,8 @@ package me.seyfu_t;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
@@ -54,6 +54,7 @@ public class App {
             // Parse the JSON file to a JsonObject
             JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
             return Optional.of(jsonObj);
+        // If there is any fail at this stage here, continuation isn't possible, so the programs need to be stopped
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
             System.exit(1);
