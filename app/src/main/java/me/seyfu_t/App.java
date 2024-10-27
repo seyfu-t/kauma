@@ -15,29 +15,28 @@ import com.google.gson.JsonParseException;
 public class App {
 
     private static Logger log = Logger.getLogger(App.class.getName());
-    
+
     public static void main(String[] args) {
-        
+
         // TODO: parse and go through each "packet" in a loop
 
         String filePath = args[0];
-        
-        if(!new File(filePath).exists()){
+
+        if (!new File(filePath).exists()) {
             log.severe("Datei existiert nicht!");
             System.exit(1);
         }
-        
+
         JsonObject fullJson = parseFilePathToJson(filePath).get();
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
 
-        for(Entry<String,JsonElement> packets : testcasesJson.entrySet()){
+        for (Entry<String, JsonElement> packets : testcasesJson.entrySet()) {
             String uniqueID = packets.getKey();
-            
+
             JsonObject remainderJsonObj = packets.getValue().getAsJsonObject();
-            
+
             String action = remainderJsonObj.get("action").getAsString();
             JsonObject arguments = remainderJsonObj.get("arguments").getAsJsonObject();
-
 
             log.info(uniqueID);
             log.info(remainderJsonObj.toString());
@@ -45,16 +44,15 @@ public class App {
             log.info(arguments.toString());
         }
 
-        
     }
-    
-    private static Optional<JsonObject> parseFilePathToJson(String filePath){
+
+    private static Optional<JsonObject> parseFilePathToJson(String filePath) {
         // Reading could fail, needs try-catch
-        try (FileReader reader = new FileReader(filePath)) { 
+        try (FileReader reader = new FileReader(filePath)) {
             // Parse the JSON file to a JsonObject
             JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
             return Optional.of(jsonObj);
-        // If there is any fail at this stage here, continuation isn't possible, so the programs need to be stopped
+            // If there is any fail at this stage here, continuation isn't possible, so the programs need to be stopped
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
             System.exit(1);
