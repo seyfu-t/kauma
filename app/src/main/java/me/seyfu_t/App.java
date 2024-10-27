@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
@@ -27,7 +26,7 @@ public class App {
             System.exit(1);
         }
 
-        JsonObject fullJson = parseFilePathToJson(filePath).get();
+        JsonObject fullJson = parseFilePathToJson(filePath);
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
 
         for (Entry<String, JsonElement> packets : testcasesJson.entrySet()) {
@@ -46,12 +45,12 @@ public class App {
 
     }
 
-    private static Optional<JsonObject> parseFilePathToJson(String filePath) {
+    private static JsonObject parseFilePathToJson(String filePath) {
         // Reading could fail, needs try-catch
         try (FileReader reader = new FileReader(filePath)) {
             // Parse the JSON file to a JsonObject
             JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
-            return Optional.of(jsonObj);
+            return jsonObj;
             // If there is any fail at this stage here, continuation isn't possible, so the programs need to be stopped
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
@@ -60,6 +59,6 @@ public class App {
             log.severe("File is not valid json!");
             System.exit(1);
         }
-        return Optional.empty(); // This line of code will never be reached, but required for type validation
+        return null; // This line of code will never be reached, but it's required for type validation
     }
 }
