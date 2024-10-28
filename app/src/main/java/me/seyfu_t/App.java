@@ -29,6 +29,14 @@ public class App {
             System.exit(1);
         }
 
+        // pipeline
+        JsonObject response = getResponseJsonFromInputPath(filePath);
+
+        // output result
+        System.out.println(response.toString());
+    }
+
+    public static JsonObject getResponseJsonFromInputPath(String filePath) {
         // extracting the relevant part
         JsonObject fullJson = parseFilePathToJson(filePath);
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject(); // get only the value of "responses"
@@ -37,12 +45,12 @@ public class App {
         ResponseBuilder responseBuilder = new ResponseBuilder();
         iterateOverAllCases(responseBuilder, testcasesJson);
 
-        // finalize and output
+        // finalize and return
         JsonObject finalResponse = responseBuilder.build();
-        System.out.println(finalResponse.toString());
+        return finalResponse;
     }
 
-    private static Action getActionClass(String actionName) {
+    public static Action getActionClass(String actionName) {
         return switch (actionName) {
             case "add_numbers" -> new AddNumbersAction();
             case "subtract_numbers" -> new SubtractNumbersAction();
@@ -50,7 +58,7 @@ public class App {
         };
     }
 
-    private static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
+    public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
         for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
             JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
 
@@ -74,14 +82,14 @@ public class App {
         }
     }
 
-    private static JsonObject parseFilePathToJson(String filePath) {
+    public static JsonObject parseFilePathToJson(String filePath) {
         // Reading could fail, needs try-catch
         try (FileReader reader = new FileReader(filePath)) {
             // Try parsing the JSON file to a JsonObject
             JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
             return jsonObj;
-        
-        // If there is any fail at this stage here, continuation isn't possible
+
+            // If there is any fail at this stage here, continuation isn't possible
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
             System.exit(1);
