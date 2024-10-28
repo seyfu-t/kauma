@@ -12,9 +12,8 @@ repositories {
 }
 
 dependencies {
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:33.3.1-jre")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(files("/usr/share/java/gson.jar"))
+    implementation(files("/usr/share/java/guava.jar"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3") // JUnit Jupiter API
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.3") // JUnit Jupiter Engine
 
