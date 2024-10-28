@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-gradle build --offline
+# gradle clean build --offline
+gradle fatJar

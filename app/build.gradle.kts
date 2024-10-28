@@ -1,6 +1,9 @@
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
     application
+}
+
+application {
+    mainClass.set("me.seyfu_t.App")
 }
 
 repositories {
@@ -31,7 +34,14 @@ java {
     }
 }
 
-application {
-    // Define the main class for the application.
-    mainClass = "me.seyfu_t.App"
+tasks.register<Jar>("fatJar") {
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+    }
+    from(sourceSets.main.get().output)
+
+    // Include dependencies
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Handle duplicates
 }
