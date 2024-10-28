@@ -11,47 +11,77 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import me.seyfu_t.actions.AddNumbersAction;
+import me.seyfu_t.actions.SubtractNumbersAction;
+import me.seyfu_t.model.Action;
+import me.seyfu_t.model.SingleResponse;
+import me.seyfu_t.util.ResponseBuilder;
+
 public class App {
 
-    private static Logger log = Logger.getLogger(App.class.getName());
+    private static final Logger log = Logger.getLogger(App.class.getName());
 
     public static void main(String[] args) {
-
-        // TODO: parse and go through each "packet" in a loop
-
+        // Checking if file exists
         String filePath = args[0];
-
         if (!new File(filePath).exists()) {
             log.severe("Datei existiert nicht!");
             System.exit(1);
         }
 
+        // extracting the relevant part
         JsonObject fullJson = parseFilePathToJson(filePath);
-        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
+        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject(); // get only the value of "responses"
 
-        for (Entry<String, JsonElement> packets : testcasesJson.entrySet()) {
-            String uniqueID = packets.getKey();
+        // building
+        ResponseBuilder responseBuilder = new ResponseBuilder();
+        iterateOverAllCases(responseBuilder, testcasesJson);
 
-            JsonObject remainderJsonObj = packets.getValue().getAsJsonObject();
+        // finalize and output
+        JsonObject finalResponse = responseBuilder.build();
+        System.out.println(finalResponse.toString());
+    }
 
-            String action = remainderJsonObj.get("action").getAsString();
-            JsonObject arguments = remainderJsonObj.get("arguments").getAsJsonObject();
+    private static Action getActionClass(String actionName) {
+        return switch (actionName) {
+            case "add_numbers" -> new AddNumbersAction();
+            case "subtract_numbers" -> new SubtractNumbersAction();
+            default -> null;
+        };
+    }
 
-            log.info(uniqueID);
-            log.info(remainderJsonObj.toString());
-            log.info(action);
-            log.info(arguments.toString());
+    private static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
+        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+
+            // the 3 relevant parts of each case
+            String uniqueHash = singleCase.getKey();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+            Action action = getActionClass(actionName); // get the appropriate instance
+
+            // execute
+            Entry<String, Object> resultEntry = action.execute(arguments);
+
+            // results
+            String actionResultName = resultEntry.getKey();
+            Object caseResult = resultEntry.getValue();
+
+            // add to builder
+            SingleResponse singleResponse = new SingleResponse(uniqueHash, actionResultName, caseResult);
+            builder.addSingleResponse(singleResponse);
         }
-
     }
 
     private static JsonObject parseFilePathToJson(String filePath) {
         // Reading could fail, needs try-catch
         try (FileReader reader = new FileReader(filePath)) {
-            // Parse the JSON file to a JsonObject
+            // Try parsing the JSON file to a JsonObject
             JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
             return jsonObj;
-            // If there is any fail at this stage here, continuation isn't possible, so the programs need to be stopped
+        
+        // If there is any fail at this stage here, continuation isn't possible
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
             System.exit(1);
@@ -59,6 +89,7 @@ public class App {
             log.severe("File is not valid json!");
             System.exit(1);
         }
-        return null; // This line of code will never be reached, but it's required for type validation
+        // This part here will never be reached, but it's required for type validation
+        return null;
     }
 }
