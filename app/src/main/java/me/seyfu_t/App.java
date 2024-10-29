@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import me.seyfu_t.actions.AddNumbersAction;
+import me.seyfu_t.actions.Poly2BlockAction;
 import me.seyfu_t.actions.SubtractNumbersAction;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.SingleResponse;
@@ -57,6 +58,7 @@ public class App {
         return switch (actionName) {
             case "add_numbers" -> new AddNumbersAction();
             case "subtract_numbers" -> new SubtractNumbersAction();
+            case "poly2block" -> new Poly2BlockAction();
             default -> null;
         };
     }
