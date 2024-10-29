@@ -13,6 +13,8 @@ class AppTest {
 
     private static final String ADD_SUBTRACT_INPUT = "AddSubtractNumbersInput.json";
     private static final String ADD_SUBTRACT_OUTPUT = "AddSubtractNumbersOutput.json";
+    private static final String POLY2BLOCK_INPUT = "Poly2BlockInput.json";
+    private static final String POLY2BLOCK_OUTPUT = "Poly2BlockOutput.json";
 
     @Test
     @SuppressWarnings("LoggerStringConcat")
@@ -31,6 +33,24 @@ class AppTest {
         log.info("Expected Output JSON: " + expectedOutputJson.toString());
 
         // Compare actual output with expected output
+        Assertions.assertEquals(expectedOutputJson, actualOutputJson,
+                "The output JSON does not match the expected output.");
+    }
+
+    @Test
+    void testPoly2BlockXEXAction() {
+        String poly2BlockInputPath = getClass().getClassLoader().getResource(POLY2BLOCK_INPUT).getFile();
+        String poly2BlockOutputPath = getClass().getClassLoader().getResource(POLY2BLOCK_OUTPUT).getFile();
+
+        JsonObject inputJson = App.parseFilePathToJson(poly2BlockInputPath);
+        log.info("Input JSON: " + inputJson.toString());
+
+        JsonObject actualOutputJson = App.getResponseJsonFromInputJson(inputJson);
+        log.info("Output JSON: " + actualOutputJson.toString());
+
+        JsonObject expectedOutputJson = App.parseFilePathToJson(poly2BlockOutputPath);
+        log.info("Expected Output JSON: " + expectedOutputJson.toString());
+
         Assertions.assertEquals(expectedOutputJson, actualOutputJson,
                 "The output JSON does not match the expected output.");
     }
