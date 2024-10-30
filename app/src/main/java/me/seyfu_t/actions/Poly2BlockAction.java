@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.util.Util;
 
 public class Poly2BlockAction implements Action {
 
@@ -28,7 +29,7 @@ public class Poly2BlockAction implements Action {
         return new AbstractMap.SimpleEntry<>("block", block); // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
     }
 
-    private String convertPoly2BlockXEX(int[] coefficients) {
+    private static String convertPoly2BlockXEX(int[] coefficients) {
         // Arbitrary size number, in little endian
         BigInteger block = BigInteger.ZERO;
 
@@ -36,7 +37,7 @@ public class Poly2BlockAction implements Action {
             block = block.setBit(i);
         }
 
-        block = changeEndianness(block);
+        block = Util.changeEndianness(block);
 
         // Fix size to 16 bytes
         byte[] finalBlockByteArray = cutBigEndianBigIntTo16ByteSize(block);
@@ -46,7 +47,7 @@ public class Poly2BlockAction implements Action {
         return base64;
     }
 
-    private byte[] cutBigEndianBigIntTo16ByteSize(BigInteger num) {
+    private static byte[] cutBigEndianBigIntTo16ByteSize(BigInteger num) {
         byte[] limitedBytes = new byte[16];
         byte[] currentBytes = num.toByteArray();
 
@@ -62,19 +63,7 @@ public class Poly2BlockAction implements Action {
         return limitedBytes;
     }
 
-    private BigInteger changeEndianness(BigInteger num) {
-        // Note: More efficient algorithm exists
-        byte[] oldBytes = num.toByteArray();
-        byte[] newBytes = new byte[oldBytes.length];
-
-        for (int i = 0; i < oldBytes.length; i++) {
-            newBytes[i] = oldBytes[oldBytes.length - i - 1];
-        }
-
-        return new BigInteger(newBytes);
-    }
-
-    private int[] convertJsonArrayToIntArray(JsonArray array) {
+    private static int[] convertJsonArrayToIntArray(JsonArray array) {
         int[] intArray = new int[array.size()];
 
         for (int i = 0; i < array.size(); i++) {
