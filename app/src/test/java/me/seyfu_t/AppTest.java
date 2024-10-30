@@ -21,59 +21,37 @@ class AppTest {
 
     @Test
     void testAddSubtractActions() {
-        String addSubtractInputPath = getClass().getClassLoader().getResource(ADD_SUBTRACT_INPUT).getFile();
-        String addSubtractOutputPath = getClass().getClassLoader().getResource(ADD_SUBTRACT_OUTPUT).getFile();
-
-        JsonObject inputJson = App.parseFilePathToJson(addSubtractInputPath);
-        info("Input JSON: {0}", inputJson.toString());
-
-        JsonObject actualOutputJson = App.getResponseJsonFromInputJson(inputJson);
-        info("Output JSON: {0}", actualOutputJson.toString());
-
-        JsonObject expectedOutputJson = App.parseFilePathToJson(addSubtractOutputPath);
-        info("Expected Output JSON: {0}", expectedOutputJson.toString());
-
-        Assertions.assertEquals(expectedOutputJson, actualOutputJson,
-                "The output JSON does not match the expected output.");
+        createTest(ADD_SUBTRACT_INPUT, ADD_SUBTRACT_OUTPUT);
     }
 
     @Test
     void testPoly2BlockXEXAction() {
-        String poly2BlockInputPath = getClass().getClassLoader().getResource(POLY2BLOCK_INPUT).getFile();
-        String poly2BlockOutputPath = getClass().getClassLoader().getResource(POLY2BLOCK_OUTPUT).getFile();
-
-        JsonObject inputJson = App.parseFilePathToJson(poly2BlockInputPath);
-        info("Input JSON: {0}", inputJson.toString());
-
-        JsonObject actualOutputJson = App.getResponseJsonFromInputJson(inputJson);
-        info("Output JSON: {0}", actualOutputJson.toString());
-
-        JsonObject expectedOutputJson = App.parseFilePathToJson(poly2BlockOutputPath);
-        info("Expected Output JSON: {0}", expectedOutputJson.toString());
-
-        Assertions.assertEquals(expectedOutputJson, actualOutputJson,
-                "The output JSON does not match the expected output.");
+        createTest(POLY2BLOCK_INPUT, POLY2BLOCK_OUTPUT);
     }
 
     @Test
     void testBlock2PolyXEXAction() {
-        String block2polyInputPath = getClass().getClassLoader().getResource(BLOCK2POLY_INPUT).getFile();
-        String block2polyOutputPath = getClass().getClassLoader().getResource(BLOCK2POLY_OUTPUT).getFile();
+        createTest(BLOCK2POLY_INPUT, BLOCK2POLY_OUTPUT);
+    }
 
-        JsonObject inputJson = App.parseFilePathToJson(block2polyInputPath);
+    private void createTest(String input, String output) {
+        String inputPath = getClass().getClassLoader().getResource(input).getFile();
+        String outputPath = getClass().getClassLoader().getResource(output).getFile();
+
+        JsonObject inputJson = App.parseFilePathToJson(inputPath);
         info("Input JSON: {0}", inputJson.toString());
 
         JsonObject actualOutputJson = App.getResponseJsonFromInputJson(inputJson);
         info("Output JSON: {0}", actualOutputJson.toString());
 
-        JsonObject expectedOutputJson = App.parseFilePathToJson(block2polyOutputPath);
+        JsonObject expectedOutputJson = App.parseFilePathToJson(outputPath);
         info("Expected Output JSON: {0}", expectedOutputJson.toString());
 
         Assertions.assertEquals(expectedOutputJson, actualOutputJson,
                 "The output JSON does not match the expected output.");
     }
 
-    private void info(String msg, Object...param){
+    private void info(String msg, Object... param) {
         log.log(Level.INFO, msg, param);
     }
 }
