@@ -36,7 +36,6 @@ public class Poly2BlockAction implements Action {
             block = block.setBit(i);
         }
 
-        // Go big-endian
         block = changeEndianness(block);
 
         // Fix size to 16 bytes
