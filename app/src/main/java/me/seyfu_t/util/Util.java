@@ -13,7 +13,7 @@ public class Util {
             newBytes[i] = oldBytes[oldBytes.length - i - 1];
         }
 
-        return new BigInteger(newBytes);
+        return new BigInteger(1, newBytes);
     }
 
 }
