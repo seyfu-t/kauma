@@ -18,6 +18,12 @@ class AppTest {
     private static final String POLY2BLOCK_OUTPUT = "Poly2BlockOutput.json";
     private static final String BLOCK2POLY_INPUT = "Block2PolyInput.json";
     private static final String BLOCK2POLY_OUTPUT = "Block2PolyOutput.json";
+    private static final String GFMUL_INPUT = "GFMulInput.json";
+    private static final String GFMUL_OUTPUT = "GFMulOutput.json";
+    private static final String SEA128_INPUT = "SEA128Input.json";
+    private static final String SEA128_OUTPUT = "SEA128Output.json";
+    private static final String FDE_INPUT = "FDEInput.json";
+    private static final String FDE_OUTPUT = "FDEOutput.json";
 
     @Test
     void testAddSubtractActions() {
@@ -32,6 +38,21 @@ class AppTest {
     @Test
     void testBlock2PolyXEXAction() {
         createTest(BLOCK2POLY_INPUT, BLOCK2POLY_OUTPUT);
+    }
+
+    @Test
+    void testGFMulAction() {
+        createTest(GFMUL_INPUT, GFMUL_OUTPUT);
+    }
+
+    @Test
+    void testSEA128Action() {
+        createTest(SEA128_INPUT, SEA128_OUTPUT);
+    }
+
+    @Test
+    void testFDEAction() {
+        createTest(FDE_INPUT, FDE_OUTPUT);
     }
 
     private void createTest(String input, String output) {
