@@ -1,6 +1,7 @@
 package me.seyfu_t.model;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HexFormat;
 
 import me.seyfu_t.util.Util;
@@ -182,6 +183,14 @@ public class UBigInt16 {
             binaryString.append(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0')).append(" ");
         }
         return binaryString.toString().trim();
+    }
+
+    public String toBase64(){
+        return Base64.getEncoder().encodeToString(this.byteArray);
+    }
+
+    public static UBigInt16 fromBase64(String base64){
+        return new UBigInt16(Base64.getDecoder().decode(base64));
     }
 
 }
