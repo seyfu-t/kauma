@@ -12,7 +12,7 @@ public class UBigInt16 {
     private final byte[] byteArray = new byte[16];
 
     // for all 0s
-    public UBigInt16(){
+    public UBigInt16() {
         // byteArray is already empty, nothing to do
     }
 
@@ -38,32 +38,32 @@ public class UBigInt16 {
         // Validate shift range
         if (bits < 0 || bits >= 128)
             throw new IllegalArgumentException("Shift out of bounds");
-    
-        // Prepare result array 
+
+        // Prepare result array
         byte[] result = new byte[16];
-    
+
         // Full byte shift
         int byteShift = bits / 8;
         // Bit shift within bytes
         int bitShift = bits % 8;
-    
+
         // If there's a full byte shift, move bytes
         for (int i = 15 - byteShift; i >= 0; i--) {
             result[i + byteShift] = byteArray[i];
         }
-    
+
         // If there's a bit shift within bytes
         if (bitShift > 0) {
             for (int i = 15; i > byteShift; i--) {
                 // Shift current byte
                 result[i] = (byte) ((result[i] << bitShift) & 0xFF);
                 // Carry over bits from previous byte
-                result[i] |= (byte) ((result[i-1] & 0xFF) >>> (8 - bitShift));
+                result[i] |= (byte) ((result[i - 1] & 0xFF) >>> (8 - bitShift));
             }
             // Shift the first affected byte
             result[byteShift] = (byte) ((result[byteShift] << bitShift) & 0xFF);
         }
-    
+
         return new UBigInt16(result);
     }
 
@@ -71,33 +71,33 @@ public class UBigInt16 {
         // Validate shift range
         if (bits < 0 || bits >= 128)
             throw new IllegalArgumentException("Shift out of bounds");
-    
-        // Prepare result array 
+
+        // Prepare result array
         byte[] result = new byte[16];
-    
+
         // Full byte shift
         int byteShift = bits / 8;
         // Bit shift within bytes
         int bitShift = bits % 8;
-    
+
         // If there's a full byte shift, move bytes
         for (int i = byteShift; i < 16; i++) {
             result[i - byteShift] = byteArray[i];
         }
-    
+
         // If there's a bit shift within bytes
         if (bitShift > 0) {
             for (int i = 0; i < 16 - byteShift - 1; i++) {
                 // Shift current byte
                 result[i] = (byte) ((result[i] & 0xFF) >>> bitShift);
                 // Carry over bits from next byte
-                result[i] |= (byte) ((result[i+1] & 0xFF) << (8 - bitShift));
+                result[i] |= (byte) ((result[i + 1] & 0xFF) << (8 - bitShift));
             }
-            
+
             // Shift the last affected byte
             result[16 - byteShift - 1] = (byte) ((result[16 - byteShift - 1] & 0xFF) >>> bitShift);
         }
-    
+
         return new UBigInt16(result);
     }
 
@@ -125,11 +125,17 @@ public class UBigInt16 {
         return new UBigInt16(bytes);
     }
 
-    public UBigInt16 setBit(int bit){
-        int byteIndex = bit/8;
-        int bitIndex = bit%8;
-        this.byteArray[byteIndex] |= (1<<bitIndex);
+    public UBigInt16 setBit(int bit) {
+        int byteIndex = bit / 8;
+        int bitIndex = bit % 8;
+        this.byteArray[byteIndex] |= (1 << bitIndex);
         return this;
+    }
+
+    public boolean testBit(int bit) {
+        int byteIndex = bit / 8;
+        int bitIndex = bit % 8;
+        return (this.byteArray[byteIndex] & (1 << bitIndex)) != 0;
     }
 
     public byte[] toByteArray() {
