@@ -98,7 +98,7 @@ public class UBigInt16 {
     }
 
     public UBigInt16 xor(UBigInt16 bigInt) {
-        byte[] bytes = bigInt.toByteArray();
+        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] ^ this.byteArray[i]);
         }
@@ -106,7 +106,7 @@ public class UBigInt16 {
     }
 
     public UBigInt16 and(UBigInt16 bigInt) {
-        byte[] bytes = bigInt.toByteArray();
+        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] & this.byteArray[i]);
         }
@@ -114,7 +114,7 @@ public class UBigInt16 {
     }
 
     public UBigInt16 or(UBigInt16 bigInt) {
-        byte[] bytes = bigInt.toByteArray();
+        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] | this.byteArray[i]);
         }
