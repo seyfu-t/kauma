@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
@@ -29,7 +30,7 @@ public class Block2PolyAction implements Action {
 
     private static int[] convertBlock2PolyXEX(String base64Block) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
-
+        System.out.println(HexFormat.of().formatHex(blockByteArray));
         // BigInt from byte array
         BigInteger block = new BigInteger(1, blockByteArray);
         block = Util.changeEndianness(block);
