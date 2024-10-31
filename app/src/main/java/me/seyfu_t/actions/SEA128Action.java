@@ -31,7 +31,7 @@ public class SEA128Action implements Action {
         return new AbstractMap.SimpleEntry<>("output", output);
     }
 
-    private static String sea128(String mode, String base64Input, String base64Key) {
+    public static String sea128(String mode, String base64Input, String base64Key) {
         byte[] input = Base64.getDecoder().decode(base64Input);
         byte[] key = Base64.getDecoder().decode(base64Key);
 
