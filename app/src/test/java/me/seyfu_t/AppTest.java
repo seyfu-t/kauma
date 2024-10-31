@@ -24,8 +24,8 @@ class AppTest {
     private static final String GFMUL_OUTPUT = "GFMulOutput.json";
     private static final String SEA128_INPUT = "SEA128Input.json";
     private static final String SEA128_OUTPUT = "SEA128Output.json";
-    private static final String FDE_INPUT = "FDEInput.json";
-    private static final String FDE_OUTPUT = "FDEOutput.json";
+    private static final String XEX_INPUT = "XEXInput.json";
+    private static final String XEX_OUTPUT = "XEXOutput.json";
 
     private static final String ALL_INPUT = "AllInput.json";
     private static final String ALL_OUTPUT = "AllOutput.json";
@@ -91,8 +91,8 @@ class AppTest {
     }
 
     @Test
-    void testFDEAction() {
-        createTest(FDE_INPUT, FDE_OUTPUT);
+    void testXEXAction() {
+        createTest(XEX_INPUT, XEX_OUTPUT);
     }
 
     private void createTest(String input, String output) {

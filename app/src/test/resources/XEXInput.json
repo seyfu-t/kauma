@@ -1,6 +1,6 @@
 {
     "testcases": {
-        "a": {
+        "xex1": {
             "action": "xex",
             "arguments": {
                 "mode": "encrypt",
@@ -9,7 +9,7 @@
                 "input": "/aOg4jMocLkBLkDLgkHYtFKc2L9jjyd2WXSSyxXQikpMY9ZRnsJE76e9dW9olZIW"
             }
         },
-        "b": {
+        "xex2": {
             "action": "xex",
             "arguments": {
                 "mode": "decrypt",
