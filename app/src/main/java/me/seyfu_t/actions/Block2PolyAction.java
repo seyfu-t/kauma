@@ -1,16 +1,13 @@
 package me.seyfu_t.actions;
 
-import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HexFormat;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.util.Util;
 
 public class Block2PolyAction implements Action {
 
@@ -30,21 +27,20 @@ public class Block2PolyAction implements Action {
 
     private static int[] convertBlock2PolyXEX(String base64Block) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
-        System.out.println(HexFormat.of().formatHex(blockByteArray));
-        // BigInt from byte array
-        BigInteger block = new BigInteger(1, blockByteArray);
-        block = Util.changeEndianness(block);
-        
-        int[] coefficients = new int[block.bitCount()];
+
+        int[] coefficients = new int[128];
         int slot = 0;// to know the current index of the coefficients array
         // check each bit and add coefficient if bit is set
-        for(int i = 0; i<16*8;i++){
-            if(block.testBit(i)){
-                coefficients[slot] = i;
-                slot++;
+        for (int byteIndex = 0; byteIndex < 16; byteIndex++) {
+            for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+                if ((blockByteArray[byteIndex] & (1 << bitIndex)) != 0) {
+                    coefficients[slot] = (byteIndex * 8) + bitIndex;
+                    slot++;
+                }
             }
         }
 
+        coefficients = Arrays.copyOfRange(coefficients, 0, slot);
         Arrays.sort(coefficients);
         return coefficients;
     }
