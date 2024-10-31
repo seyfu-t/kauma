@@ -35,4 +35,16 @@ public class Util {
         return new BigInteger(limitedByteArray);
     }
     
+    public static boolean littleEndianCheckSigned(BigInteger bigInt){
+        byte[] array = bigInt.toByteArray();
+        return array.length == 17 && array[0] == 0;
+    }
+
+    public static BigInteger bigEndianSignedBigIntTo16Bytes(BigInteger bigInt){
+        byte[] array = bigInt.toByteArray();
+        // byte index 0 is the sign byte
+        if(array.length == 17)
+            array = Arrays.copyOfRange(array, 1, 17);
+        return new BigInteger(array);
+    }
 }
