@@ -1,6 +1,5 @@
 package me.seyfu_t.actions;
 
-import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Base64;
@@ -10,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.util.Util;
 
 public class Poly2BlockAction implements Action {
 
@@ -30,21 +28,16 @@ public class Poly2BlockAction implements Action {
     }
 
     private static String convertPoly2BlockXEX(int[] coefficients) {
-        // Arbitrary size number, in little endian
-        BigInteger block = BigInteger.ZERO;
+        byte[] blockByteArray = new byte[16];
 
-        for (int i : coefficients) {
-            block = block.setBit(i);
+        for (int co : coefficients) {
+            byte byteIndex = (byte) Math.floor(co / 8);
+            byte bitIndex = (byte) (co % 8);
+            blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
         }
 
-        // go little-endian
-        block = Util.changeEndianness(block);
-
-        // Fix size to 16 bytes
-        byte[] finalBlockByteArray = Util.littleEndianSignedBigIntTo16Bytes(block).toByteArray();
-
         // Convert to base64 and return
-        String base64 = Base64.getEncoder().encodeToString(finalBlockByteArray);
+        String base64 = Base64.getEncoder().encodeToString(blockByteArray);
         return base64;
     }
 
