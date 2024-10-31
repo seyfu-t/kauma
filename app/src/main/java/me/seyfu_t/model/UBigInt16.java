@@ -135,7 +135,8 @@ public class UBigInt16 {
     public boolean testBit(int bit) {
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
-        return (this.byteArray[byteIndex] & (1 << bitIndex)) != 0;
+        byte test = (byte) ((this.byteArray[byteIndex] >> bitIndex) & (0x1));
+        return test == 1;
     }
 
     public byte[] toByteArray() {
@@ -155,6 +156,21 @@ public class UBigInt16 {
         return this.toString(16);
     }
 
+    public boolean sameAs(UBigInt16 bigInt) {
+        if (bigInt == null) {
+            return false;
+        }
+
+        // Compare each byte
+        for (int byteIndex = 0; byteIndex < 16; byteIndex++) {
+            if (this.byteArray[byteIndex] != bigInt.byteArray[byteIndex]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public String toString(int radix) {
         return switch (radix) {
             case 2 -> this.formatBinary();
@@ -171,4 +187,5 @@ public class UBigInt16 {
         }
         return binaryString.toString().trim();
     }
+
 }
