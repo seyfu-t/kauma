@@ -1,6 +1,5 @@
 package me.seyfu_t.actions;
 
-import java.math.BigInteger;
 import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Map.Entry;
@@ -8,12 +7,12 @@ import java.util.Map.Entry;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.util.Util;
+import me.seyfu_t.model.UBigInt16;
 
 public class GFMullAction implements Action {
 
-    private static final BigInteger REDUCTION_POLY = BigInteger.ZERO.setBit(128).setBit(7).setBit(2).setBit(1)
-            .setBit(0);
+    // skipping index 128 (because only 16 bytes), will fall out when using XOR anyway
+    private static final UBigInt16 REDUCTION_POLY = new UBigInt16().setBit(7).setBit(2).setBit(1).setBit(0);
 
     @Override
     public Entry<String, Object> execute(JsonObject arguments) {
@@ -31,39 +30,34 @@ public class GFMullAction implements Action {
     }
 
     private static String mulGF(String base64A, @SuppressWarnings("unused") String base64B) {
-        BigInteger blockA = new BigInteger(Base64.getDecoder().decode(base64A)); 
-        BigInteger blockB = new BigInteger(Base64.getDecoder().decode(base64B));
+        byte[] blockA = Base64.getDecoder().decode(base64A);
+        byte[] blockB = Base64.getDecoder().decode(base64B);
 
-        // Make big-endian to work with internally
-        blockA = Util.changeEndianness(blockA);
-        blockB = Util.changeEndianness(blockB);
+        UBigInt16 bigIntA = new UBigInt16(blockA);
+        UBigInt16 bigIntB = new UBigInt16(blockB);
 
-        BigInteger product = combinedMulAndModReductionInBigEndian(blockA, blockB);
-
-        // Go back to little-endian
-        product = Util.changeEndianness(product);
-        byte[] sizedProduct = Util.littleEndianSignedBigIntTo16Bytes(product).toByteArray();
-
-        String base64 = Base64.getEncoder().encodeToString(sizedProduct);
+        UBigInt16 product = combinedMulAndModReductionInBigEndian(bigIntA, bigIntB);
+        String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
 
         return base64;
     }
-    
-    private static BigInteger combinedMulAndModReductionInBigEndian(BigInteger a, BigInteger b){
-        BigInteger result = BigInteger.ZERO;
-        
-        while(!b.equals(BigInteger.ZERO)){ 
 
-            if(b.testBit(0)){
+    private static UBigInt16 combinedMulAndModReductionInBigEndian(UBigInt16 a, UBigInt16 b) {
+        UBigInt16 result = new UBigInt16();
+        while (!b.sameAs(new UBigInt16())) {
+            boolean overflow;
+            if (b.testBit(0)) {
                 result = result.xor(a);
             }
 
+            overflow = a.testBit(127);
+            
             a = a.shiftLeft(1);
 
-            if(a.testBit(128)){
+            if (overflow) {
                 a = a.xor(REDUCTION_POLY);
             }
-            
+
             b = b.shiftRight(1);
         }
         return result;
