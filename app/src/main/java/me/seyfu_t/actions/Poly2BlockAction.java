@@ -37,30 +37,15 @@ public class Poly2BlockAction implements Action {
             block = block.setBit(i);
         }
 
+        // go little-endian
         block = Util.changeEndianness(block);
 
         // Fix size to 16 bytes
-        byte[] finalBlockByteArray = cutBigEndianBigIntTo16ByteSize(block);
+        byte[] finalBlockByteArray = Util.littleEndianSignedBigIntTo16Bytes(block).toByteArray();
 
         // Convert to base64 and return
         String base64 = Base64.getEncoder().encodeToString(finalBlockByteArray);
         return base64;
-    }
-
-    private static byte[] cutBigEndianBigIntTo16ByteSize(BigInteger num) {
-        byte[] limitedBytes = new byte[16];
-        byte[] currentBytes = num.toByteArray();
-
-        for (int i = 0; i < 16; i++) {
-            // Padding with 0, if BigInt was less than 16 bytes
-            if (i < currentBytes.length) {
-                limitedBytes[i] = currentBytes[i];
-            } else {
-                limitedBytes[i] = 0;
-            }
-        }
-
-        return limitedBytes;
     }
 
     private static int[] convertJsonArrayToIntArray(JsonArray array) {
