@@ -32,17 +32,26 @@ public class Block2PolyAction implements Action {
 
         // BigInt from byte array
         BigInteger block = new BigInteger(1, blockByteArray);
+        if (Util.littleEndianCheckSigned(block)) {
+            block = Util.littleEndianSignedBigIntTo16Bytes(block);
+        }
+
+        // go big-endian
         block = Util.changeEndianness(block);
-        
+        block = Util.bigEndianSignedBigIntTo16Bytes(block);
+
         int[] coefficients = new int[block.bitCount()];
         int slot = 0;// to know the current index of the coefficients array
         // check each bit and add coefficient if bit is set
-        for(int i = 0; i<16*8;i++){
-            if(block.testBit(i)){
+        for (int i = 0; i < 16 * 8; i++) {
+            if (block.testBit(i)) {
                 coefficients[slot] = i;
                 slot++;
             }
         }
+        // block.bitCount() might give more than expected, because we removed the sign
+        // this here is required to get rid of 0's after the last actual coefficient
+        coefficients = Arrays.copyOfRange(coefficients, 0, slot); // slot also counts how many coefficients we have
 
         Arrays.sort(coefficients);
         return coefficients;
