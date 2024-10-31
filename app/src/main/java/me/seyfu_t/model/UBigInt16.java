@@ -21,16 +21,12 @@ public class UBigInt16 {
             throw new IllegalArgumentException("hä");
 
         if (bytes.length < 16) {
-            for (int i = 0; i < bytes.length; i++) {
-                byteArray[i] = bytes[i];
-            }
+            System.arraycopy(bytes, 0, byteArray, 0, bytes.length);
             for (int i = bytes.length; i < 16; i++) {
                 byteArray[i] = 0;
             }
         } else {
-            for (int i = 0; i < 16; i++) {
-                byteArray[i] = bytes[i];
-            }
+            System.arraycopy(bytes, 0, byteArray, 0, 16);
         }
     }
 
