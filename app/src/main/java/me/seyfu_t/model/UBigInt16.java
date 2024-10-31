@@ -11,6 +11,11 @@ public class UBigInt16 {
 
     private final byte[] byteArray = new byte[16];
 
+    // for all 0s
+    public UBigInt16(){
+        // byteArray is already empty, nothing to do
+    }
+
     public UBigInt16(byte[] bytes) {
         if (bytes.length == 0)
             throw new IllegalArgumentException("hä");
@@ -55,7 +60,7 @@ public class UBigInt16 {
                 // Carry over bits from previous byte
                 result[i] |= (byte) ((result[i-1] & 0xFF) >>> (8 - bitShift));
             }
-            // Shift the first affected byte to Hannah Montana
+            // Shift the first affected byte
             result[byteShift] = (byte) ((result[byteShift] << bitShift) & 0xFF);
         }
     
@@ -118,6 +123,13 @@ public class UBigInt16 {
             bytes[i] = (byte) (bytes[i] | this.byteArray[i]);
         }
         return new UBigInt16(bytes);
+    }
+
+    public UBigInt16 setBit(int bit){
+        int byteIndex = bit/8;
+        int bitIndex = bit%8;
+        this.byteArray[byteIndex] |= (1<<bitIndex);
+        return this;
     }
 
     public byte[] toByteArray() {
