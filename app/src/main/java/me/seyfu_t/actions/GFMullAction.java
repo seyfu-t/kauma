@@ -36,13 +36,13 @@ public class GFMullAction implements Action {
         UBigInt16 bigIntA = new UBigInt16(blockA);
         UBigInt16 bigIntB = new UBigInt16(blockB);
 
-        UBigInt16 product = combinedMulAndModReductionInBigEndian(bigIntA, bigIntB);
+        UBigInt16 product = combinedMulAndModReduction(bigIntA, bigIntB);
         String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
 
         return base64;
     }
 
-    private static UBigInt16 combinedMulAndModReductionInBigEndian(UBigInt16 a, UBigInt16 b) {
+    private static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
         UBigInt16 result = new UBigInt16();
         while (!b.sameAs(new UBigInt16())) {
             boolean overflow;
