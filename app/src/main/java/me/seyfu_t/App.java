@@ -15,6 +15,7 @@ import me.seyfu_t.actions.AddNumbersAction;
 import me.seyfu_t.actions.Block2PolyAction;
 import me.seyfu_t.actions.GFMullAction;
 import me.seyfu_t.actions.Poly2BlockAction;
+import me.seyfu_t.actions.SEA128Action;
 import me.seyfu_t.actions.SubtractNumbersAction;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.SingleResponse;
@@ -63,6 +64,7 @@ public class App {
             case "poly2block" -> new Poly2BlockAction();
             case "block2poly" -> new Block2PolyAction();
             case "gfmul" -> new GFMullAction();
+            case "sea128" -> new SEA128Action();
             default -> null;
         };
     }
