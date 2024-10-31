@@ -8,11 +8,9 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.Util;
 
-public class GFMullAction implements Action {
-
-    // skipping index 128 (because only 16 bytes), will fall out when using XOR anyway
-    private static final UBigInt16 REDUCTION_POLY = new UBigInt16().setBit(7).setBit(2).setBit(1).setBit(0);
+public class GFMulAction implements Action {
 
     @Override
     public Entry<String, Object> execute(JsonObject arguments) {
@@ -36,30 +34,10 @@ public class GFMullAction implements Action {
         UBigInt16 bigIntA = new UBigInt16(blockA);
         UBigInt16 bigIntB = new UBigInt16(blockB);
 
-        UBigInt16 product = combinedMulAndModReduction(bigIntA, bigIntB);
+        UBigInt16 product = Util.combinedMulAndModReduction(bigIntA, bigIntB);
         String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
 
         return base64;
     }
 
-    private static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
-        UBigInt16 result = new UBigInt16();
-        while (!b.sameAs(new UBigInt16())) {
-            boolean overflow;
-            if (b.testBit(0)) {
-                result = result.xor(a);
-            }
-
-            overflow = a.testBit(127);
-            
-            a = a.shiftLeft(1);
-
-            if (overflow) {
-                a = a.xor(REDUCTION_POLY);
-            }
-
-            b = b.shiftRight(1);
-        }
-        return result;
-    }
 }

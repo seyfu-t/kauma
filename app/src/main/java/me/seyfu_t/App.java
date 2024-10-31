@@ -13,7 +13,7 @@ import com.google.gson.JsonParseException;
 
 import me.seyfu_t.actions.AddNumbersAction;
 import me.seyfu_t.actions.Block2PolyAction;
-import me.seyfu_t.actions.GFMullAction;
+import me.seyfu_t.actions.GFMulAction;
 import me.seyfu_t.actions.Poly2BlockAction;
 import me.seyfu_t.actions.SEA128Action;
 import me.seyfu_t.actions.SubtractNumbersAction;
@@ -63,7 +63,7 @@ public class App {
             case "subtract_numbers" -> new SubtractNumbersAction();
             case "poly2block" -> new Poly2BlockAction();
             case "block2poly" -> new Block2PolyAction();
-            case "gfmul" -> new GFMullAction();
+            case "gfmul" -> new GFMulAction();
             case "sea128" -> new SEA128Action();
             default -> null;
         };
