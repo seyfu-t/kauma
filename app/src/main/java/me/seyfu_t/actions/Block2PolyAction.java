@@ -55,8 +55,9 @@ public class Block2PolyAction implements Action {
         // check each bit and add coefficient if bit is set
         for (int byteIndex = 0; byteIndex < 16; byteIndex++) {
             for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-                if ((blockByteArray[byteIndex] & (1 << bitIndex)) != 0) {
-                    coefficients[slot] = (byteIndex * 8) + 7 - bitIndex;
+                int reversedBitIndex = 7 - bitIndex;
+                if ((blockByteArray[byteIndex] & (1 << reversedBitIndex)) != 0) {
+                    coefficients[slot] = (byteIndex * 8) + reversedBitIndex;
                     slot++;
                 }
             }
