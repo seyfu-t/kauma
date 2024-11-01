@@ -22,9 +22,12 @@ public class Poly2BlockAction implements Action {
 
         if (semantic.equalsIgnoreCase("xex")) {
             block = convertPoly2BlockXEX(coefficients);
+        } else if (semantic.equalsIgnoreCase("gcm")) {
+            block = convertPoly2BlockGCM(coefficients);
         }
 
-        return new AbstractMap.SimpleEntry<>("block", block); // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
+        return new AbstractMap.SimpleEntry<>("block", block); // Very SIMPLE way of creating a SIMPLE key-value pair,
+                                                              // that's java for ya
     }
 
     private static String convertPoly2BlockXEX(int[] coefficients) {
@@ -33,6 +36,20 @@ public class Poly2BlockAction implements Action {
         for (int co : coefficients) {
             byte byteIndex = (byte) Math.floor(co / 8);
             byte bitIndex = (byte) (co % 8);
+            blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
+        }
+
+        // Convert to base64 and return
+        String base64 = Base64.getEncoder().encodeToString(blockByteArray);
+        return base64;
+    }
+
+    private static String convertPoly2BlockGCM(int[] coefficients) {
+        byte[] blockByteArray = new byte[16];
+
+        for (int co : coefficients) {
+            byte byteIndex = (byte) Math.floor(co / 8);
+            byte bitIndex = (byte) (7 - (co % 8));
             blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
         }
 
