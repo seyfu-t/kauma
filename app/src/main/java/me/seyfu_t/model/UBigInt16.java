@@ -8,19 +8,24 @@ import me.seyfu_t.util.Util;
 
 public class UBigInt16 {
 
-    // public static final UBigInt16 ZERO = new UBigInt16(new byte[16]);
-
     private final byte[] byteArray = new byte[16];
 
-    // for all 0s
+    private boolean gcm = false;
+
+    // All 0s UBigInt16
     public UBigInt16() {
-        // byteArray is already empty, nothing to do
+    }
+
+    public UBigInt16(byte[] bytes, boolean gcm) {
+        this.gcm = gcm;
+        initUBigInt16(bytes);
     }
 
     public UBigInt16(byte[] bytes) {
-        if (bytes.length == 0)
-            throw new IllegalArgumentException("hä");
+        initUBigInt16(bytes);
+    }
 
+    private void initUBigInt16(byte[] bytes) {
         if (bytes.length < 16) {
             System.arraycopy(bytes, 0, byteArray, 0, bytes.length);
             for (int i = bytes.length; i < 16; i++) {
@@ -61,7 +66,7 @@ public class UBigInt16 {
             result[byteShift] = (byte) ((result[byteShift] << bitShift) & 0xFF);
         }
 
-        return new UBigInt16(result);
+        return new UBigInt16(result, this.gcm);
     }
 
     public UBigInt16 shiftRight(int bits) {
@@ -95,7 +100,7 @@ public class UBigInt16 {
             result[16 - byteShift - 1] = (byte) ((result[16 - byteShift - 1] & 0xFF) >>> bitShift);
         }
 
-        return new UBigInt16(result);
+        return new UBigInt16(result, this.gcm);
     }
 
     public UBigInt16 xor(UBigInt16 bigInt) {
@@ -103,7 +108,7 @@ public class UBigInt16 {
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] ^ this.byteArray[i]);
         }
-        return new UBigInt16(bytes);
+        return new UBigInt16(bytes, this.gcm);
     }
 
     public UBigInt16 and(UBigInt16 bigInt) {
@@ -111,7 +116,7 @@ public class UBigInt16 {
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] & this.byteArray[i]);
         }
-        return new UBigInt16(bytes);
+        return new UBigInt16(bytes, this.gcm);
     }
 
     public UBigInt16 or(UBigInt16 bigInt) {
@@ -119,7 +124,7 @@ public class UBigInt16 {
         for (int i = 0; i < 16; i++) {
             bytes[i] = (byte) (bytes[i] | this.byteArray[i]);
         }
-        return new UBigInt16(bytes);
+        return new UBigInt16(bytes, this.gcm);
     }
 
     public UBigInt16 setBit(int bit) {
@@ -137,15 +142,15 @@ public class UBigInt16 {
     }
 
     public byte[] toByteArray() {
-        return byteArray;
+        return this.byteArray;
     }
 
     public byte[] copyAsArray() {
-        return Arrays.copyOf(byteArray, byteArray.length);
+        return Arrays.copyOf(this.byteArray, this.byteArray.length);
     }
 
-    public UBigInt16 swapEndiannes() {
-        return new UBigInt16(Util.swapByteOrder(byteArray));
+    public UBigInt16 swapEndianness() {
+        return new UBigInt16(Util.swapByteOrder(this.byteArray), this.gcm);
     }
 
     @Override
@@ -168,6 +173,18 @@ public class UBigInt16 {
         return true;
     }
 
+    public boolean isEmpty() {
+        return this.isZero();
+    }
+
+    public boolean isZero() {
+        return this.sameAs(new UBigInt16());
+    }
+
+    public boolean isGCM() {
+        return this.gcm;
+    }
+
     public String toString(int radix) {
         return switch (radix) {
             case 2 -> this.formatBinary();
@@ -185,12 +202,16 @@ public class UBigInt16 {
         return binaryString.toString().trim();
     }
 
-    public String toBase64(){
+    public String toBase64() {
         return Base64.getEncoder().encodeToString(this.byteArray);
     }
 
-    public static UBigInt16 fromBase64(String base64){
+    public static UBigInt16 fromBase64(String base64) {
         return new UBigInt16(Base64.getDecoder().decode(base64));
+    }
+
+    public static UBigInt16 fromBase64(String base64, boolean gcm) {
+        return new UBigInt16(Base64.getDecoder().decode(base64), gcm);
     }
 
 }
