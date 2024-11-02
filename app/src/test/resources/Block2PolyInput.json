@@ -6,6 +6,27 @@
                 "semantic": "xex",
                 "block": "ARIAAAAAAAAAAAAAAAAAgA=="
             }
+        },
+        "block2poly-gcm": {
+            "action": "block2poly",
+            "arguments": {
+                "semantic": "gcm",
+                "block": "ARIAAAAAAAAAAAAAAAAAgA=="
+            }
+        },
+        "block2poly-xex2": {
+            "action": "block2poly",
+            "arguments": {
+                "semantic": "xex",
+                "block": "ARIgAAA9aAggAAAAAAAAgA=="
+            }
+        },
+        "block2poly-gcm2": {
+            "action": "block2poly",
+            "arguments": {
+                "semantic": "gcm",
+                "block": "ARIgAAA9aAggAAAAAAAAgA=="
+            }
         }
     }
 }
