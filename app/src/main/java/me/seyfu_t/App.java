@@ -67,7 +67,7 @@ public class App {
             case "gfmul" -> new GFMulAction();
             case "sea128" -> new SEA128Action();
             case "xex" -> new XEXAction();
-            default -> null;
+            default -> throw new UnsupportedOperationException("This action '" + actionName + "' has not been implemented yet.");
         };
     }
 
