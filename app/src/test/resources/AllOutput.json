@@ -20,8 +20,57 @@
                 127
             ]
         },
+        "block2poly-gcm": {
+            "coefficients": [
+                7,
+                11,
+                14,
+                120
+            ]
+        },
+        "block2poly-xex2": {
+            "coefficients": [
+                0,
+                9,
+                12,
+                21,
+                40,
+                42,
+                43,
+                44,
+                45,
+                51,
+                53,
+                54,
+                59,
+                69,
+                127
+            ]
+        },
+        "block2poly-gcm2": {
+            "coefficients": [
+                7,
+                11,
+                14,
+                18,
+                42,
+                43,
+                44,
+                45,
+                47,
+                49,
+                50,
+                52,
+                60,
+                66,
+                120
+            ]
+        },
         "a1": {
             "product": "hSQAAAAAAAAAAAAAAAAAAA=="
+        },
+        "gcm1": {
+            "product": "oSQAAAAAAAAAAAAAAAAAAA=="
         },
         "a": {
             "output": "D5FDo3iVBoBN9gVi9/MSKQ=="
