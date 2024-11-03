@@ -21,7 +21,7 @@ public class Poly2BlockAction implements Action {
         String block = switch (semantic) {
             case "xex" -> convertPoly2Block(coefficients, false);
             case "gcm" -> convertPoly2Block(coefficients, true);
-            default -> "";
+            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
         // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya

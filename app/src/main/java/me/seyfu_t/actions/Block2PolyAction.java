@@ -19,7 +19,7 @@ public class Block2PolyAction implements Action {
         int[] coefficients = switch (semantic) {
             case "xex" -> convertBlock2Poly(base64Block, false);
             case "gcm" -> convertBlock2Poly(base64Block, true);
-            default -> null;
+            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
         return new AbstractMap.SimpleEntry<>("coefficients", coefficients);

@@ -18,13 +18,11 @@ public class GFMulAction implements Action {
         String a = arguments.get("a").getAsString();
         String b = arguments.get("b").getAsString();
 
-        String product = "";
-
-        if (semantic.equalsIgnoreCase("xex")) {
-            product = mulGF(a, b, false);
-        } else if (semantic.equalsIgnoreCase("gcm")) {
-            product = mulGF(a, b, true);
-        }
+        String product = switch (semantic) {
+            case "xex" -> mulGF(a, b, false);
+            case "gcm" -> mulGF(a, b, true);
+            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
+        };
 
         return new AbstractMap.SimpleEntry<>("product", product);
     }

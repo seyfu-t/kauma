@@ -36,13 +36,11 @@ public class XEXAction implements Action {
 
         byte[] input = Base64.getDecoder().decode(base64Input);
 
-        byte[] output = null;
-
-        if (mode.equalsIgnoreCase("encrypt")) {
-            output = cryptAllBlocks("encrypt", input, tweak, keyOne, keyTwo);
-        } else if (mode.equalsIgnoreCase("decrypt")) {
-            output = cryptAllBlocks("decrypt", input, tweak, keyOne, keyTwo);
-        }
+        byte[] output = switch (mode) {
+            case "encrypt" -> cryptAllBlocks("encrypt", input, tweak, keyOne, keyTwo);
+            case "decrypt" -> cryptAllBlocks("decrypt", input, tweak, keyOne, keyTwo);
+            default -> throw new IllegalArgumentException("Null is not a valid mode");
+        };
 
         String out = Base64.getEncoder().encodeToString(output);
         return out;
