@@ -21,18 +21,20 @@ public class GFMulAction implements Action {
         String product = "";
 
         if (semantic.equalsIgnoreCase("xex")) {
-            product = mulGF(a, b);
+            product = mulGF(a, b, false);
+        } else if (semantic.equalsIgnoreCase("gcm")) {
+            product = mulGF(a, b, true);
         }
 
         return new AbstractMap.SimpleEntry<>("product", product);
     }
 
-    private static String mulGF(String base64A, @SuppressWarnings("unused") String base64B) {
+    private static String mulGF(String base64A, String base64B, boolean gcm) {
         byte[] blockA = Base64.getDecoder().decode(base64A);
         byte[] blockB = Base64.getDecoder().decode(base64B);
 
-        UBigInt16 bigIntA = new UBigInt16(blockA);
-        UBigInt16 bigIntB = new UBigInt16(blockB);
+        UBigInt16 bigIntA = new UBigInt16(blockA, gcm);
+        UBigInt16 bigIntB = new UBigInt16(blockB, gcm);
 
         UBigInt16 product = Util.combinedMulAndModReduction(bigIntA, bigIntB);
         String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
