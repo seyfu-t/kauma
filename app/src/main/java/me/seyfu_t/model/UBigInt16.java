@@ -130,6 +130,10 @@ public class UBigInt16 {
     public UBigInt16 setBit(int bit) {
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
+
+        if (this.gcm)
+            bitIndex = 7 - bitIndex;
+
         this.byteArray[byteIndex] |= (1 << bitIndex);
         return this;
     }
@@ -137,6 +141,10 @@ public class UBigInt16 {
     public boolean testBit(int bit) {
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
+
+        if (this.gcm)
+            bitIndex = 7 - bitIndex;
+
         byte test = (byte) ((this.byteArray[byteIndex] >> bitIndex) & (0x1));
         return test == 1;
     }
