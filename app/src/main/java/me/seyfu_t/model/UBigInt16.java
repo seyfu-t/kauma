@@ -18,6 +18,10 @@ public class UBigInt16 {
         this.gcm = false;
     }
 
+    public UBigInt16(boolean gcm) {
+        this.gcm = gcm;
+    }
+
     public UBigInt16(byte[] bytes, boolean gcm) {
         this.gcm = gcm;
         initUBigInt16(bytes);
