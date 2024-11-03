@@ -28,12 +28,12 @@ public class UBigInt16 {
 
     private void initUBigInt16(byte[] bytes) {
         if (bytes.length < 16) {
-            System.arraycopy(bytes, 0, byteArray, 0, bytes.length);
+            System.arraycopy(bytes, 0, this.byteArray, 0, bytes.length);
             for (int i = bytes.length; i < 16; i++) {
-                byteArray[i] = 0;
+                this.byteArray[i] = 0;
             }
         } else {
-            System.arraycopy(bytes, 0, byteArray, 0, 16);
+            System.arraycopy(bytes, 0, this.byteArray, 0, 16);
         }
     }
 
@@ -57,7 +57,7 @@ public class UBigInt16 {
             for (int i = 0; i < 16; i++)
                 workArray[i] = Util.swapBitOrder(this.byteArray[i]);
         } else {
-            System.arraycopy(this.byteArray, 0, workArray, 0, 16);
+            workArray = Arrays.copyOf(this.byteArray, this.byteArray.length);
         }
 
         // Prepare result array
@@ -147,14 +147,15 @@ public class UBigInt16 {
     }
 
     public UBigInt16 setBit(int bit) {
+        byte[] bytes = Arrays.copyOf(this.byteArray, this.byteArray.length);
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
 
         if (this.gcm)
             bitIndex = 7 - bitIndex;
 
-        this.byteArray[byteIndex] |= (1 << bitIndex);
-        return this;
+        bytes[byteIndex] |= (1 << bitIndex);
+        return new UBigInt16(bytes, this.gcm);
     }
 
     public boolean testBit(int bit) {
@@ -169,7 +170,7 @@ public class UBigInt16 {
     }
 
     public byte[] toByteArray() {
-        return this.byteArray;
+        return Arrays.copyOf(this.byteArray, this.byteArray.length);
     }
 
     public byte[] copyAsArray() {
