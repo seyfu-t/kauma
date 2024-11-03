@@ -43,7 +43,7 @@ public class App {
 
     public static JsonObject getResponseJsonFromInputPath(String filePath) {
         return getResponseJsonFromInputJson(parseFilePathToJson(filePath));
-    } 
+    }
 
     public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
         // extracting the relevant part

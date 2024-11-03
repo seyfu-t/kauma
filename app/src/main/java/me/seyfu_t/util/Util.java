@@ -1,5 +1,6 @@
 package me.seyfu_t.util;
 
+import java.util.Arrays;
 import java.util.List;
 
 import me.seyfu_t.model.UBigInt16;
@@ -24,8 +25,19 @@ public class Util {
         return swappedArray;
     }
 
-    // Clever algorithm I found online (https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel)
-    public static byte swapBitOrder(byte b){
+    public static byte[] swapBitOrderInAllBytes(byte[] byteArray) {
+        byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
+        
+        for (int i = 0; i < copy.length; i++) {
+            copy[i] = Util.swapBitOrder(byteArray[i]);
+        }
+
+        return copy;
+    }
+
+    // Clever algorithm I found online
+    // (https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel)
+    public static byte swapBitOrder(byte b) {
         int x = b & 0xFF;
         // 0x55 odd bits, 0xAA even bits
         // I just pretend I understand this

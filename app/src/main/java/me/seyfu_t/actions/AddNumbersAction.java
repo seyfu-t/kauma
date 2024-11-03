@@ -14,7 +14,8 @@ public class AddNumbersAction implements Action {
         int a = arguments.get("number1").getAsInt();
         int b = arguments.get("number2").getAsInt();
 
-        return new AbstractMap.SimpleEntry<>("sum", a + b); // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
+        // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
+        return new AbstractMap.SimpleEntry<>("sum", a + b);
     }
 
 }
