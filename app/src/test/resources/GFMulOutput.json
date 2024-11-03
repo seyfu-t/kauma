@@ -2,6 +2,9 @@
     "responses": {
         "a1": {
             "product": "hSQAAAAAAAAAAAAAAAAAAA=="
+        },
+        "gcm1": {
+            "product": "oSQAAAAAAAAAAAAAAAAAAA=="
         }
     }
 }
