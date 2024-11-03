@@ -37,7 +37,7 @@ public class Util {
     }
 
     public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
-        UBigInt16 result = new UBigInt16();
+        UBigInt16 result = new UBigInt16(a.isGCM()); // take the gcm of a (doesn't matter which one is used)
         while (!b.isZero()) {
             boolean overflow;
             if (b.testBit(0)) {
