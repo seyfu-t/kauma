@@ -26,7 +26,7 @@ public class Util {
 
     public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
         UBigInt16 result = new UBigInt16();
-        while (!b.sameAs(new UBigInt16())) {
+        while (!b.isZero()) {
             boolean overflow;
             if (b.testBit(0)) {
                 result = result.xor(a);
@@ -48,7 +48,7 @@ public class Util {
     public static byte[] concatUBigInt16s(List<UBigInt16> list) {
         // Calculate size for resulting byte array
         byte[] result = new byte[list.size() * 16];
-    
+
         // piece-wise copy byte arrays into result array
         for (int listItem = 0; listItem < list.size(); listItem++) {
             byte[] currentBytes = list.get(listItem).toByteArray();
@@ -56,5 +56,5 @@ public class Util {
         }
         return result;
     }
-    
+
 }
