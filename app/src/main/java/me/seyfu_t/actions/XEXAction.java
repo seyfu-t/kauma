@@ -38,18 +38,18 @@ public class XEXAction implements Action {
 
         byte[] output = null;
 
-        if(mode.equalsIgnoreCase("encrypt")){
+        if (mode.equalsIgnoreCase("encrypt")) {
             output = cryptAllBlocks("encrypt", input, tweak, keyOne, keyTwo);
-        } else if(mode.equalsIgnoreCase("decrypt")){
+        } else if (mode.equalsIgnoreCase("decrypt")) {
             output = cryptAllBlocks("decrypt", input, tweak, keyOne, keyTwo);
         }
-
 
         String out = Base64.getEncoder().encodeToString(output);
         return out;
     }
 
-    private static byte[] cryptAllBlocks(String mode, byte[] input, UBigInt16 tweak, UBigInt16 keyOne, UBigInt16 keyTwo){
+    private static byte[] cryptAllBlocks(String mode, byte[] input, UBigInt16 tweak, UBigInt16 keyOne,
+            UBigInt16 keyTwo) {
         List<UBigInt16> blocksList = new ArrayList<>();
 
         for (int i = 0; i < input.length / 16; i++) {

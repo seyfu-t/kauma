@@ -60,11 +60,10 @@ public class UBigInt16 {
             throw new IllegalArgumentException("Shift out of bounds");
 
         // Create work array for reversing bits when gcm is true
-        byte[] workArray = new byte[16];
+        byte[] workArray;
 
         if (this.gcm) { // Swap bit order to non-gcm
-            for (int i = 0; i < 16; i++)
-                workArray[i] = Util.swapBitOrder(this.byteArray[i]);
+            workArray = Util.swapBitOrderInAllBytes(this.byteArray);
         } else {
             workArray = Arrays.copyOf(this.byteArray, this.byteArray.length);
         }
@@ -83,8 +82,7 @@ public class UBigInt16 {
             shiftPartialBits(result, byteShift, bitShift, isLeft);
 
         if (this.gcm) { // Swap bit order back to gcm
-            for (int i = 0; i < 16; i++)
-                result[i] = Util.swapBitOrder(result[i]);
+            result = Util.swapBitOrderInAllBytes(result);
         }
 
         return new UBigInt16(result, this.gcm);
@@ -146,8 +144,7 @@ public class UBigInt16 {
 
         // Since the original gcm will be preferred, the copy must be flipped
         if (this.gcm != bigInt.gcm) {
-            for (int i = 0; i < 16; i++)
-                bytes[i] = Util.swapBitOrder(bytes[i]);
+            bytes = Util.swapBitOrderInAllBytes(bytes);
         }
 
         for (int i = 0; i < 16; i++) {
