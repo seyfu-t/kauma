@@ -38,6 +38,14 @@ public class UBigInt16 {
     }
 
     public UBigInt16 shiftLeft(int bits) {
+        return shift(bits, true);
+    }
+
+    public UBigInt16 shiftRight(int bits) {
+        return shift(bits, false);
+    }
+
+    private UBigInt16 shift(int bits, boolean isLeft) {
         // Validate shift range
         if (bits < 0 || bits >= 128)
             throw new IllegalArgumentException("Shift out of bounds");
@@ -50,13 +58,27 @@ public class UBigInt16 {
         // Bit shift within bytes
         int bitShift = bits % 8;
 
-        // If there's a full byte shift, move bytes
-        for (int i = 15 - byteShift; i >= 0; i--) {
-            result[i + byteShift] = byteArray[i];
-        }
+        shiftFullBytes(result, byteShift, isLeft);
 
-        // If there's a bit shift within bytes
-        if (bitShift > 0) {
+        if (bitShift > 0)
+            shiftPartialBits(result, byteShift, bitShift, isLeft);
+
+        return new UBigInt16(result, this.gcm);
+    }
+
+    private void shiftFullBytes(byte[] result, int byteShift, boolean isLeft) {
+        if (isLeft)
+            for (int i = 15 - byteShift; i >= 0; i--) {
+                result[i + byteShift] = byteArray[i];
+            }
+        else
+            for (int i = byteShift; i < 16; i++) {
+                result[i - byteShift] = byteArray[i];
+            }
+    }
+
+    private void shiftPartialBits(byte[] result, int byteShift, int bitShift, boolean isLeft) {
+        if (isLeft) {
             for (int i = 15; i > byteShift; i--) {
                 // Shift current byte
                 result[i] = (byte) ((result[i] << bitShift) & 0xFF);
@@ -65,43 +87,16 @@ public class UBigInt16 {
             }
             // Shift the first affected byte
             result[byteShift] = (byte) ((result[byteShift] << bitShift) & 0xFF);
-        }
-
-        return new UBigInt16(result, this.gcm);
-    }
-
-    public UBigInt16 shiftRight(int bits) {
-        // Validate shift range
-        if (bits < 0 || bits >= 128)
-            throw new IllegalArgumentException("Shift out of bounds");
-
-        // Prepare result array
-        byte[] result = new byte[16];
-
-        // Full byte shift
-        int byteShift = bits / 8;
-        // Bit shift within bytes
-        int bitShift = bits % 8;
-
-        // If there's a full byte shift, move bytes
-        for (int i = byteShift; i < 16; i++) {
-            result[i - byteShift] = byteArray[i];
-        }
-
-        // If there's a bit shift within bytes
-        if (bitShift > 0) {
+        } else {
             for (int i = 0; i < 16 - byteShift - 1; i++) {
                 // Shift current byte
                 result[i] = (byte) ((result[i] & 0xFF) >>> bitShift);
                 // Carry over bits from next byte
                 result[i] |= (byte) ((result[i + 1] & 0xFF) << (8 - bitShift));
             }
-
             // Shift the last affected byte
             result[16 - byteShift - 1] = (byte) ((result[16 - byteShift - 1] & 0xFF) >>> bitShift);
         }
-
-        return new UBigInt16(result, this.gcm);
     }
 
     public UBigInt16 xor(UBigInt16 bigInt) {
