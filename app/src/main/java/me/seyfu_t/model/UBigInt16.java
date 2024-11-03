@@ -116,12 +116,24 @@ public class UBigInt16 {
         return applyOperation(bigInt, (a, b) -> (byte) (a | b));
     }
 
+    // When or, and, xor is used with two numbers having opposing gcm,
+    // the gcm of the original (not the input) will be preferred
     private UBigInt16 applyOperation(UBigInt16 bigInt, BinaryOperator<Byte> operator) {
+        // Create a copy of input
         byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
+
+        // Since the original gcm will be preferred, the copy must be flipped
+        if (this.gcm != bigInt.gcm) {
+            for (int i = 0; i < 16; i++)
+                bytes[i] = Util.swapBitOrder(bytes[i]);
+        }
+
         for (int i = 0; i < 16; i++) {
+            // Apply operation and save to the copy
             bytes[i] = operator.apply(bytes[i], this.byteArray[i]);
         }
-        return new UBigInt16(bytes, this.gcm);
+
+        return new UBigInt16(bytes, this.gcm); // return modified copy and original gcm
     }
 
     public UBigInt16 setBit(int bit) {
