@@ -35,13 +35,11 @@ public class SEA128Action implements Action {
         byte[] input = Base64.getDecoder().decode(base64Input);
         byte[] key = Base64.getDecoder().decode(base64Key);
 
-        byte[] output = null;
-
-        if (mode.equalsIgnoreCase("encrypt")) {
-            output = encryptSEA128(input, key);
-        } else if (mode.equalsIgnoreCase("decrypt")) {
-            output = decryptSEA128(input, key);
-        }
+        byte[] output = switch (mode) {
+            case "encrypt" -> encryptSEA128(input, key);
+            case "decrypt" -> decryptSEA128(input, key);
+            default -> throw new IllegalArgumentException("Null is not a valid mode");
+        };
 
         String base64 = Base64.getEncoder().encodeToString(output);
         return base64;
