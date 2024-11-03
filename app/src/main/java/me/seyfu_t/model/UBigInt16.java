@@ -11,10 +11,11 @@ public class UBigInt16 {
 
     private final byte[] byteArray = new byte[16];
 
-    private boolean gcm = false;
+    private final boolean gcm;
 
     // All 0s UBigInt16
     public UBigInt16() {
+        this.gcm = false;
     }
 
     public UBigInt16(byte[] bytes, boolean gcm) {
@@ -23,10 +24,14 @@ public class UBigInt16 {
     }
 
     public UBigInt16(byte[] bytes) {
+        this.gcm = false;
         initUBigInt16(bytes);
     }
 
     private void initUBigInt16(byte[] bytes) {
+        if (bytes == null)
+            throw new NullPointerException("Input byte array cannot be null");
+
         if (bytes.length < 16) {
             System.arraycopy(bytes, 0, this.byteArray, 0, bytes.length);
             for (int i = bytes.length; i < 16; i++) {
@@ -129,6 +134,9 @@ public class UBigInt16 {
     // When or, and, xor is used with two numbers having opposing gcm,
     // the gcm of the original (not the input) will be preferred
     private UBigInt16 applyOperation(UBigInt16 bigInt, BinaryOperator<Byte> operator) {
+        if (bigInt == null)
+            throw new NullPointerException("Input UBigInt16 is null");
+
         // Create a copy of input
         byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
 
@@ -147,6 +155,9 @@ public class UBigInt16 {
     }
 
     public UBigInt16 setBit(int bit) {
+        if (bit < 0 || bit >= 128)
+            throw new IllegalArgumentException("Bit index out of bounds: " + bit);
+
         byte[] bytes = Arrays.copyOf(this.byteArray, this.byteArray.length);
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
@@ -159,6 +170,9 @@ public class UBigInt16 {
     }
 
     public boolean testBit(int bit) {
+        if (bit < 0 || bit >= 128)
+            throw new IllegalArgumentException("Bit index out of bounds: " + bit);
+
         int byteIndex = bit / 8;
         int bitIndex = bit % 8;
 
@@ -235,10 +249,14 @@ public class UBigInt16 {
     }
 
     public static UBigInt16 fromBase64(String base64) {
+        if (base64 == null)
+            throw new NullPointerException("Base64 string cannot be null");
         return new UBigInt16(Base64.getDecoder().decode(base64));
     }
 
     public static UBigInt16 fromBase64(String base64, boolean gcm) {
+        if (base64 == null)
+            throw new NullPointerException("Base64 string cannot be null");
         return new UBigInt16(Base64.getDecoder().decode(base64), gcm);
     }
 
