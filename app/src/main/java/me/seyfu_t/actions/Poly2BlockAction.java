@@ -18,38 +18,22 @@ public class Poly2BlockAction implements Action {
         int[] coefficients = convertJsonArrayToIntArray(arguments.get("coefficients").getAsJsonArray());
         Arrays.sort(coefficients); // sort ascending, using O(n*log(n)) algorithm BTW
 
-        String block = "";
+        String block = switch (semantic) {
+            case "xex" -> convertPoly2Block(coefficients, false);
+            case "gcm" -> convertPoly2Block(coefficients, true);
+            default -> "";
+        };
 
-        if (semantic.equalsIgnoreCase("xex")) {
-            block = convertPoly2BlockXEX(coefficients);
-        } else if (semantic.equalsIgnoreCase("gcm")) {
-            block = convertPoly2BlockGCM(coefficients);
-        }
-
-        return new AbstractMap.SimpleEntry<>("block", block); // Very SIMPLE way of creating a SIMPLE key-value pair,
-                                                              // that's java for ya
+        // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
+        return new AbstractMap.SimpleEntry<>("block", block);
     }
 
-    private static String convertPoly2BlockXEX(int[] coefficients) {
+    private static String convertPoly2Block(int[] coefficients, boolean gcm) {
         byte[] blockByteArray = new byte[16];
 
         for (int co : coefficients) {
             byte byteIndex = (byte) Math.floor(co / 8);
-            byte bitIndex = (byte) (co % 8);
-            blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
-        }
-
-        // Convert to base64 and return
-        String base64 = Base64.getEncoder().encodeToString(blockByteArray);
-        return base64;
-    }
-
-    private static String convertPoly2BlockGCM(int[] coefficients) {
-        byte[] blockByteArray = new byte[16];
-
-        for (int co : coefficients) {
-            byte byteIndex = (byte) Math.floor(co / 8);
-            byte bitIndex = (byte) (7 - (co % 8));
+            byte bitIndex = (byte) (gcm ? (7 - (co % 8)) : (co % 8));
             blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
         }
 
