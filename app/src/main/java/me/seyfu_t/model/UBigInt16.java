@@ -3,6 +3,7 @@ package me.seyfu_t.model;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HexFormat;
+import java.util.function.BinaryOperator;
 
 import me.seyfu_t.util.Util;
 
@@ -104,25 +105,21 @@ public class UBigInt16 {
     }
 
     public UBigInt16 xor(UBigInt16 bigInt) {
-        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
-        for (int i = 0; i < 16; i++) {
-            bytes[i] = (byte) (bytes[i] ^ this.byteArray[i]);
-        }
-        return new UBigInt16(bytes, this.gcm);
+        return applyOperation(bigInt, (a, b) -> (byte) (a ^ b));
     }
 
     public UBigInt16 and(UBigInt16 bigInt) {
-        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
-        for (int i = 0; i < 16; i++) {
-            bytes[i] = (byte) (bytes[i] & this.byteArray[i]);
-        }
-        return new UBigInt16(bytes, this.gcm);
+        return applyOperation(bigInt, (a, b) -> (byte) (a & b));
     }
 
     public UBigInt16 or(UBigInt16 bigInt) {
+        return applyOperation(bigInt, (a, b) -> (byte) (a | b));
+    }
+
+    private UBigInt16 applyOperation(UBigInt16 bigInt, BinaryOperator<Byte> operator) {
         byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
         for (int i = 0; i < 16; i++) {
-            bytes[i] = (byte) (bytes[i] | this.byteArray[i]);
+            bytes[i] = operator.apply(bytes[i], this.byteArray[i]);
         }
         return new UBigInt16(bytes, this.gcm);
     }
