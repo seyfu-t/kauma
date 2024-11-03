@@ -38,25 +38,29 @@ class AppTest {
                 (byte) 0x81, (byte) 0x81, (byte) 0x18, (byte) 0x4c, };
         UBigInt16 b = new UBigInt16(tb);
 
-        Assertions.assertEquals(
-                "10011000 00110001 00000011 00000010 10011000 00110001 00000011 00000010 10011001 10011001 00000011 00000010 10011000 00110001 11111111 00000010",
-                b.shiftLeft(1).swapEndiannes().toString(2));
-        Assertions.assertEquals(
-                "00110000 01100010 00000110 00000101 00110000 01100010 00000110 00000101 00110011 00110010 00000110 00000101 00110000 01100011 11111110 00000100",
-                b.shiftLeft(2).swapEndiannes().toString(2));
-        Assertions.assertEquals(
-                "01100000 11000100 00001100 00001010 01100000 11000100 00001100 00001010 01100110 01100100 00001100 00001010 01100000 11000111 11111100 00001000",
-                b.shiftLeft(3).swapEndiannes().toString(2));
+        String shift1Expectation = "10011000 00110001 00000011 00000010 10011000 00110001 00000011 00000010 10011001 10011001 00000011 00000010 10011000 00110001 11111111 00000010";
+        String shift2Expectation = "00110000 01100010 00000110 00000101 00110000 01100010 00000110 00000101 00110011 00110010 00000110 00000101 00110000 01100011 11111110 00000100";
+        String shift3Expectation = "01100000 11000100 00001100 00001010 01100000 11000100 00001100 00001010 01100110 01100100 00001100 00001010 01100000 11000111 11111100 00001000";
 
-        Assertions.assertEquals(
-                "00000010 11111111 00110001 10011000 00000010 00000011 10011001 10011001 00000010 00000011 00110001 10011000 00000010 00000011 00110001 10011000",
-                b.shiftLeft(1).toString(2));
-        Assertions.assertEquals(
-                "00000100 11111110 01100011 00110000 00000101 00000110 00110010 00110011 00000101 00000110 01100010 00110000 00000101 00000110 01100010 00110000",
-                b.shiftLeft(2).toString(2));
-        Assertions.assertEquals(
-                "00001000 11111100 11000111 01100000 00001010 00001100 01100100 01100110 00001010 00001100 11000100 01100000 00001010 00001100 11000100 01100000",
-                b.shiftLeft(3).toString(2));
+        String shift1Reality = b.shiftLeft(1).swapEndianness().toString(2);
+        String shift2Reality = b.shiftLeft(2).swapEndianness().toString(2);
+        String shift3Reality = b.shiftLeft(3).swapEndianness().toString(2);
+
+        String shift4Expectation = "00000010 11111111 00110001 10011000 00000010 00000011 10011001 10011001 00000010 00000011 00110001 10011000 00000010 00000011 00110001 10011000";
+        String shift5Expectation = "00000100 11111110 01100011 00110000 00000101 00000110 00110010 00110011 00000101 00000110 01100010 00110000 00000101 00000110 01100010 00110000";
+        String shift6Expectation = "00001000 11111100 11000111 01100000 00001010 00001100 01100100 01100110 00001010 00001100 11000100 01100000 00001010 00001100 11000100 01100000";
+
+        String shift4Reality = b.shiftLeft(1).toString(2);
+        String shift5Reality = b.shiftLeft(2).toString(2);
+        String shift6Reality = b.shiftLeft(3).toString(2);
+
+        Assertions.assertEquals(shift1Expectation, shift1Reality);
+        Assertions.assertEquals(shift2Expectation, shift2Reality);
+        Assertions.assertEquals(shift3Expectation, shift3Reality);
+
+        Assertions.assertEquals(shift4Expectation, shift4Reality);
+        Assertions.assertEquals(shift5Expectation, shift5Reality);
+        Assertions.assertEquals(shift6Expectation, shift6Reality);
 
     }
 
