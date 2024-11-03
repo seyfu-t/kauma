@@ -24,6 +24,18 @@ public class Util {
         return swappedArray;
     }
 
+    // Clever algorithm I found online (https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel)
+    public static byte swapBitOrder(byte b){
+        int x = b & 0xFF;
+        // 0x55 odd bits, 0xAA even bits
+        // I just pretend I understand this
+        // It's black magic
+        x = ((x & 0x55) << 1) | ((x & 0xAA) >>> 1);
+        x = ((x & 0x33) << 2) | ((x & 0xCC) >>> 2);
+        x = ((x & 0x0F) << 4) | ((x & 0xF0) >>> 4);
+        return (byte) x;
+    }
+
     public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
         UBigInt16 result = new UBigInt16();
         while (!b.isZero()) {
