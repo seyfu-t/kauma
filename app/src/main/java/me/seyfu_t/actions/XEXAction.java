@@ -1,11 +1,11 @@
 package me.seyfu_t.actions;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -16,7 +16,7 @@ import me.seyfu_t.util.Util;
 public class XEXAction implements Action {
 
     @Override
-    public Entry<String, Object> execute(JsonObject arguments) {
+    public Map<String, Object> execute(JsonObject arguments) {
         String mode = arguments.get("mode").getAsString();
         String key = arguments.get("key").getAsString();
         String tweak = arguments.get("tweak").getAsString();
@@ -24,7 +24,10 @@ public class XEXAction implements Action {
 
         String output = xex(mode, key, tweak, input);
 
-        return new AbstractMap.SimpleEntry<>("output", output);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("output", output);
+        
+        return resultMap;
     }
 
     private static String xex(String mode, String base64Key, String base64Tweak, String base64Input) {

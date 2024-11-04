@@ -1,6 +1,6 @@
 package me.seyfu_t.model;
 
-import java.util.Map.Entry;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -12,5 +12,5 @@ public interface Action {
      * of the output (e.g. "sum" or "block") and the value being the result data
      * itself
      */
-    public Entry<String, Object> execute(JsonObject arguments);
+    public Map<String, Object> execute(JsonObject arguments);
 }

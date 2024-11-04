@@ -1,9 +1,9 @@
 package me.seyfu_t.actions;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -13,7 +13,7 @@ import me.seyfu_t.model.Action;
 public class Poly2BlockAction implements Action {
 
     @Override
-    public Entry<String, Object> execute(JsonObject arguments) {
+    public Map<String, Object> execute(JsonObject arguments) {
         String semantic = arguments.get("semantic").getAsString();
         int[] coefficients = convertJsonArrayToIntArray(arguments.get("coefficients").getAsJsonArray());
         Arrays.sort(coefficients); // sort ascending, using O(n*log(n)) algorithm BTW
@@ -24,8 +24,10 @@ public class Poly2BlockAction implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
-        return new AbstractMap.SimpleEntry<>("block", block);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("block", block);
+
+        return resultMap;
     }
 
     private static String convertPoly2Block(int[] coefficients, boolean gcm) {

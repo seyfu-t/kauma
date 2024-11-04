@@ -1,8 +1,8 @@
 package me.seyfu_t.actions;
 
-import java.util.AbstractMap;
 import java.util.Base64;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -13,7 +13,7 @@ import me.seyfu_t.util.Util;
 public class GFMulAction implements Action {
 
     @Override
-    public Entry<String, Object> execute(JsonObject arguments) {
+    public Map<String, Object> execute(JsonObject arguments) {
         String semantic = arguments.get("semantic").getAsString();
         String a = arguments.get("a").getAsString();
         String b = arguments.get("b").getAsString();
@@ -24,7 +24,10 @@ public class GFMulAction implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        return new AbstractMap.SimpleEntry<>("product", product);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("product", product);
+
+        return resultMap;
     }
 
     private static String mulGF(String base64A, String base64B, boolean gcm) {

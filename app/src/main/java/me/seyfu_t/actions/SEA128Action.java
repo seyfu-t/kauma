@@ -1,8 +1,8 @@
 package me.seyfu_t.actions;
 
-import java.util.AbstractMap;
 import java.util.Base64;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -21,14 +21,17 @@ public class SEA128Action implements Action {
     });
 
     @Override
-    public Entry<String, Object> execute(JsonObject arguments) {
+    public Map<String, Object> execute(JsonObject arguments) {
         String mode = arguments.get("mode").getAsString();
         String key = arguments.get("key").getAsString();
         String input = arguments.get("input").getAsString();
 
         String output = sea128(mode, input, key);
 
-        return new AbstractMap.SimpleEntry<>("output", output);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("output", output);
+
+        return resultMap;
     }
 
     public static String sea128(String mode, String base64Input, String base64Key) {

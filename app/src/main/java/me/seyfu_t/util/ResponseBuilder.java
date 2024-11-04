@@ -1,8 +1,10 @@
 package me.seyfu_t.util;
 
-import com.google.gson.JsonObject;
+import java.util.Map;
 
-import me.seyfu_t.model.SingleResponse;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class ResponseBuilder {
 
@@ -12,11 +14,19 @@ public class ResponseBuilder {
         responses = new JsonObject();
     }
 
-    public void addSingleResponse(SingleResponse response) {
+    public void addResponse(String hash, Map<String, Object> response) {
         JsonObject innerJson = new JsonObject(); // e.g. {"sum":"300"}
-        innerJson.add(response.getActionResultName(), response.getParsedResultAsJsonElement());
 
-        responses.add(response.getHash(), innerJson); // e.g. {"HASH":<innerJson>}
+        for (String actionResultName : response.keySet()) {
+            innerJson.add(actionResultName, parseResultToJsonElement(response.get(actionResultName)));
+
+        }
+
+        responses.add(hash, innerJson); // e.g. {"HASH":<innerJson>}
+    }
+
+    private static JsonElement parseResultToJsonElement(Object result) {
+        return new Gson().toJsonTree(result);
     }
 
     public JsonObject build() {
