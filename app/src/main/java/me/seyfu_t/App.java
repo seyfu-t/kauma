@@ -105,7 +105,7 @@ public class App {
             log.severe("File is not valid json!");
             System.exit(1);
         }
-        // This part here will never be reached, but it's required for type validation
-        return null;
+
+        throw new RuntimeException("This line of code should've never been reached");
     }
 }
