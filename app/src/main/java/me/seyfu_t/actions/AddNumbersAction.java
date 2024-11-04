@@ -1,7 +1,7 @@
 package me.seyfu_t.actions;
 
-import java.util.AbstractMap;
-import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 
@@ -10,12 +10,14 @@ import me.seyfu_t.model.Action;
 public class AddNumbersAction implements Action {
 
     @Override
-    public Entry<String, Object> execute(JsonObject arguments) {
+    public Map<String, Object> execute(JsonObject arguments) {
         int a = arguments.get("number1").getAsInt();
         int b = arguments.get("number2").getAsInt();
 
-        // Very SIMPLE way of creating a SIMPLE key-value pair, that's java for ya
-        return new AbstractMap.SimpleEntry<>("sum", a + b);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("sum", a + b);
+
+        return resultMap;
     }
 
 }

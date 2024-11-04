@@ -3,6 +3,7 @@ package me.seyfu_t;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -19,7 +20,6 @@ import me.seyfu_t.actions.SEA128Action;
 import me.seyfu_t.actions.SubtractNumbersAction;
 import me.seyfu_t.actions.XEXAction;
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.SingleResponse;
 import me.seyfu_t.util.ResponseBuilder;
 
 public class App {
@@ -67,7 +67,8 @@ public class App {
             case "gfmul" -> new GFMulAction();
             case "sea128" -> new SEA128Action();
             case "xex" -> new XEXAction();
-            default -> throw new UnsupportedOperationException("This action '" + actionName + "' has not been implemented yet.");
+            default -> throw new UnsupportedOperationException(
+                    "This action '" + actionName + "' has not been implemented yet.");
         };
     }
 
@@ -83,15 +84,9 @@ public class App {
             Action action = getActionClass(actionName); // get the appropriate instance
 
             // execute
-            Entry<String, Object> resultEntry = action.execute(arguments);
+            Map<String, Object> resultEntry = action.execute(arguments);
 
-            // results
-            String actionResultName = resultEntry.getKey();
-            Object caseResult = resultEntry.getValue();
-
-            // add to builder
-            SingleResponse singleResponse = new SingleResponse(uniqueHash, actionResultName, caseResult);
-            builder.addSingleResponse(singleResponse);
+            builder.addResponse(uniqueHash, resultEntry);
         }
     }
 
