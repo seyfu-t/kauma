@@ -48,7 +48,7 @@ public class SEA128Action implements Action {
         return base64;
     }
 
-    private static byte[] encryptSEA128(byte[] msg, byte[] key) {
+    public static byte[] encryptSEA128(byte[] msg, byte[] key) {
         // Throw into AES
         byte[] aes = AES.encrypt(msg, key);
 
@@ -60,7 +60,7 @@ public class SEA128Action implements Action {
         return new UBigInt16(aes).xor(XOR).toByteArray();
     }
 
-    private static byte[] decryptSEA128(byte[] msg, byte[] key) {
+    public static byte[] decryptSEA128(byte[] msg, byte[] key) {
         // First XOR with constant
         byte[] xored = new UBigInt16(msg).xor(XOR).toByteArray();
         // Then AES decrypt
