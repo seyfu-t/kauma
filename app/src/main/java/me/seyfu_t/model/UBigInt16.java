@@ -188,10 +188,6 @@ public class UBigInt16 {
         return Arrays.copyOf(this.byteArray, this.byteArray.length);
     }
 
-    public byte[] copyAsArray() {
-        return Arrays.copyOf(this.byteArray, this.byteArray.length);
-    }
-
     public UBigInt16 swapEndianness() {
         return new UBigInt16(Util.swapByteOrder(this.byteArray), this.gcm);
     }
