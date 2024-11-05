@@ -1,0 +1,12 @@
+{
+    "responses": {
+        "aes-gcm-gcm_encrypt": {
+            "authentic": true,
+            "plaintext": "EREavadt90qq"
+        },
+        "sea-gcm-gcm_encrypt": {
+            "authentic": false,
+            "plaintext": "AxSiKm93Gr2+"
+        }
+    }
+}
