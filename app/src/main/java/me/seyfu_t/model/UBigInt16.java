@@ -245,6 +245,15 @@ public class UBigInt16 {
         return Base64.getEncoder().encodeToString(this.byteArray);
     }
 
+    public int countOfSetBytes() {
+        for (int i = 15; i >= 0; i--) {
+            if ((byteArray[i] & 0xFF) != 0) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
     public static UBigInt16 fromBase64(String base64) {
         if (base64 == null)
             throw new NullPointerException("Base64 string cannot be null");
