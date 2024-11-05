@@ -30,17 +30,17 @@ public class GCMEncryptAction implements Action {
 
     public static Map<String, Object> gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
             String base64Plaintext, String base64AD) {
-                
+
         UBigInt16 key = UBigInt16.fromBase64(base64Key, true);
         byte[] plaintextBytes = Base64.getDecoder().decode(base64Plaintext);
-        byte[] ciphertextBytes = generateCiphertext(algorithm, base64Nonce, key, plaintextBytes);
+        byte[] ciphertextBytes = generateFullText(algorithm, base64Nonce, key, plaintextBytes);
         byte[] adBytes = Base64.getDecoder().decode(base64AD);
 
-        UBigInt16 H = calculateAuthKey(algorithm, UBigInt16.fromBase64(base64Key, true));
-        UBigInt16 L = calculateLengthOfADAndCiphertexts(Base64.getDecoder().decode(base64AD), ciphertextBytes);
+        UBigInt16 H = calculateAuthKey(algorithm, key);
+        UBigInt16 L = calculateLengthOfADAndCiphertexts(adBytes, ciphertextBytes);
         UBigInt16 ghashResult = ghash(H, adBytes, ciphertextBytes, L);
         // index -1 because 0 is the first ciphertext and this is one before that
-        UBigInt16 authTag = generateSingleCiphertextBlock(-1, algorithm, base64Nonce, key, ghashResult);
+        UBigInt16 authTag = generateSingleTextBlock(-1, algorithm, base64Nonce, key, ghashResult);
 
         String ciphertext = Base64.getEncoder().encodeToString(ciphertextBytes);
         String base64L = L.toBase64();
@@ -55,7 +55,7 @@ public class GCMEncryptAction implements Action {
         return resultMap;
     }
 
-    private static UBigInt16 calculateAuthKey(String algorithm, UBigInt16 key) {
+    public static UBigInt16 calculateAuthKey(String algorithm, UBigInt16 key) {
         return switch (algorithm) {
             case "aes128" -> new UBigInt16(AES.encrypt(new byte[16], key.toByteArray()), true);
             case "sea128" -> new UBigInt16(SEA128Action.encryptSEA128(new byte[16], key.toByteArray()), true);
@@ -63,28 +63,28 @@ public class GCMEncryptAction implements Action {
         };
     }
 
-    private static byte[] generateCiphertext(String algorithm, String nonce, UBigInt16 key, byte[] plaintext) {
+    public static byte[] generateFullText(String algorithm, String nonce, UBigInt16 key, byte[] text) {
 
         List<UBigInt16> ciphertextBlocksList = new ArrayList<>();
-        int blockCount = (plaintext.length / 16) + (plaintext.length % 16 == 0 ? 0 : 1);
+        int blockCount = (text.length / 16) + (text.length % 16 == 0 ? 0 : 1);
 
         for (int i = 0; i < blockCount; i++) {
             // Copy each 16 byte block into a UBigInt16 (this will auto-pad the last one if
             // needed)
-            UBigInt16 plaintextBlock = new UBigInt16(Arrays.copyOfRange(plaintext, i * 16, (i + 1) * 16), true);
-            UBigInt16 ciphertextBlock = generateSingleCiphertextBlock(i, algorithm, nonce, key, plaintextBlock);
+            UBigInt16 textBlock = new UBigInt16(Arrays.copyOfRange(text, i * 16, (i + 1) * 16), true);
+            UBigInt16 ciphertextBlock = generateSingleTextBlock(i, algorithm, nonce, key, textBlock);
             ciphertextBlocksList.add(ciphertextBlock);
         }
 
         byte[] concatedCiphertext = Util.concatUBigInt16s(ciphertextBlocksList);
         // undo the part that resulted from padding the last ciphertext block
-        byte[] result = Arrays.copyOfRange(concatedCiphertext, 0, plaintext.length);
+        byte[] result = Arrays.copyOfRange(concatedCiphertext, 0, text.length);
 
         return result;
     }
 
     // also used for creating the Auth Tag
-    private static UBigInt16 generateSingleCiphertextBlock(long index, String algorithm, String nonce, UBigInt16 key,
+    public static UBigInt16 generateSingleTextBlock(long index, String algorithm, String nonce, UBigInt16 key,
             UBigInt16 plaintextPart) {
 
         UBigInt16 nonceConcatCounter = concatNonceAndCounter(nonce, index + 2); // the 0th ciphertext block has Ctr 2
@@ -117,8 +117,7 @@ public class GCMEncryptAction implements Action {
         return new UBigInt16(result, true);
     }
 
-    // Todo: handle shorter and longer IV/nonce
-    private static UBigInt16 ghash(UBigInt16 authKey, byte[] ad, byte[] ciphertext, UBigInt16 concatedLength) {
+    public static UBigInt16 ghash(UBigInt16 authKey, byte[] ad, byte[] ciphertext, UBigInt16 concatedLength) {
         UBigInt16 lastBlock = new UBigInt16(true); // begin with all 0s
 
         int adBlockCount = (ad.length / 16) + (ad.length % 16 == 0 ? 0 : 1);
@@ -147,7 +146,7 @@ public class GCMEncryptAction implements Action {
         return Util.combinedMulAndModReduction(xor, authKey);
     }
 
-    private static UBigInt16 calculateLengthOfADAndCiphertexts(byte[] ad, byte[] ciphertext) {
+    public static UBigInt16 calculateLengthOfADAndCiphertexts(byte[] ad, byte[] ciphertext) {
         // Amount of bits
         long adLengthInt = ad.length * 8;
         long ciphertextLengthInt = ciphertext.length * 8;
