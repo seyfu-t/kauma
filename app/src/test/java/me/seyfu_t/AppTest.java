@@ -28,6 +28,8 @@ class AppTest {
     private static final String XEX_OUTPUT = "XEXOutput.json";
     private static final String GCMENCRYPT_INPUT = "GCMEncryptInput.json";
     private static final String GCMENCRYPT_OUTPUT = "GCMEncryptOutput.json";
+    private static final String GCMDECRYPT_INPUT = "GCMDecryptInput.json";
+    private static final String GCMDECRYPT_OUTPUT = "GCMDecryptOutput.json";
 
     private static final String ALL_INPUT = "AllInput.json";
     private static final String ALL_OUTPUT = "AllOutput.json";
@@ -104,6 +106,11 @@ class AppTest {
     @Test
     void testGCMEncryptAction() {
         createTest(GCMENCRYPT_INPUT, GCMENCRYPT_OUTPUT);
+    }
+
+    @Test
+    void testGCMDecryptAction() {
+        createTest(GCMDECRYPT_INPUT, GCMDECRYPT_OUTPUT);
     }
 
     private void createTest(String input, String output) {
