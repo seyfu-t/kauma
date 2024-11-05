@@ -14,6 +14,7 @@ import com.google.gson.JsonParseException;
 
 import me.seyfu_t.actions.AddNumbersAction;
 import me.seyfu_t.actions.Block2PolyAction;
+import me.seyfu_t.actions.GCMDecryptAction;
 import me.seyfu_t.actions.GCMEncryptAction;
 import me.seyfu_t.actions.GFMulAction;
 import me.seyfu_t.actions.Poly2BlockAction;
@@ -69,6 +70,7 @@ public class App {
             case "sea128" -> new SEA128Action();
             case "xex" -> new XEXAction();
             case "gcm_encrypt" -> new GCMEncryptAction();
+            case "gcm_decrypt" -> new GCMDecryptAction();
             default -> throw new UnsupportedOperationException(
                     "This action '" + actionName + "' has not been implemented yet.");
         };
