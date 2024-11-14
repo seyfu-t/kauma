@@ -12,15 +12,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import me.seyfu_t.actions.AddNumbersAction;
-import me.seyfu_t.actions.Block2PolyAction;
-import me.seyfu_t.actions.GCMDecryptAction;
-import me.seyfu_t.actions.GCMEncryptAction;
-import me.seyfu_t.actions.GFMulAction;
-import me.seyfu_t.actions.Poly2BlockAction;
-import me.seyfu_t.actions.SEA128Action;
-import me.seyfu_t.actions.SubtractNumbersAction;
-import me.seyfu_t.actions.XEXAction;
+import me.seyfu_t.actions.*;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
