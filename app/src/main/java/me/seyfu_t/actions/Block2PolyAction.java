@@ -28,7 +28,7 @@ public class Block2PolyAction implements Action {
         return resultMap;
     }
 
-    private static int[] convertBlock2Poly(String base64Block, boolean gcm) {
+    public static int[] convertBlock2Poly(String base64Block, boolean gcm) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
 
         int[] coefficients = new int[128];

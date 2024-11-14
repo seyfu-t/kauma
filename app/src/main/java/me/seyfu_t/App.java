@@ -71,8 +71,7 @@ public class App {
             case "xex" -> new XEXAction();
             case "gcm_encrypt" -> new GCMEncryptAction();
             case "gcm_decrypt" -> new GCMDecryptAction();
-            default -> throw new UnsupportedOperationException(
-                    "This action '" + actionName + "' has not been implemented yet.");
+            default -> null;
         };
     }
 
@@ -86,6 +85,9 @@ public class App {
             JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
 
             Action action = getActionClass(actionName); // get the appropriate instance
+
+            if (action == null)
+                continue;
 
             // execute
             Map<String, Object> resultEntry = action.execute(arguments);
