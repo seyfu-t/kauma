@@ -1,6 +1,8 @@
 package me.seyfu_t.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.List;
 
 import me.seyfu_t.model.UBigInt16;
@@ -27,7 +29,7 @@ public class Util {
 
     public static byte[] swapBitOrderInAllBytes(byte[] byteArray) {
         byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
-        
+
         for (int i = 0; i < copy.length; i++) {
             copy[i] = Util.swapBitOrder(byteArray[i]);
         }
@@ -79,6 +81,22 @@ public class Util {
             System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
         }
         return result;
+    }
+
+    public static List<byte[]> splitIntoChunks(byte[] array, int chunkSize) {
+        List<byte[]> chunks = new ArrayList<>();
+        Log.debug("Full byte array: " + HexFormat.of().formatHex(array));
+        for (int i = 0; i < array.length; i += chunkSize) {
+            // Last block could be less than 16 bytes in size
+            int maxIndex = Math.min(i + chunkSize, array.length);
+            // Copy the relevant slice
+            byte[] chunk = Arrays.copyOfRange(array, i, maxIndex);
+            chunks.add(chunk);
+
+            Log.debug("Chunk: " + HexFormat.of().formatHex(chunk));
+        }
+
+        return chunks;
     }
 
 }
