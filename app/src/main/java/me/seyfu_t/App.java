@@ -76,6 +76,7 @@ public class App {
             case "xex" -> new XEXAction();
             case "gcm_encrypt" -> new GCMEncryptAction();
             case "gcm_decrypt" -> new GCMDecryptAction();
+            case "padding_oracle" -> new PaddingOracleAction();
             default -> null;
         };
     }
