@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gson.Gson;
@@ -19,6 +20,18 @@ import me.seyfu_t.util.ResponseBuilder;
 public class App {
 
     private static final Logger log = Logger.getLogger(App.class.getName());
+
+    public static final Level LOG_LEVEL;
+    static {
+        String envLogLevel = System.getenv("KAUMA_LOG_LEVEL");
+        LOG_LEVEL = switch (envLogLevel != null ? envLogLevel : "") {
+            case "DEBUG" -> Level.FINE;
+            case "INFO" -> Level.INFO;
+            case "WARNING" -> Level.WARNING;
+            case "SEVERE" -> Level.SEVERE;
+            default -> Level.SEVERE;
+        };
+    }
 
     public static void main(String[] args) {
         // Checking if file exists
