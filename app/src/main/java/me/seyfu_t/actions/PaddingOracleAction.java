@@ -91,7 +91,7 @@ public class PaddingOracleAction implements Action {
                 Log.debug(String.format("Valid base byte: 0x%02X", baseBytes[i] & 0xFF));
             }
             UBigInt16 base = new UBigInt16(baseBytes); // D(C_n)
-            UBigInt16 result = qBlock.xor(base);
+            UBigInt16 result = base.xor(qBlock);
 
             Log.debug("Ciphertext:          ", ciphertextBlock.toString());
             Log.debug("Base:                ", base.toString());
@@ -106,19 +106,20 @@ public class PaddingOracleAction implements Action {
 
     private static byte findRelevantPaddingByte(OutputStream out, InputStream in, byte[] response)
             throws IOException {
-        List<Integer> nonZeroByteIndexList = getValidPaddingIndexes(response);
-        byte validPadding;
+        // Possibly two valid indexes
+        List<Integer> validIndexes = getValidPaddingIndexes(response);
 
-        if (nonZeroByteIndexList.size() > 1) {
-            validPadding = is01Padding(out, in, (byte) (nonZeroByteIndexList.get(0) & 0xFF))
-                    ? (byte) (nonZeroByteIndexList.get(1) & 0xFF)
-                    : (byte) (nonZeroByteIndexList.get(0) & 0xFF);
-
-        } else {
-            validPadding = (byte) (nonZeroByteIndexList.get(0) & 0xFF);
+        if (validIndexes.size() == 1) {
+            return (byte) (validIndexes.get(0) & 0xFF);
         }
 
-        return validPadding;
+        for (int index : validIndexes) {
+            if (!is01Padding(out, in, (byte) (index & 0xFF))) {
+                return (byte) (index & 0xFF);
+            }
+        }
+
+        throw new RuntimeException("Not a single valid padding found.");
     }
 
     private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
@@ -135,7 +136,7 @@ public class PaddingOracleAction implements Action {
                 pad = new UBigInt16(array);
             }
             out.write(pad.toByteArray());
-            // System.out.println("Writing: " + pad.toString());
+            Log.info("Writing:", pad.toString());
         }
 
         byte[] response = new byte[256];
@@ -145,18 +146,22 @@ public class PaddingOracleAction implements Action {
 
     private static boolean is01Padding(OutputStream out, InputStream in, byte toTest) throws IOException {
         byte[] length = new byte[2];
-        length[0] = 0x01;
+        length[0] = 0x02;
         out.write(length);
 
         byte[] array = new UBigInt16().toByteArray();
         array[15] = toTest;
+        // Test 2 diff. possibilities for other byte to not get it accidentally right
+        array[14] = 0x02;
+        out.write(array);
+
         array[14] = 0x01;
         out.write(array);
 
-        byte[] response = new byte[1];
+        byte[] response = new byte[2];
         in.read(response);
 
-        boolean result = (response[0] == 0x01);
+        boolean result = (response[0] == 0x01 && response[1] == 0x01);
         Log.debug(result);
         return result;
     }
