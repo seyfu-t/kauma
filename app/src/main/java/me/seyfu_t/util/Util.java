@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+
 import me.seyfu_t.model.UBigInt16;
 
 public class Util {
@@ -99,4 +101,13 @@ public class Util {
         return chunks;
     }
 
+    public static String[] convertJsonArrayToStringArray(JsonArray array) {
+        String[] stringArray = new String[array.size()];
+
+        for (int i = 0; i < array.size(); i++) {
+            stringArray[i] = array.get(i).getAsString();
+        }
+        
+        return stringArray;
+    }
 }
