@@ -13,12 +13,14 @@ public class GF128Poly {
     }
 
     public GF128Poly(UBigInt16[] coefficients) {
+        growToSize(coefficients.length);
         for (int i = 0; i < coefficients.length; i++) {
             this.coefficients.set(i, coefficients[i]);
         }
     }
 
     public GF128Poly(List<UBigInt16> coefficients) {
+        growToSize(coefficients.size());
         for (int i = 0; i < coefficients.size(); i++) {
             this.coefficients.set(i, coefficients.get(i));
         }
@@ -40,17 +42,24 @@ public class GF128Poly {
         return array;
     }
 
-    public UBigInt16 getCoefficient(int index){
+    public UBigInt16 getCoefficient(int index) {
         return this.coefficients.get(index);
     }
 
-    public void setCoefficient(int index, UBigInt16 coefficient){
+    public void setCoefficient(int index, UBigInt16 coefficient) {
+        growToSize(index);
         this.coefficients.set(index, coefficient);
     }
 
     public int getDegree() {
         // TODO: naive implementation, removing leading null values could be necessary
         return this.coefficients.size();
+    }
+
+    private void growToSize(int size) {
+        while (this.coefficients.size() <= size) {
+            this.coefficients.add(null);
+        }
     }
 
     @Override
