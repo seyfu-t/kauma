@@ -31,11 +31,11 @@ public class Block2PolyAction implements Action {
     public static int[] convertBlock2Poly(String base64Block, boolean gcm) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
 
-        int[] coefficients = new int[128];
+        int[] coefficients = new int[blockByteArray.length * 8];
         int slot = 0;// to know the current index of the coefficients array
 
         // check each bit and add coefficient if bit is set
-        for (int byteIndex = 0; byteIndex < 16; byteIndex++) {
+        for (int byteIndex = 0; byteIndex < blockByteArray.length; byteIndex++) {
             for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
 
                 boolean condition;
