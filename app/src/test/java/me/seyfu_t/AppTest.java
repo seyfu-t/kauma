@@ -30,6 +30,8 @@ class AppTest {
     private static final String GCMENCRYPT_OUTPUT = "GCMEncryptOutput.json";
     private static final String GCMDECRYPT_INPUT = "GCMDecryptInput.json";
     private static final String GCMDECRYPT_OUTPUT = "GCMDecryptOutput.json";
+    private static final String GF_POLY_ADD_INPUT = "GFPolyAddInput.json";
+    private static final String GF_POLY_ADD_OUTPUT = "GFPolyAddOutput.json";
 
     private static final String ALL_INPUT = "AllInput.json";
     private static final String ALL_OUTPUT = "AllOutput.json";
@@ -66,6 +68,11 @@ class AppTest {
         Assertions.assertEquals(shift5Expectation, shift5Reality);
         Assertions.assertEquals(shift6Expectation, shift6Reality);
 
+    }
+
+    @Test
+    void testGFPolyAdd() {
+        createTest(GF_POLY_ADD_INPUT, GF_POLY_ADD_OUTPUT);
     }
 
     @Test
