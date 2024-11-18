@@ -77,6 +77,7 @@ public class App {
             case "gcm_encrypt" -> new GCMEncryptAction();
             case "gcm_decrypt" -> new GCMDecryptAction();
             case "padding_oracle" -> new PaddingOracleAction();
+            case "gfpoly_add" -> new GFPolyAddAction();
             default -> null;
         };
     }
