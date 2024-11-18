@@ -14,30 +14,59 @@ public class GF128Poly {
 
     public GF128Poly(UBigInt16[] coefficients) {
         for (int i = 0; i < coefficients.length; i++) {
-            this.coefficients.add(i, coefficients[i]);
+            this.coefficients.set(i, coefficients[i]);
         }
     }
 
     public GF128Poly(List<UBigInt16> coefficients) {
         for (int i = 0; i < coefficients.size(); i++) {
-            this.coefficients.add(i, coefficients.get(i));
+            this.coefficients.set(i, coefficients.get(i));
         }
+    }
+
+    public GF128Poly(String[] base64Array) {
+        for (String base64Coefficient : base64Array) {
+            this.coefficients.add(UBigInt16.fromBase64(base64Coefficient));
+        }
+    }
+
+    public String[] toBase64Array() {
+        String[] array = new String[this.coefficients.size()];
+
+        for (int i = 0; i < this.coefficients.size(); i++) {
+            array[i] = this.coefficients.get(i).toBase64();
+        }
+
+        return array;
+    }
+
+    public UBigInt16 getCoefficient(int index){
+        return this.coefficients.get(index);
+    }
+
+    public void setCoefficient(int index, UBigInt16 coefficient){
+        this.coefficients.set(index, coefficient);
+    }
+
+    public int getDegree() {
+        // TODO: naive implementation, removing leading null values could be necessary
+        return this.coefficients.size();
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-    
+
         for (int i = 0; i < this.coefficients.size(); i++) {
             UBigInt16 coefficient = this.coefficients.get(i);
-    
+
             if (coefficient == null || coefficient.isZero()) {
                 continue; // Skip zero coefficients
             }
-    
+
             // Convert the field element to its polynomial representation
             int[] elementPoly = Block2PolyAction.convertBlock2Poly(coefficient.toBase64(), gcm);
-    
+
             // Build the coefficient representation
             StringBuilder coefStr = new StringBuilder();
             if (elementPoly.length == 1) {
@@ -60,13 +89,13 @@ public class GF128Poly {
                 }
                 coefStr.append(")");
             }
-    
+
             // Append the coefficient and variable (X) term
             if (sb.length() > 0) {
                 sb.append(" + ");
             }
             sb.append(coefStr);
-    
+
             // Append the power of X
             if (i > 0) {
                 sb.append("X");
@@ -75,10 +104,9 @@ public class GF128Poly {
                 }
             }
         }
-    
+
         // Return "0" if no terms were added
         return sb.length() > 0 ? sb.toString() : "0";
     }
-    
 
 }
