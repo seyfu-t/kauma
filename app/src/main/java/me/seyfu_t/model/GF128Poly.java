@@ -81,6 +81,16 @@ public class GF128Poly {
         }
     }
 
+    public GF128Poly copy() {
+        GF128Poly copy = new GF128Poly();
+
+        for (int i = 0; i < this.coefficients.size(); i++) {
+            copy.coefficients.add(this.coefficients.get(i).copy());
+        }
+
+        return copy;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
