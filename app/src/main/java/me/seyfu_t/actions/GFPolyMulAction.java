@@ -33,6 +33,7 @@ public class GFPolyMulAction implements Action {
 
         // 0 times anything is 0
         if (a.isEmpty() || b.isEmpty()) {
+            result.setCoefficient(0, UBigInt16.Zero(true));
             return result;
         }
 
@@ -62,6 +63,9 @@ public class GFPolyMulAction implements Action {
                 result = GFPolyAddAction.gfPolyAdd(result, term);
             }
         }
+
+        if (result.isEmpty())
+            result.setCoefficient(0, UBigInt16.Zero(true));
 
         return result;
     }
