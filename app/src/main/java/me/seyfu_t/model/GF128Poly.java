@@ -101,11 +101,14 @@ public class GF128Poly {
     }
 
     public GF128Poly popLeadingZeros() {
-        
-        while (this.coefficients.size() > 1 && this.coefficients.getLast().isZero())
+        while (this.coefficients.size() > 1 && this.coefficients.getLast().isZero()) 
             this.coefficients.removeLast();
 
         return this;
+    }
+
+    public LinkedList<UBigInt16> getCoefficients() {
+        return this.coefficients;
     }
 
     @Override
