@@ -44,4 +44,17 @@ public class GFPolyAddAction implements Action {
         return result;
     }
 
+    public static GF128Poly gfPolyAdd(GF128Poly[] summands) {
+        GF128Poly result = new GF128Poly();
+
+        for (GF128Poly summand : summands) {
+            if (result.isEmpty())
+                result = summand;
+
+            result = gfPolyAdd(result, summand);
+        }
+
+        return result;
+    }
+
 }
