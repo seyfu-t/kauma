@@ -149,7 +149,7 @@ public class PaddingOracleAction implements Action {
         length[0] = 0x02;
         out.write(length);
 
-        byte[] array = new UBigInt16().toByteArray();
+        byte[] array = UBigInt16.Zero().toByteArray();
         array[15] = toTest;
         // Test 2 diff. possibilities for other byte to not get it accidentally right
         array[14] = 0x02;
@@ -184,7 +184,7 @@ public class PaddingOracleAction implements Action {
     }
 
     private static UBigInt16 genPaddedBlock(int byteIndex, byte pad) {
-        byte[] array = new UBigInt16().toByteArray();
+        byte[] array = UBigInt16.Zero().toByteArray();
         array[byteIndex] = pad;
         return new UBigInt16(array);
     }

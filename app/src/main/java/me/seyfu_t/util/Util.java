@@ -11,8 +11,8 @@ import me.seyfu_t.model.UBigInt16;
 
 public class Util {
     // skipping index 128, will fall out when using XOR anyways
-    public static final UBigInt16 REDUCTION_POLY = new UBigInt16().setBit(7).setBit(2).setBit(1).setBit(0);
-    public static final UBigInt16 ALPHA = new UBigInt16().setBit(1);
+    public static final UBigInt16 REDUCTION_POLY = UBigInt16.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
+    public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
 
     public static byte[] swapByteOrder(byte[] byteArray) {
         if (byteArray == null) {

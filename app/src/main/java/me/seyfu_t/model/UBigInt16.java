@@ -217,7 +217,7 @@ public class UBigInt16 {
     }
 
     public boolean isZero() {
-        return this.sameAs(new UBigInt16());
+        return this.sameAs(UBigInt16.Zero());
     }
 
     public boolean isGCM() {
