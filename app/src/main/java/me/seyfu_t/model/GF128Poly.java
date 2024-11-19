@@ -43,6 +43,8 @@ public class GF128Poly {
     }
 
     public UBigInt16 getCoefficient(int index) {
+        if (index > this.size())
+            return UBigInt16.Zero(gcm);
         return this.coefficients.get(index);
     }
 
@@ -70,8 +72,15 @@ public class GF128Poly {
 
     public int size() {
         int size = this.coefficients.size();
-        while (this.coefficients.get(size - 1) == null || this.coefficients.get(size - 1).isZero())
+        if (size == 0)
+            return size;
+
+        while (this.coefficients.get(size - 1) == null || this.coefficients.get(size - 1).isZero()) {
             size--;
+            if (size == 0)
+                return size;
+        }
+
         return size;
     }
 
