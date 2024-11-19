@@ -68,7 +68,7 @@ public class GF128Poly {
         return true;
     }
 
-    public int getDegree() {
+    public int size() {
         int size = this.coefficients.size();
         while (this.coefficients.get(size - 1) == null || this.coefficients.get(size - 1).isZero())
             size--;

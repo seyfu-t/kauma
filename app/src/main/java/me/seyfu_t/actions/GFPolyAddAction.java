@@ -28,8 +28,8 @@ public class GFPolyAddAction implements Action {
     }
 
     public static GF128Poly gfPolyAdd(GF128Poly a, GF128Poly b) {
-        int minIndex = Math.min(a.getDegree(), b.getDegree());
-        int maxIndex = Math.max(a.getDegree(), b.getDegree());
+        int minIndex = Math.min(a.size(), b.size());
+        int maxIndex = Math.max(a.size(), b.size());
 
         GF128Poly result = new GF128Poly();
 
@@ -38,7 +38,7 @@ public class GFPolyAddAction implements Action {
         }
 
         for (int i = minIndex; i < maxIndex; i++) {
-            result.setCoefficient(i, a.getDegree() > b.getDegree() ? a.getCoefficient(i) : b.getCoefficient(i));
+            result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i) : b.getCoefficient(i));
         }
 
         return result;
