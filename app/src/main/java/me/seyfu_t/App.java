@@ -80,6 +80,7 @@ public class App {
             case "gfpoly_add" -> new GFPolyAddAction();
             case "gfpoly_mul" -> new GFPolyMulAction();
             case "gfpoly_pow" -> new GFPolyPowAction();
+            case "gfdiv" -> new GFDivAction();
             default -> null;
         };
     }
