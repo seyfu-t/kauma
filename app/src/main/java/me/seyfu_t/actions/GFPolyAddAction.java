@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.util.Log;
 import me.seyfu_t.util.Util;
 
 public class GFPolyAddAction implements Action {
