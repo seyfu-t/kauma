@@ -76,9 +76,10 @@ public class App {
             case "xex" -> new XEXAction();
             case "gcm_encrypt" -> new GCMEncryptAction();
             case "gcm_decrypt" -> new GCMDecryptAction();
-            case "padding_oracle" -> new PaddingOracleAction();
+            // case "padding_oracle" -> new PaddingOracleAction();
             case "gfpoly_add" -> new GFPolyAddAction();
             case "gfpoly_mul" -> new GFPolyMulAction();
+            case "gfpoly_pow" -> new GFPolyPowAction();
             default -> null;
         };
     }
