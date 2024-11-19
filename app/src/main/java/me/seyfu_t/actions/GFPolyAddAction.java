@@ -34,11 +34,11 @@ public class GFPolyAddAction implements Action {
         GF128Poly result = new GF128Poly();
 
         for (int i = 0; i < minIndex; i++) {
-            result.setCoefficient(i, a.getCoefficient(i).xor(b.getCoefficient(i)));
+            result.setCoefficient(i, a.getCoefficient(i).xor(b.getCoefficient(i).copy()));
         }
 
         for (int i = minIndex; i < maxIndex; i++) {
-            result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i) : b.getCoefficient(i));
+            result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i).copy() : b.getCoefficient(i).copy());
         }
 
         return result.popLeadingZeros();
