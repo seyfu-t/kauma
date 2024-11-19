@@ -258,6 +258,14 @@ public class UBigInt16 {
         return new UBigInt16(this.byteArray);
     }
 
+    public static UBigInt16 Zero() {
+        return new UBigInt16();
+    }
+
+    public static UBigInt16 Zero(boolean gcm) {
+        return new UBigInt16(true);
+    }
+
     public static UBigInt16 fromBase64(String base64) {
         if (base64 == null)
             throw new NullPointerException("Base64 string cannot be null");
