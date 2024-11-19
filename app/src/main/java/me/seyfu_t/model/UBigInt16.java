@@ -274,7 +274,7 @@ public class UBigInt16 {
     }
 
     public UBigInt16 copy() {
-        return new UBigInt16(this.byteArray);
+        return new UBigInt16(this.byteArray, gcm);
     }
 
     public static UBigInt16 Zero() {
