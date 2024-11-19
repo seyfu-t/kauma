@@ -118,7 +118,7 @@ public class GCMEncryptAction implements Action {
     }
 
     public static UBigInt16 ghash(UBigInt16 authKey, byte[] ad, byte[] ciphertext, UBigInt16 concatedLength) {
-        UBigInt16 lastBlock = new UBigInt16(true); // begin with all 0s
+        UBigInt16 lastBlock = UBigInt16.Zero(true); // begin with all 0s
 
         int adBlockCount = (ad.length / 16) + (ad.length % 16 == 0 ? 0 : 1);
 
