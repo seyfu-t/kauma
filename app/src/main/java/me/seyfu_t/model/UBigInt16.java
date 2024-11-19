@@ -282,13 +282,17 @@ public class UBigInt16 {
     }
 
     public static UBigInt16 AllOne() {
+        return UBigInt16.AllOne(false);
+    }
+
+    public static UBigInt16 AllOne(boolean gcm) {
         byte oneByte = (byte) 0xFF;
         return new UBigInt16(new byte[] {
                 oneByte, oneByte, oneByte, oneByte,
                 oneByte, oneByte, oneByte, oneByte,
                 oneByte, oneByte, oneByte, oneByte,
                 oneByte, oneByte, oneByte, oneByte,
-        });
+        }, gcm);
     }
 
     public static UBigInt16 Zero(boolean gcm) {
