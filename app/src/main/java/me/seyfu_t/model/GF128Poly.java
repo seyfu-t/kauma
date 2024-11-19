@@ -101,9 +101,14 @@ public class GF128Poly {
     }
 
     public GF128Poly popLeadingZeros() {
-        for (int i = this.size() - 1; i >= 0; i--) {
-            if (this.coefficients.get(i).isZero())
+        boolean foundNonZero = false;
+        for (int i = this.size() - 1; i > 0; i--) {
+            if (this.coefficients.get(i).isZero()) {
+                if (foundNonZero)
+                    return this;
                 this.coefficients.removeLast();
+            } else
+                foundNonZero = true;
         }
 
         return this;
