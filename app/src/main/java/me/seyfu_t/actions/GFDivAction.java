@@ -44,10 +44,8 @@ public class GFDivAction implements Action {
     public static UBigInt16 inverse(UBigInt16 a) {
         UBigInt16 result = UBigInt16.Zero(true).setBit(0); // 1
         UBigInt16 base = a.copy();
-        
-        UBigInt16 pow = UBigInt16.AllOne().unsetBit(0); // 2^128 - 2
 
-        System.out.println(pow.swapEndianness().toString(2));
+        UBigInt16 pow = UBigInt16.AllOne().unsetBit(0); // 2^128 - 2
 
         while (!pow.isZero()) {
             if (pow.testBit(0)) { // if odd
@@ -56,8 +54,6 @@ public class GFDivAction implements Action {
             base = GFMulAction.combinedMulAndModReduction(base, base);
 
             pow = pow.shiftRight(1); // div by 2
-            System.out.println(pow.swapEndianness().toString(2));
-
         }
 
         return result;
