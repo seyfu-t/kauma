@@ -100,6 +100,15 @@ public class GF128Poly {
         return copy;
     }
 
+    public GF128Poly popLeadingZeros() {
+        for (int i = this.size() - 1; i >= 0; i--) {
+            if (this.coefficients.get(i).isZero())
+                this.coefficients.removeLast();
+        }
+
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

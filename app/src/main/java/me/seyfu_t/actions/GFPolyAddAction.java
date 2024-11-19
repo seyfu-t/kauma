@@ -41,7 +41,7 @@ public class GFPolyAddAction implements Action {
             result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i) : b.getCoefficient(i));
         }
 
-        return result;
+        return result.popLeadingZeros();
     }
 
     public static GF128Poly gfPolyAdd(GF128Poly[] summands) {
