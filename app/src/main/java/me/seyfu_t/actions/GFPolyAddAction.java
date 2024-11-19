@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.Log;
 import me.seyfu_t.util.Util;
 
 public class GFPolyAddAction implements Action {
@@ -41,7 +43,12 @@ public class GFPolyAddAction implements Action {
             result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i).copy() : b.getCoefficient(i).copy());
         }
 
-        return result.popLeadingZeros();
+        if (result.isEmpty())
+            result.setCoefficient(0, UBigInt16.Zero(true));
+
+        result = result.popLeadingZeros();
+
+        return result;
     }
 
     public static GF128Poly gfPolyAdd(GF128Poly[] summands) {
