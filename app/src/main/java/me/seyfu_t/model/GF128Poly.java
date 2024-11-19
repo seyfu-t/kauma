@@ -51,9 +51,28 @@ public class GF128Poly {
         this.coefficients.set(index, coefficient);
     }
 
+    public void insertCoefficient(int index, UBigInt16 coefficient) {
+        growToSize(this.coefficients.size() + 1);
+        this.coefficients.add(index, coefficient);
+    }
+
+    public boolean isEmpty() {
+        if (this.coefficients.isEmpty())
+            return true;
+
+        for (int i = 0; i < this.coefficients.size(); i++) {
+            if (this.coefficients.get(i) != null)
+                return false;
+        }
+
+        return true;
+    }
+
     public int getDegree() {
-        // TODO: naive implementation, removing leading null values could be necessary
-        return this.coefficients.size();
+        int size = this.coefficients.size();
+        while (this.coefficients.get(size - 1) == null || this.coefficients.get(size - 1).isZero())
+            size--;
+        return size;
     }
 
     private void growToSize(int size) {
