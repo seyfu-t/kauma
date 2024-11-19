@@ -77,7 +77,7 @@ public class GF128Poly {
 
     private void growToSize(int size) {
         while (this.coefficients.size() <= size) {
-            this.coefficients.add(null);
+            this.coefficients.add(UBigInt16.Zero(gcm));
         }
     }
 
