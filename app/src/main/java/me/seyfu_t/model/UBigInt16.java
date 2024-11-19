@@ -9,6 +9,10 @@ import me.seyfu_t.util.Util;
 
 public class UBigInt16 {
 
+    // skipping index 128, will fall out when using XOR anyways
+    public static final UBigInt16 REDUCTION_POLY = UBigInt16.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
+    public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
+
     private final byte[] byteArray = new byte[16];
 
     private final boolean gcm;
