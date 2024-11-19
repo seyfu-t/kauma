@@ -28,7 +28,7 @@ public class GF128Poly {
 
     public GF128Poly(String[] base64Array) {
         for (String base64Coefficient : base64Array) {
-            this.coefficients.add(UBigInt16.fromBase64(base64Coefficient));
+            this.coefficients.add(UBigInt16.fromBase64(base64Coefficient, gcm));
         }
     }
 
