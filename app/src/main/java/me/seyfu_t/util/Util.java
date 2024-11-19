@@ -10,10 +10,7 @@ import com.google.gson.JsonArray;
 import me.seyfu_t.model.UBigInt16;
 
 public class Util {
-    // skipping index 128, will fall out when using XOR anyways
-    public static final UBigInt16 REDUCTION_POLY = UBigInt16.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
-    public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
-
+    
     public static byte[] swapByteOrder(byte[] byteArray) {
         if (byteArray == null) {
             return null; // Handle null input
@@ -50,27 +47,6 @@ public class Util {
         x = ((x & 0x33) << 2) | ((x & 0xCC) >>> 2);
         x = ((x & 0x0F) << 4) | ((x & 0xF0) >>> 4);
         return (byte) x;
-    }
-
-    public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
-        UBigInt16 result = new UBigInt16(a.isGCM()); // take the gcm of a (doesn't matter which one is used)
-        while (!b.isZero()) {
-            boolean overflow;
-            if (b.testBit(0)) {
-                result = result.xor(a);
-            }
-
-            overflow = a.testBit(127);
-
-            a = a.shiftLeft(1);
-
-            if (overflow) {
-                a = a.xor(REDUCTION_POLY);
-            }
-
-            b = b.shiftRight(1);
-        }
-        return result;
     }
 
     public static byte[] concatUBigInt16s(List<UBigInt16> list) {

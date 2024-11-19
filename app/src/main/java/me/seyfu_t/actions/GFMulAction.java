@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.util.Util;
 
 public class GFMulAction implements Action {
 
@@ -37,10 +36,31 @@ public class GFMulAction implements Action {
         UBigInt16 bigIntA = new UBigInt16(blockA, gcm);
         UBigInt16 bigIntB = new UBigInt16(blockB, gcm);
 
-        UBigInt16 product = Util.combinedMulAndModReduction(bigIntA, bigIntB);
+        UBigInt16 product = combinedMulAndModReduction(bigIntA, bigIntB);
         String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
 
         return base64;
+    }
+
+    public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
+        UBigInt16 result = new UBigInt16(a.isGCM()); // take the gcm of a (doesn't matter which one is used)
+        while (!b.isZero()) {
+            boolean overflow;
+            if (b.testBit(0)) {
+                result = result.xor(a);
+            }
+
+            overflow = a.testBit(127);
+
+            a = a.shiftLeft(1);
+
+            if (overflow) {
+                a = a.xor(UBigInt16.REDUCTION_POLY);
+            }
+
+            b = b.shiftRight(1);
+        }
+        return result;
     }
 
 }
