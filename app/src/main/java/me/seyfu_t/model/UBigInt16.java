@@ -174,6 +174,21 @@ public class UBigInt16 {
         return new UBigInt16(bytes, this.gcm);
     }
 
+    public UBigInt16 unsetBit(int bit) {
+        if (bit < 0 || bit >= 128)
+            throw new IllegalArgumentException("Bit index out of bounds: " + bit);
+
+        byte[] bytes = Arrays.copyOf(this.byteArray, this.byteArray.length);
+        int byteIndex = bit / 8;
+        int bitIndex = bit % 8;
+
+        if (this.gcm)
+            bitIndex = 7 - bitIndex;
+
+        bytes[byteIndex] &= ~(1 << bitIndex); // Clear the specific bit
+        return new UBigInt16(bytes, this.gcm);
+    }
+
     public boolean testBit(int bit) {
         if (bit < 0 || bit >= 128)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
@@ -264,6 +279,16 @@ public class UBigInt16 {
 
     public static UBigInt16 Zero() {
         return new UBigInt16();
+    }
+
+    public static UBigInt16 AllOne() {
+        byte oneByte = (byte) 0xFF;
+        return new UBigInt16(new byte[] {
+                oneByte, oneByte, oneByte, oneByte,
+                oneByte, oneByte, oneByte, oneByte,
+                oneByte, oneByte, oneByte, oneByte,
+                oneByte, oneByte, oneByte, oneByte,
+        });
     }
 
     public static UBigInt16 Zero(boolean gcm) {
