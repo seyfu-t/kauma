@@ -1,6 +1,10 @@
 package me.seyfu_t.model;
 
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Base64;
+
+import me.seyfu_t.util.Util;
 
 public class UBigInt16 extends UBigInt<UBigInt16> {
     // Constants specific to UBigInt16
@@ -55,5 +59,22 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
         if (base64 == null)
             throw new NullPointerException("Base64 string cannot be null");
         return new UBigInt16(Base64.getDecoder().decode(base64), gcm);
+    }
+
+    public static UBigInt16 fromBigInt(BigInteger bigInt) {
+        return fromBigInt(bigInt, false);
+    }
+
+    public static UBigInt16 fromBigInt(BigInteger bigInt, boolean gcm) {
+        // BigInteger may or may not have a sign byte
+        boolean hasSignByte = Util.hasSignByte(bigInt);
+        // Java stores BigInteger as big-endian byte array
+        byte[] bigIntBytes = Util.swapByteOrder(bigInt.toByteArray());
+
+        // Copy only 16 bytes maximum
+        int maxIndex = Math.max(hasSignByte ? bigIntBytes.length - 1 : bigIntBytes.length, 16);
+        byte[] byteArray = Arrays.copyOfRange(bigIntBytes, 0, maxIndex);
+
+        return new UBigInt16(byteArray, gcm);
     }
 }

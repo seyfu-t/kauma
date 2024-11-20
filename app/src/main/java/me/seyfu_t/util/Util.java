@@ -1,5 +1,6 @@
 package me.seyfu_t.util;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -10,7 +11,7 @@ import com.google.gson.JsonArray;
 import me.seyfu_t.model.UBigInt16;
 
 public class Util {
-    
+
     public static byte[] swapByteOrder(byte[] byteArray) {
         if (byteArray == null) {
             return null; // Handle null input
@@ -83,7 +84,23 @@ public class Util {
         for (int i = 0; i < array.size(); i++) {
             stringArray[i] = array.get(i).getAsString();
         }
-        
+
         return stringArray;
+    }
+
+    public static boolean hasSignByte(BigInteger bigInteger) {
+        byte[] byteArray = bigInteger.toByteArray();
+        
+        // Check if the first byte is the sign byte
+        byte signByte = byteArray[0];
+        boolean isNegative = bigInteger.signum() < 0;
+
+        // Non-negative numbers have a leading 0x00 as a sign byte
+        if (!isNegative && signByte == 0x00) {
+            return true;
+        }
+        // Negative numbers have a leading 0xFF as a sign byte
+
+        return isNegative && signByte == (byte) 0xFF;
     }
 }
