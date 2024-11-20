@@ -72,6 +72,10 @@ public class GF128Poly {
         return true;
     }
 
+    public boolean isZero() {
+        return this.isEmpty();
+    }
+
     public int size() {
         int size = this.coefficients.size();
         if (size == 0)
