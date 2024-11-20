@@ -48,14 +48,16 @@ public class GF128Poly {
         return this.coefficients.get(index);
     }
 
-    public void setCoefficient(int index, UBigInt16 coefficient) {
+    public GF128Poly setCoefficient(int index, UBigInt16 coefficient) {
         growToSize(index);
         this.coefficients.set(index, coefficient);
+        return this;
     }
 
-    public void insertCoefficient(int index, UBigInt16 coefficient) {
+    public GF128Poly insertCoefficient(int index, UBigInt16 coefficient) {
         growToSize(this.coefficients.size() + 1);
         this.coefficients.add(index, coefficient);
+        return this;
     }
 
     public boolean isEmpty() {
