@@ -82,6 +82,7 @@ public class App {
             case "gfpoly_pow" -> new GFPolyPowAction();
             case "gfdiv" -> new GFDivAction();
             case "gfpoly_make_monic" -> new GFPolyMakeMonicAction();
+            case "gfpoly_divmod" -> new GFPolyDivModAction();
             default -> null;
         };
     }
