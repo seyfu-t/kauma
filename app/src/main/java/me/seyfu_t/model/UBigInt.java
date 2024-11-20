@@ -1,5 +1,6 @@
 package me.seyfu_t.model;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HexFormat;
@@ -208,6 +209,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     public String toString(int radix) {
         return switch (radix) {
             case 2 -> this.formatBinary();
+            case 10 -> this.formatDecimal();
             case 16 -> HexFormat.of().formatHex(byteArray);
             default -> this.toString(16);
         };
@@ -219,6 +221,12 @@ public abstract class UBigInt<T extends UBigInt<T>> {
             binaryString.append(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0')).append(" ");
         }
         return binaryString.toString().trim();
+    }
+
+    private String formatDecimal() {
+        // BigInteger uses big-endian
+        BigInteger bigInt = new BigInteger(1, Util.swapByteOrder(this.byteArray));
+        return bigInt.toString(10);
     }
 
     public String toBase64() {
