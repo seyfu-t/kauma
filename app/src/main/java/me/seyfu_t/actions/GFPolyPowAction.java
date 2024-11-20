@@ -35,7 +35,7 @@ public class GFPolyPowAction implements Action {
 
         if (pow == 0) {
             GF128Poly one = new GF128Poly();
-            one.insertCoefficient(0, UBigInt16.Zero(true).setBit(0));
+            one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
             return one;
         }
 
@@ -46,24 +46,24 @@ public class GFPolyPowAction implements Action {
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = new GF128Poly();
         result.insertCoefficient(0, UBigInt16.Zero(true).setBit(0));
-        
+
         GF128Poly base = poly.copy();
-        
+
         // Binary exponentiation algorithm
         while (pow > 0) {
             // If odd, multiply
             if ((pow & 1) == 1) {
                 result = GFPolyMulAction.gfPolyMul(result, base);
             }
-            
+
             // Square
             base = GFPolyMulAction.gfPolyMul(base, base);
-            
+
             // Divide power by 2
             pow >>= 1;
         }
 
-        return result;
+        return result.popLeadingZeros();
     }
 
 }
