@@ -90,6 +90,10 @@ public class GF128Poly {
         return size;
     }
 
+    public int degree() {
+        return this.size() - 1;
+    }
+
     public int totalSize() {
         return this.coefficients.size();
     }
