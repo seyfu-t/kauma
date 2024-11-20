@@ -84,6 +84,10 @@ public class GF128Poly {
         return size;
     }
 
+    public int totalSize() {
+        return this.coefficients.size();
+    }
+
     private void growToSize(int size) {
         while (this.coefficients.size() <= size) {
             this.coefficients.add(UBigInt16.Zero(gcm));
@@ -101,7 +105,7 @@ public class GF128Poly {
     }
 
     public GF128Poly popLeadingZeros() {
-        while (this.coefficients.size() > 1 && this.coefficients.getLast().isZero()) 
+        while (this.coefficients.size() > 1 && this.coefficients.getLast().isZero())
             this.coefficients.removeLast();
 
         return this;
