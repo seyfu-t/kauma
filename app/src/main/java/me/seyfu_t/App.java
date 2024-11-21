@@ -85,6 +85,7 @@ public class App {
             case "gfpoly_divmod" -> new GFPolyDivModAction();
             case "gfpoly_powmod" -> new GFPolyPowModAction();
             case "gfpoly_sqrt" -> new GFPolySqrtAction();
+            case "gfpoly_sort" -> new GFPolySortAction();
             default -> null;
         };
     }
