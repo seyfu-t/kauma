@@ -69,7 +69,7 @@ public class GF128Poly {
             return true;
 
         for (int i = 0; i < this.coefficients.size(); i++) {
-            if (this.coefficients.get(i) != null && this.coefficients.get(i).isZero())
+            if (!this.coefficients.get(i).isZero())
                 return false;
         }
 
