@@ -1,6 +1,6 @@
 {
     "testcases": {
-        "padding-oracle": {
+        "padding_oracle1": {
             "action": "padding_oracle",
             "arguments": {
                 "hostname": "127.0.0.1",

@@ -1,6 +1,6 @@
 {
     "testcases": {
-        "a1": {
+        "gfmul1": {
             "action": "gfmul",
             "arguments": {
                 "semantic": "xex",
@@ -8,7 +8,7 @@
                 "b": "AgAAAAAAAAAAAAAAAAAAAA=="
             }
         },
-        "gcm1": {
+        "gfmul2": {
             "action": "gfmul",
             "arguments": {
                 "semantic": "gcm",
