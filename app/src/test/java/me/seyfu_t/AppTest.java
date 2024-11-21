@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
 
 class AppTest {
@@ -26,10 +27,10 @@ class AppTest {
     private static final String SEA128_OUTPUT = "SEA128Output.json";
     private static final String XEX_INPUT = "XEXInput.json";
     private static final String XEX_OUTPUT = "XEXOutput.json";
-    private static final String GCMENCRYPT_INPUT = "GCMEncryptInput.json";
-    private static final String GCMENCRYPT_OUTPUT = "GCMEncryptOutput.json";
-    private static final String GCMDECRYPT_INPUT = "GCMDecryptInput.json";
-    private static final String GCMDECRYPT_OUTPUT = "GCMDecryptOutput.json";
+    private static final String GCM_ENCRYPT_INPUT = "GCMEncryptInput.json";
+    private static final String GCM_ENCRYPT_OUTPUT = "GCMEncryptOutput.json";
+    private static final String GCM_DECRYPT_INPUT = "GCMDecryptInput.json";
+    private static final String GCM_DECRYPT_OUTPUT = "GCMDecryptOutput.json";
     private static final String GF_POLY_ADD_INPUT = "GFPolyAddInput.json";
     private static final String GF_POLY_ADD_OUTPUT = "GFPolyAddOutput.json";
 
@@ -69,6 +70,56 @@ class AppTest {
         Assertions.assertEquals(shift6Expectation, shift6Reality);
 
     }
+
+    @Test
+    void testComparators() {
+        UBigInt16[] aa = new UBigInt16[] {
+                UBigInt16.Zero(), UBigInt16.Zero(), UBigInt16.Zero(),
+        };
+        UBigInt16[] bb = new UBigInt16[] {
+                UBigInt16.Zero()
+        };
+        UBigInt16[] cc = new UBigInt16[] {
+                UBigInt16.AllOne(),
+        };
+        UBigInt16[] dd = new UBigInt16[] {
+                new UBigInt16(new byte[] { (byte) 0xAF })
+        };
+        UBigInt16[] ee = new UBigInt16[] {
+                new UBigInt16(new byte[] { (byte) 0x01 })
+        };
+        UBigInt16[] ff = new UBigInt16[] {
+                new UBigInt16(new byte[] { (byte) 0xFF })
+        };
+    
+        GF128Poly a = new GF128Poly(aa);
+        GF128Poly b = new GF128Poly(bb);
+        GF128Poly c = new GF128Poly(cc);
+        GF128Poly d = new GF128Poly(dd);
+        GF128Poly e = new GF128Poly(ee);
+        GF128Poly f = new GF128Poly(ff);
+    
+        // Equality checks
+        Assertions.assertTrue(a.equals(b));
+        Assertions.assertTrue(b.equals(a));
+        Assertions.assertFalse(a.equals(c));
+    
+        // Greater than checks
+        Assertions.assertTrue(c.greaterThan(d)); // AllOne > 0xAF
+        Assertions.assertTrue(d.greaterThan(e)); // 0xAF > 0x01
+        Assertions.assertFalse(f.greaterThan(c)); // 0xFF > AllOne
+    
+        // Less than checks
+        Assertions.assertTrue(d.lessThan(c)); // 0xAF < AllOne
+        Assertions.assertTrue(e.lessThan(d)); // 0x01 < 0xAF
+        Assertions.assertFalse(c.lessThan(f)); // AllOne < 0xFF
+    
+        // Mixed relational checks
+        Assertions.assertTrue(a.lessThan(e)); // Zero < 0x01
+        Assertions.assertFalse(a.greaterThan(b)); // Zero is not greater than Zero
+        Assertions.assertTrue(f.greaterThan(b)); // 0xFF > Zero
+    }
+    
 
     @Test
     void testGFPolyAdd() {
@@ -112,12 +163,12 @@ class AppTest {
 
     @Test
     void testGCMEncryptAction() {
-        createTest(GCMENCRYPT_INPUT, GCMENCRYPT_OUTPUT);
+        createTest(GCM_ENCRYPT_INPUT, GCM_ENCRYPT_OUTPUT);
     }
 
     @Test
     void testGCMDecryptAction() {
-        createTest(GCMDECRYPT_INPUT, GCMDECRYPT_OUTPUT);
+        createTest(GCM_DECRYPT_INPUT, GCM_DECRYPT_OUTPUT);
     }
 
     private void createTest(String input, String output) {
