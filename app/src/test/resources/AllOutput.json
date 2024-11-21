@@ -184,6 +184,26 @@
                     "AndDesertYouAAAAAAAAAA=="
                 ]
             ]
+        },
+        "gfpoly_gcd1": {
+            "G": [
+                "NeverGonnaMakeYouCryAA==",
+                "NeverGonnaSayGoodbyeAA==",
+                "NeverGonnaTellALieAAAA==",
+                "AndHurtYouAAAAAAAAAAAA==",
+                "gAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_diff1": {
+            "action": "gfpoly_diff",
+            "arguments": {
+                "F": [
+                    "IJustWannaTellYouAAAAA==",
+                    "HowImFeelingAAAAAAAAAA==",
+                    "GottaMakeYouAAAAAAAAAA==",
+                    "UnderstaaaaaaaaaaaaanQ=="
+                ]
+            }
         }
     }
 }
