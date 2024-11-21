@@ -2,7 +2,6 @@ package me.seyfu_t.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,22 +14,24 @@ import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.util.Util;
 
 public class GFPolySortAction implements Action {
-
+    
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
         JsonArray array = arguments.get("polys").getAsJsonArray();
-        List<GF128Poly> polysList = new ArrayList<>();
+        List<GF128Poly> polysList = new ArrayList<>(array.size()); // Pre-size the ArrayList
 
         for (int i = 0; i < array.size(); i++) {
             String[] poly = Util.convertJsonArrayToStringArray(array.get(i).getAsJsonArray());
             polysList.add(new GF128Poly(poly));
         }
 
-        List<GF128Poly> list = gfPolySort(polysList);
-        JsonArray resultArray = new JsonArray(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            String[] currentResult = list.get(i).toBase64Array();
-            resultArray.add(new Gson().toJsonTree(currentResult));
+        List<GF128Poly> sortedList = gfPolySort(polysList);
+
+        JsonArray resultArray = new JsonArray();
+        Gson gson = new Gson(); // Create Gson instance once
+
+        for (GF128Poly poly : sortedList) {
+            resultArray.add(gson.toJsonTree(poly.toBase64Array()));
         }
 
         Map<String, Object> resultMap = new HashMap<>();
@@ -39,35 +40,33 @@ public class GFPolySortAction implements Action {
     }
 
     public static List<GF128Poly> gfPolySort(List<GF128Poly> listOfPolysToSort) {
-        List<GF128Poly> sortedList = new LinkedList<>(listOfPolysToSort);
+        // Use ArrayList instead of LinkedList for better random access performance
+        List<GF128Poly> sortedList = new ArrayList<>(listOfPolysToSort);
 
-        // Java syntax is beautiful... not
-        // the sort() method uses merge sort for LinkedLists
         sortedList.sort((p1, p2) -> {
             // First compare by degree
             int degreeComparison = Integer.compare(p1.degree(), p2.degree());
             if (degreeComparison != 0) {
-                return degreeComparison; // Sort by degree
+                return degreeComparison;
             }
 
-            // Degree must be same, if -1, both are []
-            if (p1.degree() == -1)
+            // If both polynomials are empty (degree == -1)
+            if (p1.degree() == -1) {
                 return 0;
+            }
 
-            // If degrees are equal, compare coefficients
-            for (int i = p1.size() - 1; i >= 0; i++) {
+            // Compare coefficients from highest to lowest degree
+            for (int i = p1.degree(); i >= 0; i--) {
                 if (p1.getCoefficient(i).greaterThan(p2.getCoefficient(i))) {
-                    return 1; // p1 > p2
+                    return 1;
                 } else if (p2.getCoefficient(i).greaterThan(p1.getCoefficient(i))) {
-                    return -1; // p1 < p2
+                    return -1;
                 }
             }
 
-            // Polynomials are equal
-            return 0;
+            return 0; // Polynomials are equal
         });
 
         return sortedList;
     }
-
 }
