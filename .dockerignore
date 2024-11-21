@@ -1,0 +1,5 @@
+app/bin/
+app/build/
+.vscode/
+.gradle/
+*.code-workspace
