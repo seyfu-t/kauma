@@ -250,4 +250,41 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     public String toString() {
         return this.toString(16);
     }
+
+    public boolean equals(T otherBigInt) {
+        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
+            return false;
+
+        for (int i = 0; i < this.byteLength; i++) {
+            if (this.byteArray[i] != otherBigInt.byteArray[i])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean greaterThan(T otherBigInt) {
+        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
+            throw new IllegalArgumentException("Invalid comparison");
+
+        for (int i = this.byteLength - 1; i >= 0; i--) {
+            if (this.byteArray[i] != otherBigInt.byteArray[i]) {
+                return this.byteArray[i] > otherBigInt.byteArray[i];
+            }
+        }
+
+        return false; // Equal values, so not greater
+    }
+
+    public boolean lessThan(T otherBigInt) {
+        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
+            throw new IllegalArgumentException("Invalid comparison");
+
+        for (int i = this.byteLength - 1; i >= 0; i--) {
+            if (this.byteArray[i] != otherBigInt.byteArray[i]) {
+                return this.byteArray[i] < otherBigInt.byteArray[i];
+            }
+        }
+
+        return false; // Equal values, so not less
+    }
 }
