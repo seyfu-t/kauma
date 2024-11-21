@@ -45,7 +45,7 @@ public class GF128Poly {
     public UBigInt16 getCoefficient(int index) {
         if (this.totalSize() == 0)
             this.setCoefficient(0, UBigInt16.Zero(true));
-            
+
         if (index >= this.size())
             return UBigInt16.Zero(gcm);
         return this.coefficients.get(index);
@@ -65,6 +65,10 @@ public class GF128Poly {
 
     public boolean isEmpty() {
         if (this.coefficients.isEmpty())
+            return true;
+        
+        // This is an edge case in the for loop for some reason
+        if (this.totalSize() == 1 && this.getCoefficient(0).sameAs(UBigInt16.Zero(gcm)))
             return true;
 
         for (int i = 0; i < this.coefficients.size(); i++) {
