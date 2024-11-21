@@ -11,22 +11,22 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
     public static final UBigInt16 REDUCTION_POLY = UBigInt16.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
     public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
 
-    private static final int BYTE_LENGTH = 16;
+    private static final int BYTE_COUNT = 16;
 
     public UBigInt16() {
-        super(UBigInt16.BYTE_LENGTH, false);
+        super(UBigInt16.BYTE_COUNT, false);
     }
 
     public UBigInt16(boolean gcm) {
-        super(UBigInt16.BYTE_LENGTH, gcm);
+        super(UBigInt16.BYTE_COUNT, gcm);
     }
 
     public UBigInt16(byte[] bytes) {
-        super(bytes, UBigInt16.BYTE_LENGTH, false);
+        super(bytes, UBigInt16.BYTE_COUNT, false);
     }
 
     public UBigInt16(byte[] bytes, boolean gcm) {
-        super(bytes, UBigInt16.BYTE_LENGTH, gcm);
+        super(bytes, UBigInt16.BYTE_COUNT, gcm);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
     }
 
     public static UBigInt16 AllOne(boolean gcm) {
-        byte[] bytes = new byte[UBigInt16.BYTE_LENGTH];
+        byte[] bytes = new byte[UBigInt16.BYTE_COUNT];
         java.util.Arrays.fill(bytes, (byte) 0xFF);
         return new UBigInt16(bytes, gcm);
     }
@@ -74,7 +74,7 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
         byte[] bigIntBytes = Util.swapByteOrder(bigInt.toByteArray());
 
         // Copy only 16 bytes maximum
-        int maxIndex = Math.max(hasSignByte ? bigIntBytes.length - 1 : bigIntBytes.length, UBigInt16.BYTE_LENGTH);
+        int maxIndex = Math.max(hasSignByte ? bigIntBytes.length - 1 : bigIntBytes.length, UBigInt16.BYTE_COUNT);
         byte[] byteArray = Arrays.copyOfRange(bigIntBytes, 0, maxIndex);
 
         return new UBigInt16(byteArray, gcm);
