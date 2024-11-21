@@ -43,9 +43,6 @@ public class GF128Poly {
     }
 
     public UBigInt16 getCoefficient(int index) {
-        if (this.totalSize() == 0)
-            this.setCoefficient(0, UBigInt16.Zero(true));
-
         if (index >= this.size())
             return UBigInt16.Zero(gcm);
         return this.coefficients.get(index);
@@ -98,7 +95,7 @@ public class GF128Poly {
     }
 
     public int degree() {
-        return this.size() == 0 ? 0 : this.size() - 1;
+        return this.size() - 1;
     }
 
     public int totalSize() {
