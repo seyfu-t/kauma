@@ -41,7 +41,7 @@ public class GFPolySqrtAction implements Action {
             base = GFPolyPowAction.gfPolyPow(base, pow);
 
             // take back the now processed coefficient and save
-            result.setCoefficient(i, base.getCoefficient(0));
+            result.setCoefficient(i/2, base.getCoefficient(0));
         }
 
         return result;
