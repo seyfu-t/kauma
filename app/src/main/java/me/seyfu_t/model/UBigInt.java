@@ -11,18 +11,18 @@ import me.seyfu_t.util.Util;
 public abstract class UBigInt<T extends UBigInt<T>> {
     protected final byte[] byteArray;
     protected final boolean gcm;
-    protected final int byteLength;
+    protected final int byteCount;
 
-    protected UBigInt(int byteLength, boolean gcm) {
-        this.byteLength = byteLength;
+    protected UBigInt(int byteCount, boolean gcm) {
+        this.byteCount = byteCount;
         this.gcm = gcm;
-        this.byteArray = new byte[byteLength];
+        this.byteArray = new byte[byteCount];
     }
 
-    protected UBigInt(byte[] bytes, int byteLength, boolean gcm) {
-        this.byteLength = byteLength;
+    protected UBigInt(byte[] bytes, int byteCount, boolean gcm) {
+        this.byteCount = byteCount;
         this.gcm = gcm;
-        this.byteArray = new byte[byteLength];
+        this.byteArray = new byte[byteCount];
         initUBigInt(bytes);
     }
 
@@ -30,13 +30,13 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (bytes == null)
             throw new NullPointerException("Input byte array cannot be null");
 
-        if (bytes.length < byteLength) {
+        if (bytes.length < byteCount) {
             System.arraycopy(bytes, 0, this.byteArray, 0, bytes.length);
-            for (int i = bytes.length; i < byteLength; i++) {
+            for (int i = bytes.length; i < byteCount; i++) {
                 this.byteArray[i] = 0;
             }
         } else {
-            System.arraycopy(bytes, 0, this.byteArray, 0, byteLength);
+            System.arraycopy(bytes, 0, this.byteArray, 0, byteCount);
         }
     }
 
@@ -53,14 +53,14 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     private UBigInt<T> shift(int bits, boolean isLeft) {
-        int maxBits = byteLength * 8;
+        int maxBits = byteCount * 8;
         if (bits < 0 || bits >= maxBits)
             throw new IllegalArgumentException("Shift out of bounds");
 
         byte[] workArray = this.gcm ? Util.swapBitOrderInAllBytes(this.byteArray)
                 : Arrays.copyOf(this.byteArray, this.byteArray.length);
 
-        byte[] result = new byte[byteLength];
+        byte[] result = new byte[byteCount];
         int byteShift = bits / 8;
         int bitShift = bits % 8;
 
@@ -77,28 +77,28 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
     private void shiftFullBytes(byte[] result, byte[] workArray, int byteShift, boolean isLeft) {
         if (isLeft)
-            for (int i = byteLength - 1 - byteShift; i >= 0; i--) {
+            for (int i = byteCount - 1 - byteShift; i >= 0; i--) {
                 result[i + byteShift] = workArray[i];
             }
         else
-            for (int i = byteShift; i < byteLength; i++) {
+            for (int i = byteShift; i < byteCount; i++) {
                 result[i - byteShift] = workArray[i];
             }
     }
 
     private void shiftPartialBits(byte[] result, int byteShift, int bitShift, boolean isLeft) {
         if (isLeft) {
-            for (int i = byteLength - 1; i > byteShift; i--) {
+            for (int i = byteCount - 1; i > byteShift; i--) {
                 result[i] = (byte) ((result[i] << bitShift) & 0xFF);
                 result[i] |= (byte) ((result[i - 1] & 0xFF) >>> (8 - bitShift));
             }
             result[byteShift] = (byte) ((result[byteShift] << bitShift) & 0xFF);
         } else {
-            for (int i = 0; i < byteLength - byteShift - 1; i++) {
+            for (int i = 0; i < byteCount - byteShift - 1; i++) {
                 result[i] = (byte) ((result[i] & 0xFF) >>> bitShift);
                 result[i] |= (byte) ((result[i + 1] & 0xFF) << (8 - bitShift));
             }
-            result[byteLength - byteShift - 1] = (byte) ((result[byteLength - byteShift - 1] & 0xFF) >>> bitShift);
+            result[byteCount - byteShift - 1] = (byte) ((result[byteCount - byteShift - 1] & 0xFF) >>> bitShift);
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     private UBigInt<T> applyOperation(UBigInt<T> bigInt, BinaryOperator<Byte> operator) {
         if (bigInt == null)
             throw new NullPointerException("Input UBigInt is null");
-        if (bigInt.byteLength != this.byteLength)
+        if (bigInt.byteCount != this.byteCount)
             throw new IllegalArgumentException("Operands must have the same byte length");
 
         byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
@@ -129,7 +129,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
             bytes = Util.swapBitOrderInAllBytes(bytes);
         }
 
-        for (int i = 0; i < byteLength; i++) {
+        for (int i = 0; i < byteCount; i++) {
             bytes[i] = operator.apply(bytes[i], this.byteArray[i]);
         }
 
@@ -137,7 +137,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public T setBit(int bit) {
-        if (bit < 0 || bit >= byteLength * 8)
+        if (bit < 0 || bit >= byteCount * 8)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
 
         byte[] bytes = Arrays.copyOf(this.byteArray, this.byteArray.length);
@@ -152,7 +152,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public T unsetBit(int bit) {
-        if (bit < 0 || bit >= byteLength * 8)
+        if (bit < 0 || bit >= byteCount * 8)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
 
         byte[] bytes = Arrays.copyOf(this.byteArray, this.byteArray.length);
@@ -167,7 +167,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean testBit(int bit) {
-        if (bit < 0 || bit >= byteLength * 8)
+        if (bit < 0 || bit >= byteCount * 8)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
 
         int byteIndex = bit / 8;
@@ -188,7 +188,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean sameAs(T bigInt) {
-        if (bigInt == null || bigInt.byteLength != this.byteLength) {
+        if (bigInt == null || bigInt.byteCount != this.byteCount) {
             return false;
         }
         return Arrays.equals(this.byteArray, bigInt.byteArray);
@@ -199,7 +199,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean isZero() {
-        return Arrays.equals(this.byteArray, new byte[byteLength]);
+        return Arrays.equals(this.byteArray, new byte[byteCount]);
     }
 
     public boolean isGCM() {
@@ -234,7 +234,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public int countOfSetBytes() {
-        for (int i = byteLength - 1; i >= 0; i--) {
+        for (int i = byteCount - 1; i >= 0; i--) {
             if ((byteArray[i] & 0xFF) != 0) {
                 return i + 1;
             }
@@ -252,23 +252,35 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean equals(T otherBigInt) {
-        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
-            return false;
+        UBigInt<T> a = this.copy();
+        UBigInt<T> b = otherBigInt.copy();
 
-        for (int i = 0; i < this.byteLength; i++) {
-            if (this.byteArray[i] != otherBigInt.byteArray[i])
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = 0; i < a.byteCount; i++) {
+            if (a.byteArray[i] != b.byteArray[i])
                 return false;
         }
         return true;
     }
 
     public boolean greaterThan(T otherBigInt) {
-        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
-            throw new IllegalArgumentException("Invalid comparison");
+        UBigInt<T> a = this.copy();
+        UBigInt<T> b = otherBigInt.copy();
 
-        for (int i = this.byteLength - 1; i >= 0; i--) {
-            if (this.byteArray[i] != otherBigInt.byteArray[i]) {
-                return Util.swapBitOrder(this.byteArray[i]) > Util.swapBitOrder(otherBigInt.byteArray[i]);
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = a.byteCount - 1; i >= 0; i--) {
+            if (a.byteArray[i] != b.byteArray[i]) {
+                return a.byteArray[i] > b.byteArray[i];
             }
         }
 
@@ -276,15 +288,21 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean lessThan(T otherBigInt) {
-        if (otherBigInt == null || this.byteLength != otherBigInt.byteLength)
-            throw new IllegalArgumentException("Invalid comparison");
+        UBigInt<T> a = this.copy();
+        UBigInt<T> b = otherBigInt.copy();
 
-        for (int i = this.byteLength - 1; i >= 0; i--) {
-            if (this.byteArray[i] != otherBigInt.byteArray[i]) {
-                return Util.swapBitOrder(this.byteArray[i]) < Util.swapBitOrder(otherBigInt.byteArray[i]);
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = a.byteCount - 1; i >= 0; i--) {
+            if (a.byteArray[i] != b.byteArray[i]) {
+                return a.byteArray[i] < b.byteArray[i];
             }
         }
 
-        return false; // Equal values, so not less
+        return false; // Equal values, so not greater
     }
 }
