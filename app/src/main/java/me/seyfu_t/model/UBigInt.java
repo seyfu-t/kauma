@@ -299,7 +299,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
         for (int i = a.byteCount - 1; i >= 0; i--) {
             if (a.byteArray[i] != b.byteArray[i]) {
-                return (a.byteArray[i]&0xFF) < (b.byteArray[i] & 0xFF);
+                return (a.byteArray[i] & 0xFF) < (b.byteArray[i] & 0xFF);
             }
         }
 
