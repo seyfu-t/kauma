@@ -1,6 +1,6 @@
 {
     "testcases": {
-        "a": {
+        "sea128_1": {
             "action": "sea128",
             "arguments": {
                 "mode": "encrypt",
@@ -8,7 +8,7 @@
                 "input": "yv66vvrO263eyviIiDNEVQ=="
             }
         },
-        "b": {
+        "sea128_2": {
             "action": "sea128",
             "arguments": {
                 "mode": "decrypt",

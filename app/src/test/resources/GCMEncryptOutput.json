@@ -1,12 +1,12 @@
 {
     "responses": {
-        "aes-gcm-gcm_encrypt": {
+        "gcm_encrypt1": {
             "ciphertext": "ET3RmvH/Hbuxba63EuPRrw==",
             "tag": "Mp0APJb/ZIURRwQlMgNN/w==",
             "L": "AAAAAAAAAEAAAAAAAAAAgA==",
             "H": "Bu6ywbsUKlpmZXMQyuGAng=="
         },
-        "sea-gcm-gcm_encrypt": {
+        "gcm_encrypt2": {
             "ciphertext": "0cI/Wg4R3URfrVFZ0hw/vg==",
             "tag": "ysDdzOSnqLH0MQ+Mkb23gw==",
             "L": "AAAAAAAAAEAAAAAAAAAAgA==",

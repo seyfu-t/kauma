@@ -1,6 +1,6 @@
 {
     "responses": {
-        "b856d760-023d-4b00-bad2-15d2aadb22fe": {
+        "block2poly1": {
             "coefficients": [
                 0,
                 9,
@@ -8,7 +8,7 @@
                 127
             ]
         },
-        "block2poly-gcm": {
+        "block2poly2": {
             "coefficients": [
                 7,
                 11,
@@ -16,7 +16,7 @@
                 120
             ]
         },
-        "block2poly-xex2": {
+        "block2poly3": {
             "coefficients": [
                 0,
                 9,
@@ -35,7 +35,7 @@
                 127
             ]
         },
-        "block2poly-gcm2": {
+        "block2poly4": {
             "coefficients": [
                 7,
                 11,

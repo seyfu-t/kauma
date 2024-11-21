@@ -1,10 +1,10 @@
 {
     "responses": {
-        "aes-gcm-gcm_encrypt": {
+        "gcm_decrypt1": {
             "authentic": true,
             "plaintext": "EREavadt90qq"
         },
-        "sea-gcm-gcm_encrypt": {
+        "gcm_decrypt2": {
             "authentic": false,
             "plaintext": "AxSiKm93Gr2+"
         }

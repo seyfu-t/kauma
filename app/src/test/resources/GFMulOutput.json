@@ -1,9 +1,9 @@
 {
     "responses": {
-        "a1": {
+        "gfmul1": {
             "product": "hSQAAAAAAAAAAAAAAAAAAA=="
         },
-        "gcm1": {
+        "gfmul2": {
             "product": "oSQAAAAAAAAAAAAAAAAAAA=="
         }
     }

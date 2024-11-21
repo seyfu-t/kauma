@@ -1,6 +1,6 @@
 {
     "testcases": {
-        "aes-gcm-gcm_encrypt": {
+        "gcm_decrypt1": {
             "action": "gcm_decrypt",
             "arguments": {
                 "algorithm": "aes128",
@@ -11,7 +11,7 @@
                 "tag": "d4Z2uVRSmpVE1TEa/Zhx9A=="
             }
         },
-        "sea-gcm-gcm_encrypt": {
+        "gcm_decrypt2": {
             "action": "gcm_decrypt",
             "arguments": {
                 "algorithm": "sea128",

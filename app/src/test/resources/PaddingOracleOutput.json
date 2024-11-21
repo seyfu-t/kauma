@@ -1,6 +1,6 @@
 {
     "responses": {
-        "padding-oracle": {
+        "padding_oracle2": {
             "plaintext": "RGFzIGlzdCBlaW5lIGtvcnJla3QgZW50c2NobHVlc3NlbHRlIE5hY2hyaWNodAIC"
         }
     }

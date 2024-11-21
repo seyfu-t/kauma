@@ -1,18 +1,18 @@
 {
     "responses": {
-        "b856d760-023d-4b00-bad2-15d2b6da22fe": {
+        "add_numbers1": {
             "sum": 357
         },
-        "254eaee7-05fd-4e0d-8292-9b658a852245": {
+        "add_numbers2": {
             "sum": 777
         },
-        "affbf4fc-4d2a-41e3-afe0-a79e1d174781": {
+        "subtract_numbers1": {
             "difference": -120213
         },
-        "b856d760-023d-4b00-bad2-15d2aada22fe": {
+        "poly2block1": {
             "block": "ARIAAAAAAAAAAAAAAAAAgA=="
         },
-        "b856d760-023d-4b00-bad2-15d2aadb22fe": {
+        "block2poly1": {
             "coefficients": [
                 0,
                 9,
@@ -20,7 +20,7 @@
                 127
             ]
         },
-        "block2poly-gcm": {
+        "block2poly2": {
             "coefficients": [
                 7,
                 11,
@@ -28,7 +28,7 @@
                 120
             ]
         },
-        "block2poly-xex2": {
+        "block2poly3": {
             "coefficients": [
                 0,
                 9,
@@ -47,7 +47,7 @@
                 127
             ]
         },
-        "block2poly-gcm2": {
+        "block2poly4": {
             "coefficients": [
                 7,
                 11,
@@ -66,16 +66,16 @@
                 120
             ]
         },
-        "a1": {
+        "gfmul1": {
             "product": "hSQAAAAAAAAAAAAAAAAAAA=="
         },
-        "gcm1": {
+        "gfmul2": {
             "product": "oSQAAAAAAAAAAAAAAAAAAA=="
         },
-        "a": {
+        "sea128_1": {
             "output": "D5FDo3iVBoBN9gVi9/MSKQ=="
         },
-        "b": {
+        "sea128_2": {
             "output": "yv66vvrO263eyviIiDNEVQ=="
         },
         "xex1": {
@@ -83,6 +83,107 @@
         },
         "xex2": {
             "output": "SGV5IHdpZSBrcmFzcyBkYXMgZnVua3Rpb25pZXJ0IGphIG9mZmVuYmFyIGVjaHQu"
+        },
+        "gcm_encrypt1": {
+            "ciphertext": "ET3RmvH/Hbuxba63EuPRrw==",
+            "tag": "Mp0APJb/ZIURRwQlMgNN/w==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "Bu6ywbsUKlpmZXMQyuGAng=="
+        },
+        "gcm_encrypt2": {
+            "ciphertext": "0cI/Wg4R3URfrVFZ0hw/vg==",
+            "tag": "ysDdzOSnqLH0MQ+Mkb23gw==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "xhFcAUT66qWIpYz+Ch5ujw=="
+        },
+        "gcm_decrypt1": {
+            "authentic": true,
+            "plaintext": "EREavadt90qq"
+        },
+        "gcm_decrypt2": {
+            "authentic": false,
+            "plaintext": "AxSiKm93Gr2+"
+        },
+        "gfdiv1": {
+            "q": "OAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        "gfpoly_add1": {
+            "S": [
+                "H1d3GuyA9/0OxeYouUpAAA==",
+                "OZuIncPAGEp4tYouDownAA==",
+                "NeverGonnaRunAroundAAA==",
+                "AndDesertYouAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_mul1": {
+            "P": [
+                "MoAAAAAAAAAAAAAAAAAAAA==",
+                "sUgAAAAAAAAAAAAAAAAAAA==",
+                "MbQAAAAAAAAAAAAAAAAAAA==",
+                "AAhAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_divmod1": {
+            "Q": [
+                "nAIAgCAIAgCAIAgCAIAgCg==",
+                "m85znOc5znOc5znOc5znOQ=="
+            ],
+            "R": [
+                "lQNA0DQNA0DQNA0DQNA0Dg=="
+            ]
+        },
+        "gfpoly_pow1": {
+            "Z": [
+                "AkkAAAAAAAAAAAAAAAAAAA==",
+                "DDAAAAAAAAAAAAAAAAAAAA==",
+                "LQIIAAAAAAAAAAAAAAAAAA==",
+                "8AAAAAAAAAAAAAAAAAAAAA==",
+                "ACgCQAAAAAAAAAAAAAAAAA==",
+                "AAAMAAAAAAAAAAAAAAAAAA==",
+                "AAAAAgAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_powmod1": {
+            "Z": [
+                "oNXl5P8xq2WpUTP92u25zg=="
+            ]
+        },
+        "gfpoly_make_monic1": {
+            "A*": [
+                "edY47onJ4MtCENDTHG/sZw==",
+                "oaXjCKnceBIxSavZ9eFT8w==",
+                "1Ial5rAJGOucIdUe3zh5bw==",
+                "gAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_sqrt1": {
+            "S": [
+                "NeverGonnaGiveYouUpAAA==",
+                "NeverGonnaLetYouDownAA==",
+                "NeverGonnaRunAroundAAA==",
+                "AndDesertYouAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_sort1": {
+            "sorted_polys": [
+                [
+                    "WereNoStrangersToLoveA==",
+                    "YouKnowTheRulesAAAAAAA==",
+                    "AndSoDoIAAAAAAAAAAAAAA=="
+                ],
+                [
+                    "NeverGonnaMakeYouCryAA==",
+                    "NeverGonnaSayGoodbyeAA==",
+                    "NeverGonnaTellALieAAAA==",
+                    "AndHurtYouAAAAAAAAAAAA=="
+                ],
+                [
+                    "NeverGonnaGiveYouUpAAA==",
+                    "NeverGonnaLetYouDownAA==",
+                    "NeverGonnaRunAroundAAA==",
+                    "AndDesertYouAAAAAAAAAA=="
+                ]
+            ]
         }
     }
 }
