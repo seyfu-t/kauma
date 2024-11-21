@@ -14,11 +14,11 @@ import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.util.Util;
 
 public class GFPolySortAction implements Action {
-    
+
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
         JsonArray array = arguments.get("polys").getAsJsonArray();
-        List<GF128Poly> polysList = new ArrayList<>(array.size()); // Pre-size the ArrayList
+        List<GF128Poly> polysList = new ArrayList<>(array.size()); // Pre-sizing
 
         for (int i = 0; i < array.size(); i++) {
             String[] poly = Util.convertJsonArrayToStringArray(array.get(i).getAsJsonArray());
@@ -28,7 +28,7 @@ public class GFPolySortAction implements Action {
         List<GF128Poly> sortedList = gfPolySort(polysList);
 
         JsonArray resultArray = new JsonArray();
-        Gson gson = new Gson(); // Create Gson instance once
+        Gson gson = new Gson();
 
         for (GF128Poly poly : sortedList) {
             resultArray.add(gson.toJsonTree(poly.toBase64Array()));
@@ -43,17 +43,21 @@ public class GFPolySortAction implements Action {
         // Use ArrayList instead of LinkedList for better random access performance
         List<GF128Poly> sortedList = new ArrayList<>(listOfPolysToSort);
 
+        // Java syntax...
+        // lambda that in theory must be able to compare each possible pair p1 and p2
         sortedList.sort((p1, p2) -> {
+            // Returning 1 means p1 > p2
+            // Returning 0 means p1 = p2
+            // Returning -1 means p1 < p2
+
             // First compare by degree
             int degreeComparison = Integer.compare(p1.degree(), p2.degree());
-            if (degreeComparison != 0) {
+            if (degreeComparison != 0)
                 return degreeComparison;
-            }
 
             // If both polynomials are empty (degree == -1)
-            if (p1.degree() == -1) {
+            if (p1.degree() == -1)
                 return 0;
-            }
 
             // Compare coefficients from highest to lowest degree
             for (int i = p1.degree(); i >= 0; i--) {
