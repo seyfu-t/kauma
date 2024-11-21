@@ -37,7 +37,7 @@ public class GFPolyDiffAction implements Action {
                 result.setCoefficient(i - 1, poly.getCoefficient(i));
         }
 
-        return result;
+        return result.popLeadingZeros();
     }
 
 }
