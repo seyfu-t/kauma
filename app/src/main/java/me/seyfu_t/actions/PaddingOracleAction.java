@@ -108,6 +108,8 @@ public class PaddingOracleAction implements Action {
             throws IOException {
         // Possibly two valid indexes
         List<Integer> validIndexes = getValidPaddingIndexes(response);
+        
+        Log.debug("Valid indexes size:",validIndexes.size());
 
         if (validIndexes.size() == 1) {
             return (byte) (validIndexes.get(0) & 0xFF);
@@ -115,6 +117,7 @@ public class PaddingOracleAction implements Action {
 
         for (int index : validIndexes) {
             if (!is01Padding(out, in, (byte) (index & 0xFF))) {
+                Log.debug("correct index:",(index&0xFF));
                 return (byte) (index & 0xFF);
             }
         }
@@ -162,8 +165,8 @@ public class PaddingOracleAction implements Action {
         in.read(response);
 
         boolean result = (response[0] == 0x01 && response[1] == 0x01);
-        Log.debug(result);
-        return result;
+        Log.debug("is01Padding:",result);
+        return !result;
     }
 
     private static List<Integer> getValidPaddingIndexes(byte[] response) {
