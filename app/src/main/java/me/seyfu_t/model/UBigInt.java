@@ -268,7 +268,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
         for (int i = this.byteLength - 1; i >= 0; i--) {
             if (this.byteArray[i] != otherBigInt.byteArray[i]) {
-                return this.byteArray[i] > otherBigInt.byteArray[i];
+                return Util.swapBitOrder(this.byteArray[i]) > Util.swapBitOrder(otherBigInt.byteArray[i]);
             }
         }
 
@@ -281,7 +281,7 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
         for (int i = this.byteLength - 1; i >= 0; i--) {
             if (this.byteArray[i] != otherBigInt.byteArray[i]) {
-                return this.byteArray[i] < otherBigInt.byteArray[i];
+                return Util.swapBitOrder(this.byteArray[i]) < Util.swapBitOrder(otherBigInt.byteArray[i]);
             }
         }
 
