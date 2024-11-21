@@ -21,8 +21,8 @@ class AppTest {
     private static final String POLY2BLOCK_OUTPUT = "Poly2BlockOutput.json";
     private static final String BLOCK2POLY_INPUT = "Block2PolyInput.json";
     private static final String BLOCK2POLY_OUTPUT = "Block2PolyOutput.json";
-    private static final String GFMUL_INPUT = "GFMulInput.json";
-    private static final String GFMUL_OUTPUT = "GFMulOutput.json";
+    private static final String GF_MUL_INPUT = "GFMulInput.json";
+    private static final String GF_MUL_OUTPUT = "GFMulOutput.json";
     private static final String SEA128_INPUT = "SEA128Input.json";
     private static final String SEA128_OUTPUT = "SEA128Output.json";
     private static final String XEX_INPUT = "XEXInput.json";
@@ -33,6 +33,22 @@ class AppTest {
     private static final String GCM_DECRYPT_OUTPUT = "GCMDecryptOutput.json";
     private static final String GF_POLY_ADD_INPUT = "GFPolyAddInput.json";
     private static final String GF_POLY_ADD_OUTPUT = "GFPolyAddOutput.json";
+    private static final String GF_POLY_MUL_INPUT = "GFPolyMulInput.json";
+    private static final String GF_POLY_MUL_OUTPUT = "GFPolyMulOutput.json";
+    private static final String GF_POLY_DIV_MOD_INPUT = "GFPolyDivModInput.json";
+    private static final String GF_POLY_DIV_MOD_OUTPUT = "GFPolyDivModOutput.json";
+    private static final String GF_POLY_POW_INPUT = "GFPolyPowInput.json";
+    private static final String GF_POLY_POW_OUTPUT = "GFPolyPowOutput.json";
+    private static final String GF_POLY_POW_MOD_INPUT = "GFPolyPowModInput.json";
+    private static final String GF_POLY_POW_MOD_OUTPUT = "GFPolyPowModOutput.json";
+    private static final String GF_POLY_MAKE_MONIC_INPUT = "GFPolyMakeMonicInput.json";
+    private static final String GF_POLY_MAKE_MONIC_OUTPUT = "GFPolyMakeMonicOutput.json";
+    private static final String GF_POLY_SQRT_INPUT = "GFPolySqrtInput.json";
+    private static final String GF_POLY_SQRT_OUTPUT = "GFPolySqrtOutput.json";
+    private static final String GF_POLY_SORT_INPUT = "GFPolySortInput.json";
+    private static final String GF_POLY_SORT_OUTPUT = "GFPolySortOutput.json";
+    private static final String GF_DIV_INPUT = "GFDivInput.json";
+    private static final String GF_DIV_OUTPUT = "GFDivOutput.json";
 
     private static final String ALL_INPUT = "AllInput.json";
     private static final String ALL_OUTPUT = "AllOutput.json";
@@ -91,35 +107,74 @@ class AppTest {
         UBigInt16[] ff = new UBigInt16[] {
                 new UBigInt16(new byte[] { (byte) 0xFF })
         };
-    
+
         GF128Poly a = new GF128Poly(aa);
         GF128Poly b = new GF128Poly(bb);
         GF128Poly c = new GF128Poly(cc);
         GF128Poly d = new GF128Poly(dd);
         GF128Poly e = new GF128Poly(ee);
         GF128Poly f = new GF128Poly(ff);
-    
+
         // Equality checks
         Assertions.assertTrue(a.equals(b));
         Assertions.assertTrue(b.equals(a));
         Assertions.assertFalse(a.equals(c));
-    
+
         // Greater than checks
         Assertions.assertTrue(c.greaterThan(d)); // AllOne > 0xAF
         Assertions.assertTrue(d.greaterThan(e)); // 0xAF > 0x01
         Assertions.assertFalse(f.greaterThan(c)); // 0xFF > AllOne
-    
+
         // Less than checks
         Assertions.assertTrue(d.lessThan(c)); // 0xAF < AllOne
         Assertions.assertTrue(e.lessThan(d)); // 0x01 < 0xAF
         Assertions.assertFalse(c.lessThan(f)); // AllOne < 0xFF
-    
+
         // Mixed relational checks
         Assertions.assertTrue(a.lessThan(e)); // Zero < 0x01
         Assertions.assertFalse(a.greaterThan(b)); // Zero is not greater than Zero
         Assertions.assertTrue(f.greaterThan(b)); // 0xFF > Zero
     }
-    
+
+    @Test
+    void testGFDiv() {
+        createTest(GF_DIV_INPUT, GF_DIV_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyMakeMonic() {
+        createTest(GF_POLY_MAKE_MONIC_INPUT, GF_POLY_MAKE_MONIC_OUTPUT);
+    }
+
+    @Test
+    void testGFPolySqrt() {
+        createTest(GF_POLY_SQRT_INPUT, GF_POLY_SQRT_OUTPUT);
+    }
+
+    @Test
+    void testGFPolySort() {
+        createTest(GF_POLY_SORT_INPUT, GF_POLY_SORT_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyDivMod() {
+        createTest(GF_POLY_DIV_MOD_INPUT, GF_POLY_DIV_MOD_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyPowMod() {
+        createTest(GF_POLY_POW_MOD_INPUT, GF_POLY_POW_MOD_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyPow() {
+        createTest(GF_POLY_POW_INPUT, GF_POLY_POW_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyMul() {
+        createTest(GF_POLY_MUL_INPUT, GF_POLY_MUL_OUTPUT);
+    }
 
     @Test
     void testGFPolyAdd() {
@@ -148,7 +203,7 @@ class AppTest {
 
     @Test
     void testGFMulAction() {
-        createTest(GFMUL_INPUT, GFMUL_OUTPUT);
+        createTest(GF_MUL_INPUT, GF_MUL_OUTPUT);
     }
 
     @Test
