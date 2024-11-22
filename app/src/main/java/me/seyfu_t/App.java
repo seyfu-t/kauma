@@ -88,6 +88,7 @@ public class App {
             case "gfpoly_sort" -> new GFPolySortAction();
             case "gfpoly_diff" -> new GFPolyDiffAction();
             case "gfpoly_gcd" -> new GFPolyGCDAction();
+            case "gfpoly_factor_sff" -> new GFPolyFactorSFFAction();
             default -> null;
         };
     }
