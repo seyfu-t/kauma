@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.ForkJoinPool;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -34,17 +35,12 @@ public class App {
     }
 
     public static void main(String[] args) {
-        // Checking if file exists
-        String filePath = args[0];
-        if (!new File(filePath).exists()) {
+        if (args.length == 0 || !new File(args[0]).exists()) {
             log.severe("Datei existiert nicht!");
             System.exit(1);
         }
 
-        // pipeline
-        JsonObject response = getResponseJsonFromInputPath(filePath);
-
-        // output result
+        JsonObject response = getResponseJsonFromInputPath(args[0]);
         System.out.println(response.toString());
     }
 
@@ -53,17 +49,45 @@ public class App {
     }
 
     public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
-        // extracting the relevant part
-        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject(); // get only the value of "responses"
-
-        // building
+        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
-        iterateOverAllCases(responseBuilder, testcasesJson);
 
-        // finalize and return
-        JsonObject finalResponse = responseBuilder.build();
-        return finalResponse;
+        // Use the common ForkJoinPool for parallel processing
+        ForkJoinPool.commonPool().submit(() ->
+            testcasesJson.entrySet().parallelStream().forEach(singleCase -> {
+                ProcessedTestCase result = processTestCase(singleCase);
+                if (result != null && result.result() != null) {
+                    synchronized (responseBuilder) {
+                        responseBuilder.addResponse(result.hash(), result.result());
+                    }
+                }
+            })
+        ).join();
+
+        return responseBuilder.build();
     }
+
+    private static ProcessedTestCase processTestCase(Entry<String, JsonElement> singleCase) {
+        try {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            String uniqueHash = singleCase.getKey();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+            Action action = getActionClass(actionName);
+            if (action == null) {
+                return null;
+            }
+
+            Map<String, Object> resultEntry = action.execute(arguments);
+            return new ProcessedTestCase(uniqueHash, resultEntry);
+        } catch (Exception e) {
+            log.warning("Error processing testcase: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private record ProcessedTestCase(String hash, Map<String, Object> result) {}
 
     public static Action getActionClass(String actionName) {
         return switch (actionName) {
@@ -92,35 +116,9 @@ public class App {
         };
     }
 
-    public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
-        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
-            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-
-            // the 3 relevant parts of each case
-            String uniqueHash = singleCase.getKey();
-            String actionName = remainderJsonObject.get("action").getAsString();
-            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
-
-            Action action = getActionClass(actionName); // get the appropriate instance
-
-            if (action == null)
-                continue;
-
-            // execute
-            Map<String, Object> resultEntry = action.execute(arguments);
-
-            builder.addResponse(uniqueHash, resultEntry);
-        }
-    }
-
     public static JsonObject parseFilePathToJson(String filePath) {
-        // Reading could fail, needs try-catch
         try (FileReader reader = new FileReader(filePath)) {
-            // Try parsing the JSON file to a JsonObject
-            JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
-            return jsonObj;
-
-            // If there is any fail at this stage here, continuation isn't possible
+            return new Gson().fromJson(reader, JsonObject.class);
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
             System.exit(1);
@@ -128,7 +126,6 @@ public class App {
             log.severe("File is not valid json!");
             System.exit(1);
         }
-
         throw new RuntimeException("This line of code should've never been reached");
     }
 }
