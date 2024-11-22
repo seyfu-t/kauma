@@ -41,11 +41,11 @@ public class GFPolyGCDAction implements Action {
         while (!divisor.isZero()) {
             // Update polynomials for next iteration
             dividend = divisor.copy();
-            divisor = GFPolyDivModAction.gfPolyDivModRest(dividend, divisor);
+            divisor = GFPolyDivModAction.divModRest(dividend, divisor);
         }
 
         // Normalize the result - make the leading coefficient 1 if possible
-        GF128Poly monicResult = GFPolyMakeMonicAction.gfPolyMakeMonic(dividend);
+        GF128Poly monicResult = GFPolyMakeMonicAction.makeMonic(dividend);
 
         return monicResult;
     }

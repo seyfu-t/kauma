@@ -16,7 +16,7 @@ public class GFDivAction implements Action {
         String a = arguments.get("a").getAsString();
         String b = arguments.get("b").getAsString();
 
-        String quotient = gfDiv(a, b);
+        String quotient = div(a, b);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("q", quotient);
@@ -24,20 +24,20 @@ public class GFDivAction implements Action {
         return resultMap;
     }
 
-    private static String gfDiv(String base64A, String base64B) {
+    private static String div(String base64A, String base64B) {
         byte[] blockA = Base64.getDecoder().decode(base64A);
         byte[] blockB = Base64.getDecoder().decode(base64B);
 
         UBigInt16 bigIntA = new UBigInt16(blockA, true);
         UBigInt16 bigIntB = new UBigInt16(blockB, true);
 
-        UBigInt16 quotient = divide(bigIntA, bigIntB);
+        UBigInt16 quotient = div(bigIntA, bigIntB);
         String base64 = Base64.getEncoder().encodeToString(quotient.toByteArray());
 
         return base64;
     }
 
-    public static UBigInt16 divide(UBigInt16 a, UBigInt16 b) {
+    public static UBigInt16 div(UBigInt16 a, UBigInt16 b) {
         return GFMulAction.combinedMulAndModReduction(a, inverse(b));
     }
 

@@ -20,12 +20,12 @@ public class GFPolyDivModAction implements Action {
         GF128Poly polyA = new GF128Poly(a);
         GF128Poly polyB = new GF128Poly(b);
 
-        Map<String, Object> resultMap = gfPolyDivMod(polyA, polyB);
+        Map<String, Object> resultMap = divMod(polyA, polyB);
 
         return resultMap;
     }
 
-    public static Map<String, Object> gfPolyDivMod(GF128Poly dividend, GF128Poly divisor) {
+    public static Map<String, Object> divMod(GF128Poly dividend, GF128Poly divisor) {
         if (divisor.isEmpty()) {
             throw new ArithmeticException("Division by zero polynomial");
         }
@@ -49,17 +49,17 @@ public class GFPolyDivModAction implements Action {
             int degDiff = remainder.degree() - divisor.degree();
 
             // Calculate the quotient term
-            UBigInt16 quotientTerm = GFDivAction.divide(remainder.getCoefficient(remainder.degree()), divisorLC);
+            UBigInt16 quotientTerm = GFDivAction.div(remainder.getCoefficient(remainder.degree()), divisorLC);
 
             // Create a new polynomial for the term
             GF128Poly term = new GF128Poly();
             term.setCoefficient(degDiff, quotientTerm);
 
-            quotient = GFPolyAddAction.gfPolyAdd(quotient, term);
+            quotient = GFPolyAddAction.add(quotient, term);
 
             // Subtract (divisor * term) from remainder
-            GF128Poly subtrahend = GFPolyMulAction.gfPolyMul(divisor, term);
-            remainder = GFPolyAddAction.gfPolyAdd(remainder, subtrahend);
+            GF128Poly subtrahend = GFPolyMulAction.mul(divisor, term);
+            remainder = GFPolyAddAction.add(remainder, subtrahend);
 
             remainder = remainder.popLeadingZeros();
         }
@@ -70,12 +70,12 @@ public class GFPolyDivModAction implements Action {
         return map;
     }
 
-    public static GF128Poly gfPolyDivModRest(GF128Poly dividend, GF128Poly divisor) {
-        return new GF128Poly((String[]) gfPolyDivMod(dividend, divisor).get("R"));
+    public static GF128Poly divModRest(GF128Poly dividend, GF128Poly divisor) {
+        return new GF128Poly((String[]) divMod(dividend, divisor).get("R"));
     }
 
-    public static GF128Poly gfPolyDivModQuotient(GF128Poly dividend, GF128Poly divisor) {
-        return new GF128Poly((String[]) gfPolyDivMod(dividend, divisor).get("Q"));
+    public static GF128Poly divModQuotient(GF128Poly dividend, GF128Poly divisor) {
+        return new GF128Poly((String[]) divMod(dividend, divisor).get("Q"));
     }
 
 }

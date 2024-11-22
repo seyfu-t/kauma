@@ -18,7 +18,7 @@ public class GFPolyDiffAction implements Action {
 
         GF128Poly q = new GF128Poly(poly);
 
-        GF128Poly s = gfPolyDiff(q);
+        GF128Poly s = diff(q);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("F'", s.toBase64Array());
@@ -26,7 +26,7 @@ public class GFPolyDiffAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolyDiff(GF128Poly poly) {
+    public static GF128Poly diff(GF128Poly poly) {
         GF128Poly result = new GF128Poly();
 
         if (poly.isZero()) {

@@ -20,7 +20,7 @@ public class GFPolyAddAction implements Action {
         GF128Poly a = new GF128Poly(polyA);
         GF128Poly b = new GF128Poly(polyB);
 
-        GF128Poly sum = gfPolyAdd(a, b);
+        GF128Poly sum = add(a, b);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("S", sum.toBase64Array());
@@ -28,7 +28,7 @@ public class GFPolyAddAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolyAdd(GF128Poly a, GF128Poly b) {
+    public static GF128Poly add(GF128Poly a, GF128Poly b) {
         int minIndex = Math.min(a.size(), b.size());
         int maxIndex = Math.max(a.size(), b.size());
 
@@ -50,14 +50,14 @@ public class GFPolyAddAction implements Action {
         return result;
     }
 
-    public static GF128Poly gfPolyAdd(GF128Poly[] summands) {
+    public static GF128Poly add(GF128Poly[] summands) {
         GF128Poly result = new GF128Poly();
 
         for (GF128Poly summand : summands) {
             if (result.isEmpty())
                 result = summand;
 
-            result = gfPolyAdd(result, summand);
+            result = add(result, summand);
         }
 
         return result;

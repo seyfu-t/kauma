@@ -25,7 +25,7 @@ public class GFPolySortAction implements Action {
             polysList.add(new GF128Poly(poly));
         }
 
-        List<GF128Poly> sortedList = gfPolySort(polysList);
+        List<GF128Poly> sortedList = sort(polysList);
 
         JsonArray resultArray = new JsonArray();
         Gson gson = new Gson();
@@ -39,7 +39,7 @@ public class GFPolySortAction implements Action {
         return resultMap;
     }
 
-    public static List<GF128Poly> gfPolySort(List<GF128Poly> listOfPolysToSort) {
+    public static List<GF128Poly> sort(List<GF128Poly> listOfPolysToSort) {
         // Use ArrayList instead of LinkedList for better random access performance
         List<GF128Poly> sortedList = new ArrayList<>(listOfPolysToSort);
 

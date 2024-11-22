@@ -20,7 +20,7 @@ public class GFPolyMulAction implements Action {
         GF128Poly a = new GF128Poly(polyA);
         GF128Poly b = new GF128Poly(polyB);
 
-        GF128Poly product = gfPolyMul(a, b);
+        GF128Poly product = mul(a, b);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("P", product.toBase64Array());
@@ -28,7 +28,7 @@ public class GFPolyMulAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolyMul(GF128Poly a, GF128Poly b) {
+    public static GF128Poly mul(GF128Poly a, GF128Poly b) {
         GF128Poly result = new GF128Poly();
 
         // 0 times anything is 0
@@ -60,7 +60,7 @@ public class GFPolyMulAction implements Action {
                 term.setCoefficient(i + j, multipliedCoef);
 
                 // Add this term to result
-                result = GFPolyAddAction.gfPolyAdd(result, term);
+                result = GFPolyAddAction.add(result, term);
             }
         }
 

@@ -18,7 +18,7 @@ public class GFPolySqrtAction implements Action {
 
         GF128Poly q = new GF128Poly(poly);
 
-        GF128Poly s = gfPolySqrt(q);
+        GF128Poly s = sqrt(q);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("S", s.toBase64Array());
@@ -26,7 +26,7 @@ public class GFPolySqrtAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolySqrt(GF128Poly poly) {
+    public static GF128Poly sqrt(GF128Poly poly) {
         // sqrt(d) = d^(2^(m-1)) in F_(2^m)
         UBigInt16 pow = UBigInt16.Zero(true).setBit(127);
         
@@ -38,7 +38,7 @@ public class GFPolySqrtAction implements Action {
             GF128Poly base = new GF128Poly(new UBigInt16[]{currentCoefficient});
 
             // square and multiply, the polynomial wont get bigger
-            base = GFPolyPowAction.gfPolyPow(base, pow);
+            base = GFPolyPowAction.pow(base, pow);
 
             // take back the now processed coefficient and save
             result.setCoefficient(i/2, base.getCoefficient(0));

@@ -19,7 +19,7 @@ public class GFPolyPowAction implements Action {
 
         GF128Poly a = new GF128Poly(poly);
 
-        GF128Poly z = gfPolyPow(a, k);
+        GF128Poly z = pow(a, k);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("Z", z.toBase64Array());
@@ -28,18 +28,18 @@ public class GFPolyPowAction implements Action {
     }
 
     // Square and multiply algorithm
-    public static GF128Poly gfPolyPow(GF128Poly poly, int pow) {
-        if (pow < 0) {
+    public static GF128Poly pow(GF128Poly poly, int exp) {
+        if (exp < 0) {
             throw new IllegalArgumentException("Negative powers are not supported");
         }
 
-        if (pow == 0) {
+        if (exp == 0) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
             return one;
         }
 
-        if (pow == 1) {
+        if (exp == 1) {
             return poly.copy();
         }
 
@@ -50,30 +50,30 @@ public class GFPolyPowAction implements Action {
         GF128Poly base = poly.copy();
 
         // Binary exponentiation algorithm
-        while (pow > 0) {
+        while (exp > 0) {
             // If odd, multiply
-            if ((pow & 1) == 1) {
-                result = GFPolyMulAction.gfPolyMul(result, base);
+            if ((exp & 1) == 1) {
+                result = GFPolyMulAction.mul(result, base);
             }
 
             // Square
-            base = GFPolyMulAction.gfPolyMul(base, base);
+            base = GFPolyMulAction.mul(base, base);
 
-            // Divide power by 2
-            pow >>= 1;
+            // Divide exponent by 2
+            exp >>= 1;
         }
 
         return result.popLeadingZeros();
     }
 
-    public static GF128Poly gfPolyPow(GF128Poly poly, UBigInt16 pow) {
-        if (pow.isZero()) {
+    public static GF128Poly pow(GF128Poly poly, UBigInt16 exp) {
+        if (exp.isZero()) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
             return one;
         }
 
-        if (pow.sameAs(UBigInt16.Zero(true).setBit(0))) {
+        if (exp.sameAs(UBigInt16.Zero(true).setBit(0))) {
             return poly.copy();
         }
 
@@ -84,17 +84,17 @@ public class GFPolyPowAction implements Action {
         GF128Poly base = poly.copy();
 
         // Binary exponentiation algorithm
-        while (!pow.isZero()) {
+        while (!exp.isZero()) {
             // If odd, multiply
-            if (pow.testBit(0)) {
-                result = GFPolyMulAction.gfPolyMul(result, base);
+            if (exp.testBit(0)) {
+                result = GFPolyMulAction.mul(result, base);
             }
 
             // Square
-            base = GFPolyMulAction.gfPolyMul(base, base);
+            base = GFPolyMulAction.mul(base, base);
 
-            // Divide power by 2
-            pow = pow.shiftRight(1);
+            // Divide exponent by 2
+            exp = exp.shiftRight(1);
         }
 
         return result.popLeadingZeros();
