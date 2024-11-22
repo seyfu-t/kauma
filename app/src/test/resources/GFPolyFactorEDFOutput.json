@@ -1,0 +1,20 @@
+{
+    "responses": {
+        "gfpoly_factor_edf1": {
+            "factors": [
+                [
+                    "iwAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "AAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                [
+                    "kAAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "wAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ]
+            ]
+        }
+    }
+}
