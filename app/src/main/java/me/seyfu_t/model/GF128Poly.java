@@ -1,5 +1,6 @@
 package me.seyfu_t.model;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -189,6 +190,10 @@ public class GF128Poly {
 
     @Override
     public String toString() {
+        return Arrays.toString(this.toBase64Array());
+    }
+
+    public String toHumanReadableString() {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < this.coefficients.size(); i++) {
