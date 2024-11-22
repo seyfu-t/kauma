@@ -305,4 +305,46 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
         return false; // Equal values, so not greater
     }
+
+    @SuppressWarnings("unchecked")
+    public T pow(long exponent) {
+        byte[] oneBytes = new byte[this.byteCount];
+        oneBytes[0] = 0x01;
+        T result = createInstance(oneBytes, this.gcm);
+    
+        T base = (T) this;
+    
+        while (exponent > 0) {
+            // Multiply
+            if ((exponent & 1) == 1) {
+                result = result.mul(base);
+            }
+    
+            // Square
+            base = base.mul(base);
+            exponent >>= 1; // Shift exponent to the right
+        }
+    
+        return result;
+    }
+    
+    public T mul(T other) {
+        byte[] result = new byte[this.byteCount];
+    
+        for (int i = 0; i < this.byteCount; i++) {
+            int carry = 0;
+            for (int j = 0; j < this.byteCount - i; j++) {
+                int sum = (result[i + j] & 0xFF)
+                        + (this.byteArray[i] & 0xFF) * (j < other.byteCount ? other.byteArray[j] & 0xFF : 0)
+                        + carry;
+    
+                result[i + j] = (byte) (sum & 0xFF);
+                carry = sum >>> 8;
+            }
+        }
+    
+        return createInstance(result, this.gcm);
+    }
+    
+
 }
