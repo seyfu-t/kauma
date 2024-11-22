@@ -155,10 +155,10 @@ class AppTest {
     //     createTest(GF_POLY_FACTOR_EDF_INPUT, GF_POLY_FACTOR_EDF_OUTPUT);
     // }
 
-    // @Test
-    // void testFactorDDF(){
-    //     createTest(GF_POLY_FACTOR_DDF_INPUT, GF_POLY_FACTOR_DDF_OUTPUT);
-    // }
+    @Test
+    void testFactorDDF(){
+        createTest(GF_POLY_FACTOR_DDF_INPUT, GF_POLY_FACTOR_DDF_OUTPUT);
+    }
 
     @Test
     void testFactorSFF(){
