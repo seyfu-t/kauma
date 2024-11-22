@@ -195,15 +195,11 @@
             ]
         },
         "gfpoly_diff1": {
-            "action": "gfpoly_diff",
-            "arguments": {
-                "F": [
-                    "IJustWannaTellYouAAAAA==",
-                    "HowImFeelingAAAAAAAAAA==",
-                    "GottaMakeYouAAAAAAAAAA==",
-                    "UnderstaaaaaaaaaaaaanQ=="
-                ]
-            }
+            "F'": [
+                "HowImFeelingAAAAAAAAAA==",
+                "AAAAAAAAAAAAAAAAAAAAAA==",
+                "UnderstaaaaaaaaaaaaanQ=="
+            ]
         }
     }
 }
