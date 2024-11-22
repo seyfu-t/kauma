@@ -39,13 +39,9 @@ public class GFPolyGCDAction implements Action {
         GF128Poly divisor = a.degree() >= b.degree() ? b.copy() : a.copy();
 
         while (!divisor.isZero()) {
-            // Get remainder after using gfpoly_divmod
-            Map<String, Object> divResult = GFPolyDivModAction.gfPolyDivMod(dividend, divisor);
-            String[] remainderArray = (String[]) divResult.get("R");
-
             // Update polynomials for next iteration
             dividend = divisor.copy();
-            divisor = new GF128Poly(remainderArray);
+            divisor = GFPolyDivModAction.gfPolyDivModRest(dividend, divisor);
         }
 
         // Normalize the result - make the leading coefficient 1 if possible
