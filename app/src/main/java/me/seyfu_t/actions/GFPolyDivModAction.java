@@ -74,4 +74,8 @@ public class GFPolyDivModAction implements Action {
         return new GF128Poly((String[]) gfPolyDivMod(dividend, divisor).get("R"));
     }
 
+    public static GF128Poly gfPolyDivModQuotient(GF128Poly dividend, GF128Poly divisor) {
+        return new GF128Poly((String[]) gfPolyDivMod(dividend, divisor).get("Q"));
+    }
+
 }
