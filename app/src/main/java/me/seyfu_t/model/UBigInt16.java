@@ -43,6 +43,14 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
         return new UBigInt16(gcm);
     }
 
+    public static UBigInt16 One() {
+        return new UBigInt16().setBit(0);
+    }
+
+    public static UBigInt16 One(boolean gcm) {
+        return new UBigInt16(gcm).setBit(0);
+    }
+
     public static UBigInt16 AllOne() {
         return AllOne(false);
     }
