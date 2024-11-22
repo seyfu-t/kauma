@@ -51,7 +51,7 @@ public class GFPolyFactorSFFAction implements Action {
             if (!f.equals(y))
                 tupleList.add(new Tuple<>(GFPolyDivModAction.divModQuotient(f, y), exponent));
 
-            f = y;
+            f = y.copy();
             c = GFPolyDivModAction.divModQuotient(c, y);
 
             exponent++;
@@ -63,6 +63,7 @@ public class GFPolyFactorSFFAction implements Action {
             }
         }
 
+        // Sort by exponent
         tupleList.sort(Comparator.comparing(Tuple::getSecond));
 
         return tupleList;
