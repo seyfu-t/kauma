@@ -70,4 +70,8 @@ public class GFPolyDivModAction implements Action {
         return map;
     }
 
+    public static GF128Poly gfPolyDivModRest(GF128Poly dividend, GF128Poly divisor) {
+        return new GF128Poly((String[]) gfPolyDivMod(dividend, divisor).get("R"));
+    }
+
 }

@@ -54,14 +54,13 @@ public class GFPolyPowModAction implements Action {
             // If odd, multiply
             if (p.testBit(0)) {
                 result = GFPolyMulAction.gfPolyMul(result, base);
-                String[] base64ReducedResult = (String[]) GFPolyDivModAction.gfPolyDivMod(result, mod).get("R");
-                result = new GF128Poly(base64ReducedResult);
+                result = GFPolyDivModAction.gfPolyDivModRest(result, mod);
             }
 
             // Square
             base = GFPolyMulAction.gfPolyMul(base, base);
-            String[] base64ReducedBase = (String[]) GFPolyDivModAction.gfPolyDivMod(base, mod).get("R");
-            base = new GF128Poly(base64ReducedBase);
+            // Reduce
+            base = GFPolyDivModAction.gfPolyDivModRest(base, mod);
 
             // Divide power by 2
             p = p.shiftRight(1);
