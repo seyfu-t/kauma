@@ -21,16 +21,16 @@ class AppTest {
     private static final String POLY2BLOCK_OUTPUT = "Poly2BlockOutput.json";
     private static final String BLOCK2POLY_INPUT = "Block2PolyInput.json";
     private static final String BLOCK2POLY_OUTPUT = "Block2PolyOutput.json";
-    private static final String GF_MUL_INPUT = "GFMulInput.json";
-    private static final String GF_MUL_OUTPUT = "GFMulOutput.json";
     private static final String SEA128_INPUT = "SEA128Input.json";
     private static final String SEA128_OUTPUT = "SEA128Output.json";
     private static final String XEX_INPUT = "XEXInput.json";
     private static final String XEX_OUTPUT = "XEXOutput.json";
+    
     private static final String GCM_ENCRYPT_INPUT = "GCMEncryptInput.json";
     private static final String GCM_ENCRYPT_OUTPUT = "GCMEncryptOutput.json";
     private static final String GCM_DECRYPT_INPUT = "GCMDecryptInput.json";
     private static final String GCM_DECRYPT_OUTPUT = "GCMDecryptOutput.json";
+
     private static final String GF_POLY_ADD_INPUT = "GFPolyAddInput.json";
     private static final String GF_POLY_ADD_OUTPUT = "GFPolyAddOutput.json";
     private static final String GF_POLY_MUL_INPUT = "GFPolyMulInput.json";
@@ -41,14 +41,28 @@ class AppTest {
     private static final String GF_POLY_POW_OUTPUT = "GFPolyPowOutput.json";
     private static final String GF_POLY_POW_MOD_INPUT = "GFPolyPowModInput.json";
     private static final String GF_POLY_POW_MOD_OUTPUT = "GFPolyPowModOutput.json";
+    private static final String GF_POLY_DIFF_INPUT = "GFPolyDiffInput.json";
+    private static final String GF_POLY_DIFF_OUTPUT = "GFPolyDiffOutput.json";
     private static final String GF_POLY_MAKE_MONIC_INPUT = "GFPolyMakeMonicInput.json";
     private static final String GF_POLY_MAKE_MONIC_OUTPUT = "GFPolyMakeMonicOutput.json";
+    private static final String GF_POLY_GCD_INPUT = "GFPolyGCDInput.json";
+    private static final String GF_POLY_GCD_OUTPUT = "GFPolyGCDOutput.json";
     private static final String GF_POLY_SQRT_INPUT = "GFPolySqrtInput.json";
     private static final String GF_POLY_SQRT_OUTPUT = "GFPolySqrtOutput.json";
     private static final String GF_POLY_SORT_INPUT = "GFPolySortInput.json";
     private static final String GF_POLY_SORT_OUTPUT = "GFPolySortOutput.json";
+    
+    private static final String GF_MUL_INPUT = "GFMulInput.json";
+    private static final String GF_MUL_OUTPUT = "GFMulOutput.json";
     private static final String GF_DIV_INPUT = "GFDivInput.json";
     private static final String GF_DIV_OUTPUT = "GFDivOutput.json";
+
+    private static final String GF_POLY_FACTOR_SFF_INPUT = "GFPolyFactorSFFInput.json";
+    private static final String GF_POLY_FACTOR_SFF_OUTPUT = "GFPolyFactorSFFOutput.json";
+    private static final String GF_POLY_FACTOR_DDF_INPUT = "GFPolyFactorDDFInput.json";
+    private static final String GF_POLY_FACTOR_DDF_OUTPUT = "GFPolyFactorDDFOutput.json";
+    private static final String GF_POLY_FACTOR_EDF_INPUT = "GFPolyFactorEDFInput.json";
+    private static final String GF_POLY_FACTOR_EDF_OUTPUT = "GFPolyFactorEDFOutput.json";
 
     private static final String ALL_INPUT = "AllInput.json";
     private static final String ALL_OUTPUT = "AllOutput.json";
@@ -134,6 +148,31 @@ class AppTest {
         Assertions.assertTrue(a.lessThan(e)); // Zero < 0x01
         Assertions.assertFalse(a.greaterThan(b)); // Zero is not greater than Zero
         Assertions.assertTrue(f.greaterThan(b)); // 0xFF > Zero
+    }
+
+    // @Test
+    // void testFactorEDF(){
+    //     createTest(GF_POLY_FACTOR_EDF_INPUT, GF_POLY_FACTOR_EDF_OUTPUT);
+    // }
+
+    // @Test
+    // void testFactorDDF(){
+    //     createTest(GF_POLY_FACTOR_DDF_INPUT, GF_POLY_FACTOR_DDF_OUTPUT);
+    // }
+
+    @Test
+    void testFactorSFF(){
+        createTest(GF_POLY_FACTOR_SFF_INPUT, GF_POLY_FACTOR_SFF_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyGCD(){
+        createTest(GF_POLY_GCD_INPUT, GF_POLY_GCD_OUTPUT);
+    }
+
+    @Test
+    void testGFPolyDiff(){
+        createTest(GF_POLY_DIFF_INPUT, GF_POLY_DIFF_OUTPUT);
     }
 
     @Test
