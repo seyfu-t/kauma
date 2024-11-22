@@ -12,12 +12,9 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.Tuple;
-import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.Util;
 
 public class GFPolyFactorSFFAction implements Action {
-
-    private static final GF128Poly onePoly = new GF128Poly(new UBigInt16[] { UBigInt16.One(true) });
 
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
@@ -48,7 +45,7 @@ public class GFPolyFactorSFFAction implements Action {
 
         int exponent = 1;
 
-        while (!f.equals(onePoly)) {
+        while (!f.equals(GF128Poly.DEGREE_ZERO_POLY)) {
             GF128Poly y = GFPolyGCDAction.gcd(f, c);
 
             if (!f.equals(y))
@@ -60,7 +57,7 @@ public class GFPolyFactorSFFAction implements Action {
             exponent++;
         }
 
-        if (!c.equals(onePoly)) {
+        if (!c.equals(GF128Poly.DEGREE_ZERO_POLY)) {
             for (Tuple<GF128Poly, Integer> tuple : sff(GFPolySqrtAction.sqrt(c))) {
                 tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
             }
