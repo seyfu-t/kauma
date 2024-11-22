@@ -1,6 +1,7 @@
 package me.seyfu_t.actions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,8 @@ public class GFPolyFactorSFFAction implements Action {
                 tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
             }
         }
+
+        tupleList.sort(Comparator.comparing(Tuple::getSecond));
 
         return tupleList;
     }
