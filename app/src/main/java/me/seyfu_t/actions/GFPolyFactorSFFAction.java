@@ -45,7 +45,7 @@ public class GFPolyFactorSFFAction implements Action {
 
         int exponent = 1;
 
-        while (!f.equals(GF128Poly.DEGREE_ZERO_POLY)) {
+        while (!f.equals(GF128Poly.DEGREE_ZERO_POLY_ONE)) {
             GF128Poly y = GFPolyGCDAction.gcd(f, c);
 
             if (!f.equals(y))
@@ -57,7 +57,7 @@ public class GFPolyFactorSFFAction implements Action {
             exponent++;
         }
 
-        if (!c.equals(GF128Poly.DEGREE_ZERO_POLY)) {
+        if (!c.equals(GF128Poly.DEGREE_ZERO_POLY_ONE)) {
             for (Tuple<GF128Poly, Integer> tuple : sff(GFPolySqrtAction.sqrt(c))) {
                 tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
             }

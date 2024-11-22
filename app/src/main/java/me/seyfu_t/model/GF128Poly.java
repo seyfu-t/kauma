@@ -8,7 +8,12 @@ import me.seyfu_t.actions.Block2PolyAction;
 
 public class GF128Poly {
 
-    public static final GF128Poly DEGREE_ZERO_POLY = new GF128Poly(new UBigInt16[] { UBigInt16.One(true) });
+    public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly(new UBigInt16[] {
+            UBigInt16.One(true)
+    });
+    public static final GF128Poly DEGREE_ONE_POLY_ONE = new GF128Poly(new UBigInt16[] {
+            UBigInt16.Zero(true), UBigInt16.One(true)
+    });
 
     private final LinkedList<UBigInt16> coefficients = new LinkedList<>();
     private final boolean gcm = true;
