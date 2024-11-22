@@ -18,8 +18,8 @@ public class GFMulAction implements Action {
         String b = arguments.get("b").getAsString();
 
         String product = switch (semantic) {
-            case "xex" -> mulGF(a, b, false);
-            case "gcm" -> mulGF(a, b, true);
+            case "xex" -> mul(a, b, false);
+            case "gcm" -> mul(a, b, true);
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
@@ -29,7 +29,7 @@ public class GFMulAction implements Action {
         return resultMap;
     }
 
-    private static String mulGF(String base64A, String base64B, boolean gcm) {
+    private static String mul(String base64A, String base64B, boolean gcm) {
         byte[] blockA = Base64.getDecoder().decode(base64A);
         byte[] blockB = Base64.getDecoder().decode(base64B);
 

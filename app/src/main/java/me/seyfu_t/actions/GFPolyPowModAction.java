@@ -21,7 +21,7 @@ public class GFPolyPowModAction implements Action {
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
 
-        GF128Poly z = gfPolyPowMod(a, k, m);
+        GF128Poly z = powMod(a, k, m);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("Z", z.toBase64Array());
@@ -30,7 +30,7 @@ public class GFPolyPowModAction implements Action {
     }
 
     // Square and multiply algorithm
-    public static GF128Poly gfPolyPowMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
+    public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
         if (pow.isZero()) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
@@ -53,14 +53,14 @@ public class GFPolyPowModAction implements Action {
         while (!p.isZero()) {
             // If odd, multiply
             if (p.testBit(0)) {
-                result = GFPolyMulAction.gfPolyMul(result, base);
-                result = GFPolyDivModAction.gfPolyDivModRest(result, mod);
+                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyDivModAction.divModRest(result, mod);
             }
 
             // Square
-            base = GFPolyMulAction.gfPolyMul(base, base);
+            base = GFPolyMulAction.mul(base, base);
             // Reduce
-            base = GFPolyDivModAction.gfPolyDivModRest(base, mod);
+            base = GFPolyDivModAction.divModRest(base, mod);
 
             // Divide power by 2
             p = p.shiftRight(1);

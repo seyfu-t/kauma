@@ -18,7 +18,7 @@ public class GFPolyMakeMonicAction implements Action {
 
         GF128Poly a = new GF128Poly(polyA);
 
-        GF128Poly monic = gfPolyMakeMonic(a);
+        GF128Poly monic = makeMonic(a);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("A*", monic.toBase64Array());
@@ -26,13 +26,13 @@ public class GFPolyMakeMonicAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolyMakeMonic(GF128Poly a) {
+    public static GF128Poly makeMonic(GF128Poly a) {
         UBigInt16 leadingCoefficient = a.getCoefficient(a.size() - 1);
 
         GF128Poly poly = new GF128Poly();
         for (int i = 0; i < a.size(); i++) {
             // Divide each coefficient
-            UBigInt16 divided = GFDivAction.divide(a.getCoefficient(i), leadingCoefficient);
+            UBigInt16 divided = GFDivAction.div(a.getCoefficient(i), leadingCoefficient);
             poly.setCoefficient(i, divided);
         }
 
