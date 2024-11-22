@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.model.UBigInt32;
+import me.seyfu_t.model.UBigInt512;
 import me.seyfu_t.util.Util;
 
 public class GFPolyPowModAction implements Action {
@@ -70,7 +70,7 @@ public class GFPolyPowModAction implements Action {
         return result.popLeadingZeros();
     }
 
-    public static GF128Poly powMod(GF128Poly poly, UBigInt32 pow, GF128Poly mod) {
+    public static GF128Poly powMod(GF128Poly poly, UBigInt512 pow, GF128Poly mod) {
         if (pow.isZero()) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
@@ -78,7 +78,7 @@ public class GFPolyPowModAction implements Action {
         }
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt32.Zero(true).setBit(0))) {
+        if (pow.sameAs(UBigInt512.Zero(true).setBit(0))) {
             return poly.copy();
         }
 
@@ -88,7 +88,7 @@ public class GFPolyPowModAction implements Action {
 
         GF128Poly base = poly.copy();
 
-        UBigInt32 p = pow.copy();
+        UBigInt512 p = pow.copy();
         // Square and multiply
         while (!p.isZero()) {
             // If odd, multiply
