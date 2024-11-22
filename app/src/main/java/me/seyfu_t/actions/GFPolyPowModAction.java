@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.model.UBigInt32;
 import me.seyfu_t.util.Util;
 
 public class GFPolyPowModAction implements Action {
@@ -49,6 +50,45 @@ public class GFPolyPowModAction implements Action {
         GF128Poly base = poly.copy();
 
         UBigInt16 p = pow.copy();
+        // Square and multiply
+        while (!p.isZero()) {
+            // If odd, multiply
+            if (p.testBit(0)) {
+                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyDivModAction.divModRest(result, mod);
+            }
+
+            // Square
+            base = GFPolyMulAction.mul(base, base);
+            // Reduce
+            base = GFPolyDivModAction.divModRest(base, mod);
+
+            // Divide power by 2
+            p = p.shiftRight(1);
+        }
+
+        return result.popLeadingZeros();
+    }
+
+    public static GF128Poly powMod(GF128Poly poly, UBigInt32 pow, GF128Poly mod) {
+        if (pow.isZero()) {
+            GF128Poly one = new GF128Poly();
+            one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
+            return one;
+        }
+
+        // Check if power is 1
+        if (pow.sameAs(UBigInt32.Zero(true).setBit(0))) {
+            return poly.copy();
+        }
+
+        // Initialize result as 1 (identity element for multiplication)
+        GF128Poly result = new GF128Poly();
+        result.insertCoefficient(0, UBigInt16.Zero(true).setBit(0));
+
+        GF128Poly base = poly.copy();
+
+        UBigInt32 p = pow.copy();
         // Square and multiply
         while (!p.isZero()) {
             // If odd, multiply
