@@ -19,7 +19,7 @@ public class GFPolyGCDAction implements Action {
         GF128Poly a = new GF128Poly(polyA);
         GF128Poly b = new GF128Poly(polyB);
 
-        GF128Poly gcd = gfPolyGCD(a, b);
+        GF128Poly gcd = gcd(a, b);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("G", gcd.toBase64Array());
@@ -27,7 +27,7 @@ public class GFPolyGCDAction implements Action {
         return resultMap;
     }
 
-    public static GF128Poly gfPolyGCD(GF128Poly a, GF128Poly b) {
+    public static GF128Poly gcd(GF128Poly a, GF128Poly b) {
         // Handle special cases
         if (a.isZero())
             return b.copy();
@@ -39,9 +39,11 @@ public class GFPolyGCDAction implements Action {
         GF128Poly divisor = a.degree() >= b.degree() ? b.copy() : a.copy();
 
         while (!divisor.isZero()) {
+            // Get remainder after using gfpoly_divmod
             // Update polynomials for next iteration
+            GF128Poly tempDividend = dividend.copy();
             dividend = divisor.copy();
-            divisor = GFPolyDivModAction.divModRest(dividend, divisor);
+            divisor = GFPolyDivModAction.divModRest(tempDividend, divisor);
         }
 
         // Normalize the result - make the leading coefficient 1 if possible
