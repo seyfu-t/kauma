@@ -150,10 +150,10 @@ class AppTest {
         Assertions.assertTrue(f.greaterThan(b)); // 0xFF > Zero
     }
 
-    // @Test
-    // void testFactorEDF(){
-    //     createTest(GF_POLY_FACTOR_EDF_INPUT, GF_POLY_FACTOR_EDF_OUTPUT);
-    // }
+    @Test
+    void testFactorEDF(){
+        createTest(GF_POLY_FACTOR_EDF_INPUT, GF_POLY_FACTOR_EDF_OUTPUT);
+    }
 
     @Test
     void testFactorDDF(){
