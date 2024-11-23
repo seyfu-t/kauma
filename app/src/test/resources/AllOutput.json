@@ -200,6 +200,74 @@
                 "AAAAAAAAAAAAAAAAAAAAAA==",
                 "UnderstaaaaaaaaaaaaanQ=="
             ]
+        },
+        "gfpoly_factor_sff1": {
+            "factors": [
+                {
+                    "factor": [
+                        "q4AAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 1
+                },
+                {
+                    "factor": [
+                        "iwAAAAAAAAAAAAAAAAAAAA==",
+                        "CAAAAAAAAAAAAAAAAAAAAA==",
+                        "AAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 2
+                },
+                {
+                    "factor": [
+                        "kAAAAAAAAAAAAAAAAAAAAA==",
+                        "CAAAAAAAAAAAAAAAAAAAAA==",
+                        "wAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 3
+                }
+            ]
+        },
+        "gfpoly_factor_ddf1": {
+            "factors": [
+                {
+                    "factor": [
+                        "q4AAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "degree": 1
+                },
+                {
+                    "factor": [
+                        "mmAAAAAAAAAAAAAAAAAAAA==",
+                        "AbAAAAAAAAAAAAAAAAAAAA==",
+                        "zgAAAAAAAAAAAAAAAAAAAA==",
+                        "FwAAAAAAAAAAAAAAAAAAAA==",
+                        "AAAAAAAAAAAAAAAAAAAAAA==",
+                        "wAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "degree": 3
+                }
+            ]
+        },
+        "gfpoly_factor_edf1": {
+            "factors": [
+                [
+                    "iwAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "AAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                [
+                    "kAAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "wAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ]
+            ]
         }
     }
 }
