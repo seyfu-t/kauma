@@ -309,18 +309,48 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     public T pow(long exponent) {
         // Convert to BigInteger (which uses big-endian)
         BigInteger bigInt = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-        
-        BigInteger result = bigInt.pow((int)exponent);
-        
+
+        BigInteger result = bigInt.pow((int) exponent);
+
         // Convert back to UBigInt
-        return (T)createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
+        return (T) createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
     }
 
     public T mul(T other) {
         BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
         BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
-     
+
         BigInteger result = a.multiply(b);
+
+        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
+    }
+
+    public T add(T other) {
+        BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
+        BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
+
+        BigInteger result = a.add(b);
+
+        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
+    }
+
+    public T sub(T other) {
+        BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
+        BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
+
+        BigInteger result = a.subtract(b); // undefined behavior when this goes below 0
+
+        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
+    }
+
+    public T div(T divisor) {
+        if (divisor.isZero())
+            throw new ArithmeticException("Division by zero");
+            
+        BigInteger dividend = new BigInteger(1, Util.swapByteOrder(this.byteArray));
+        BigInteger div = new BigInteger(1, Util.swapByteOrder(divisor.byteArray));
+
+        BigInteger result = dividend.divide(div);
         
         return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
     }
