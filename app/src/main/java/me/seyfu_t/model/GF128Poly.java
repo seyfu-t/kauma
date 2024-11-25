@@ -6,7 +6,7 @@ import java.util.List;
 
 import me.seyfu_t.actions.Block2PolyAction;
 
-public class GF128Poly {
+public class GF128Poly implements Comparable<GF128Poly>{
 
     public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly(new UBigInt16[] {
             UBigInt16.One(true)
@@ -255,5 +255,35 @@ public class GF128Poly {
         // Return "0" if no terms were added
         return sb.length() > 0 ? sb.toString() : "0";
     }
+
+    @Override
+    public int compareTo(GF128Poly other) {
+        // Returning 1 means this > other
+        // Returning 0 means this = other
+        // Returning -1 means this < other
+    
+        // First compare by degree
+        int degreeComparison = Integer.compare(this.degree(), other.degree());
+        if (degreeComparison != 0) {
+            return degreeComparison;
+        }
+    
+        // If both polynomials are empty (degree == -1)
+        if (this.degree() == -1) {
+            return 0;
+        }
+    
+        // Compare coefficients from highest to lowest degree
+        for (int i = this.degree(); i >= 0; i--) {
+            if (this.getCoefficient(i).greaterThan(other.getCoefficient(i))) {
+                return 1;
+            } else if (other.getCoefficient(i).greaterThan(this.getCoefficient(i))) {
+                return -1;
+            }
+        }
+    
+        return 0; // Polynomials are equal
+    }
+    
 
 }
