@@ -64,7 +64,7 @@ public class GFPolyFactorSFFAction implements Action {
         }
 
         // Sort by exponent
-        tupleList.sort(Comparator.comparing(Tuple::getSecond));
+        tupleList.sort(Comparator.comparing(Tuple::getFirst));
 
         return tupleList;
     }
