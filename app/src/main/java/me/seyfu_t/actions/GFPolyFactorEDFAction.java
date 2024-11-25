@@ -19,13 +19,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDFAction implements Action {
 
-    private static final byte[] EXPONENT_Q = new byte[] {
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x01
-    };
+    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero(true).setBit(128);
     private static final UBigInt512 THREE = new UBigInt512(new byte[] { 3 });
     private static final Gson gson = new Gson();
 
@@ -49,13 +43,11 @@ public class GFPolyFactorEDFAction implements Action {
     }
 
     public static List<GF128Poly> edf(GF128Poly f, int d) {
-        UBigInt512 q = new UBigInt512(EXPONENT_Q);
-
         int n = f.degree() / d;
 
         List<GF128Poly> polyList = new ArrayList<>();
         polyList.add(f);
-        UBigInt512 bigExponent = q.pow(d).sub(UBigInt512.One()).div(THREE);
+        UBigInt512 bigExponent = EXPONENT_Q.pow(d).sub(UBigInt512.One()).div(THREE);
         while (polyList.size() < n) {
             GF128Poly h = generateRandomPoly(f.degree());
 
