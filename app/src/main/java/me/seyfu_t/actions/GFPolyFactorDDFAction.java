@@ -66,7 +66,7 @@ public class GFPolyFactorDDFAction implements Action {
             tupleList.add(new Tuple<>(f, 1));
 
         // Sort by degree
-        tupleList.sort(Comparator.comparing(Tuple::getSecond));
+        tupleList.sort(Comparator.comparing(Tuple::getFirst));
 
         return tupleList;
     }
