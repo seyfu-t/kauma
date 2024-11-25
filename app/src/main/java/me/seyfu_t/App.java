@@ -37,7 +37,7 @@ public class App {
         // Checking if file exists
         String filePath = args[0];
         if (!new File(filePath).exists()) {
-            log.severe("Datei existiert nicht!");
+            log.severe("Datei existiert nicht.");
             System.exit(1);
         }
 
