@@ -52,7 +52,7 @@ public class App {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
 
-        // Use the common ForkJoinPool for parallel processing
+        // Use ForkJoinPool for parallel processing
         ForkJoinPool.commonPool().submit(() ->
             testcasesJson.entrySet().parallelStream().forEach(singleCase -> {
                 ProcessedTestCase result = processTestCase(singleCase);
@@ -82,7 +82,6 @@ public class App {
             Map<String, Object> resultEntry = action.execute(arguments);
             return new ProcessedTestCase(uniqueHash, resultEntry);
         } catch (Exception e) {
-            log.warning("Error processing testcase: " + e.getMessage());
             return null;
         }
     }
