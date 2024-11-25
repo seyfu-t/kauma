@@ -3,11 +3,14 @@ package me.seyfu_t;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -52,8 +55,32 @@ public class App {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
 
-        // Use the common ForkJoinPool for parallel processing
-        ForkJoinPool.commonPool().submit(() ->
+        // Separate sequential and parallel cases
+        Map<String, JsonObject> sequentialCases = new HashMap<>();
+        Map<String, JsonObject> parallelCases = new HashMap<>();
+
+        for (Entry<String, JsonElement> entry : testcasesJson.entrySet()) {
+            String caseHash = entry.getKey();
+            JsonObject remainderJsonObject = entry.getValue().getAsJsonObject();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            (isSequential(actionName) ? sequentialCases : parallelCases).put(caseHash, remainderJsonObject);
+        }
+
+        // Sequential action cases get processed in a new thread
+        ExecutorService sequentialExecutor = Executors.newSingleThreadExecutor();
+        CompletableFuture<Void> sequentialTask = CompletableFuture.runAsync(() -> {
+            sequentialCases.forEach((key, value) -> {
+                ProcessedTestCase result = processTestCase(Map.entry(key, value));
+                if (result != null && result.result() != null) {
+                    synchronized (responseBuilder) {
+                        responseBuilder.addResponse(result.hash(), result.result());
+                    }
+                }
+            });
+        }, sequentialExecutor);
+
+        // Parallel action cases get processed in a thread pool
+        CompletableFuture<Void> parallelTask = CompletableFuture.runAsync(() -> {
             testcasesJson.entrySet().parallelStream().forEach(singleCase -> {
                 ProcessedTestCase result = processTestCase(singleCase);
                 if (result != null && result.result() != null) {
@@ -61,33 +88,34 @@ public class App {
                         responseBuilder.addResponse(result.hash(), result.result());
                     }
                 }
-            })
-        ).join();
+            });
+        });
+
+        // Check if both sequential and parallel task are finished
+        CompletableFuture.allOf(sequentialTask, parallelTask).join();
+        // Thread for sequential tasks can be safely closed
+        sequentialExecutor.shutdown();
 
         return responseBuilder.build();
     }
 
     private static ProcessedTestCase processTestCase(Entry<String, JsonElement> singleCase) {
-        try {
-            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-            String uniqueHash = singleCase.getKey();
-            String actionName = remainderJsonObject.get("action").getAsString();
-            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+        JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+        String uniqueHash = singleCase.getKey();
+        String actionName = remainderJsonObject.get("action").getAsString();
+        JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
 
-            Action action = getActionClass(actionName);
-            if (action == null) {
-                return null;
-            }
-
-            Map<String, Object> resultEntry = action.execute(arguments);
-            return new ProcessedTestCase(uniqueHash, resultEntry);
-        } catch (Exception e) {
-            log.warning("Error processing testcase: " + e.getMessage());
+        Action action = getActionClass(actionName);
+        if (action == null) {
             return null;
         }
+
+        Map<String, Object> resultEntry = action.execute(arguments);
+        return new ProcessedTestCase(uniqueHash, resultEntry);
     }
 
-    private record ProcessedTestCase(String hash, Map<String, Object> result) {}
+    private record ProcessedTestCase(String hash, Map<String, Object> result) {
+    }
 
     public static Action getActionClass(String actionName) {
         return switch (actionName) {
@@ -130,5 +158,12 @@ public class App {
             System.exit(1);
         }
         throw new RuntimeException("This line of code should've never been reached");
+    }
+
+    private static boolean isSequential(String actionName) {
+        return switch (actionName) {
+            case "padding_oracle" -> true;
+            default -> false;
+        };
     }
 }
