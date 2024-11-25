@@ -17,13 +17,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
 
-    private static final byte[] EXPONENT_Q = new byte[] {
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-            (byte) 0x01
-    };
+    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero(true).setBit(128);
 
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
@@ -46,13 +40,12 @@ public class GFPolyFactorDDFAction implements Action {
     }
 
     public static List<Tuple<GF128Poly, Integer>> ddf(GF128Poly f) {
-        UBigInt512 q = new UBigInt512(EXPONENT_Q);
         List<Tuple<GF128Poly, Integer>> tupleList = new ArrayList<>();
         int d = 1;
         GF128Poly fStar = f.copy();
 
         while (fStar.degree() >= 2 * d) {
-            UBigInt512 bigExponent = q.pow(d);
+            UBigInt512 bigExponent = EXPONENT_Q.pow(d);
             // X^(q^d) mod f*
             GF128Poly h = GFPolyPowModAction.powMod(GF128Poly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
