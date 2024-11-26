@@ -65,7 +65,7 @@ public class GFPolyFactorDDFAction implements Action {
         else if (tupleList.isEmpty())
             tupleList.add(new Tuple<>(f, 1));
 
-        // Sort by degree
+        // Sort by polynomials
         tupleList.sort(Comparator.comparing(Tuple::getFirst));
 
         return tupleList;
