@@ -63,7 +63,7 @@ public class GFPolyFactorSFFAction implements Action {
             }
         }
 
-        // Sort by exponent
+        // Sort by polynomials
         tupleList.sort(Comparator.comparing(Tuple::getFirst));
 
         return tupleList;
