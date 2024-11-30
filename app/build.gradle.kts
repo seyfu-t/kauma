@@ -1,5 +1,6 @@
 plugins {
     application
+    id("org.graalvm.buildtools.native") version "0.10.3"
 }
 
 application {
@@ -52,3 +53,25 @@ tasks.register<Jar>("fatJar") {
 tasks.test {
     useJUnitPlatform() // Enable JUnit Platform for the test task
 }
+
+// // GraalVM Native Image task
+// tasks.register<Exec>("buildNativeImage") {
+//     group = "build"
+//     description = "Build a GraalVM native image"
+//     commandLine = listOf(
+//         "native-image",
+//         "-cp", sourceSets.main.get().output.classesDirs.asPath,
+//         "-H:Name=app", // This will name the native image binary
+//         "-H:+ReportExceptionStackTraces", // Optional, provides stack traces in case of failures
+//         application.mainClass.get()
+//     )
+// }
+
+
+
+graalvmNative {
+    binaries.all {
+        resources.autodetect()
+    }
+}
+
