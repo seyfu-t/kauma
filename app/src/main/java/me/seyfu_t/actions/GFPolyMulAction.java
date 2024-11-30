@@ -70,4 +70,19 @@ public class GFPolyMulAction implements Action {
         return result;
     }
 
+    public static GF128Poly square(GF128Poly a) {
+        if (a.isEmpty())
+            return new GF128Poly().setCoefficient(0, UBigInt16.Zero(true));
+
+        GF128Poly result = new GF128Poly();
+
+        for (int i = 0; i < a.size(); i++) {
+            if (!a.getCoefficient(i).isZero()) {
+                UBigInt16 squared = GFMulAction.combinedMulAndModReduction(a.getCoefficient(i), a.getCoefficient(i));
+                result.setCoefficient(i * 2, squared);
+            }
+        }
+
+        return result;
+    }
 }
