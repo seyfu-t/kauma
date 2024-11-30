@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+/usr/lib/jvm/java-17-graalvm/bin/native-image -cp app/build/libs/app.jar -H:ConfigurationFileDirectories=META-INF/native-image/ -m me.seyfu_t.App
