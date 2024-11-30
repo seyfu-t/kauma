@@ -16,11 +16,8 @@ public class Block2PolyAction implements Action {
         String semantic = arguments.get("semantic").getAsString();
         String base64Block = arguments.get("block").getAsString();
 
-        int[] coefficients = switch (semantic) {
-            case "xex" -> convertBlock2Poly(base64Block, false);
-            case "gcm" -> convertBlock2Poly(base64Block, true);
-            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
-        };
+        int[] coefficients = (semantic == "gcm" ? convertBlock2Poly(base64Block, true)
+                : convertBlock2Poly(base64Block, false));
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("coefficients", coefficients);
