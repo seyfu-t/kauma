@@ -37,7 +37,7 @@ def generate_test_case(max_degree, num_polynoms):
     # Save to a file or return as JSON
     output_file = "gfpoly_sort_generated.json"
     with open(output_file, "w") as f:
-        json.dump(test_case, f, indent=4)
+        json.dump(test_case, f)
 
     print(f"Test case saved to {output_file}")
 
