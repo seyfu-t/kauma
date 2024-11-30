@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-docker build $script_dir -t labtest
-docker run --network none -it labtest
+INPUT_JSON="${1:-./app/src/test/resources/input/AllInput.json}"
+
+docker build --build-arg INPUT_JSON="$INPUT_JSON" $script_dir -t labtest
+docker run --network none -e INPUT_JSON="$INPUT_JSON" labtest
