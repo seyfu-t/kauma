@@ -37,6 +37,13 @@ java {
     }
 }
 
+jmh {
+    benchmarkMode.set(listOf("thrpt", "ss"))
+    fork.set(1)
+    iterations.set(3)
+    warmupIterations.set(2)
+}
+
 tasks.register<Jar>("fatJar") {
     manifest {
         attributes["Main-Class"] = application.mainClass.get()
