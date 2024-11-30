@@ -53,7 +53,7 @@ def main():
     # Save to a JSON file
     output_file = f"gfpoly_add_{args.num_cases}.json"
     with open(output_file, "w") as f:
-        json.dump(testcases, f, indent=4)
+        json.dump(testcases, f)
 
     print(f"Test cases saved to {output_file}")
 
