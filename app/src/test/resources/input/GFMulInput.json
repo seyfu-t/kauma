@@ -1,0 +1,20 @@
+{
+    "testcases": {
+        "gfmul1": {
+            "action": "gfmul",
+            "arguments": {
+                "semantic": "xex",
+                "a": "ARIAAAAAAAAAAAAAAAAAgA==",
+                "b": "AgAAAAAAAAAAAAAAAAAAAA=="
+            }
+        },
+        "gfmul2": {
+            "action": "gfmul",
+            "arguments": {
+                "semantic": "gcm",
+                "a": "gEgAAAAAAAAAAAAAAAAAAQ==",
+                "b": "QAAAAAAAAAAAAAAAAAAAAA=="
+            }
+        }
+    }
+}

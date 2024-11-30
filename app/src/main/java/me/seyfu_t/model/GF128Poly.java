@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.seyfu_t.actions.Block2PolyAction;
 
+// implementing Comparable allows Java's sort() to be used in the context of Lists
 public class GF128Poly implements Comparable<GF128Poly>{
 
     public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly(new UBigInt16[] {
