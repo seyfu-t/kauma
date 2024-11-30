@@ -57,7 +57,7 @@ public class GFPolyPowAction implements Action {
             }
 
             // Square
-            base = GFPolyMulAction.mul(base, base);
+            base = GFPolyMulAction.square(base);
 
             // Divide exponent by 2
             exp >>= 1;
@@ -91,7 +91,7 @@ public class GFPolyPowAction implements Action {
             }
 
             // Square
-            base = GFPolyMulAction.mul(base, base);
+            base = GFPolyMulAction.square(base);
 
             // Divide exponent by 2
             exp = exp.shiftRight(1);
