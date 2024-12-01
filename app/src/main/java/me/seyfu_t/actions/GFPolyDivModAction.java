@@ -26,10 +26,6 @@ public class GFPolyDivModAction implements Action {
     }
 
     public static Map<String, Object> divMod(GF128Poly dividend, GF128Poly divisor) {
-        if (divisor.isEmpty()) {
-            throw new ArithmeticException("Division by zero polynomial");
-        }
-
         // If dividend degree < divisor degree, quotient is 0 and remainder is dividend
         if (dividend.size() < divisor.size()) {
             Map<String, Object> map = new LinkedHashMap<>();
