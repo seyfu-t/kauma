@@ -18,8 +18,11 @@ public class Poly2BlockAction implements Action {
         int[] coefficients = convertJsonArrayToIntArray(arguments.get("coefficients").getAsJsonArray());
         Arrays.sort(coefficients); // sort ascending, using O(n*log(n)) algorithm BTW
 
-        String block = (semantic == "gcm" ? convertPoly2Block(coefficients, true)
-                : convertPoly2Block(coefficients, false));
+        String block = switch (semantic) {
+            case "xex" -> convertPoly2Block(coefficients, false);
+            case "gcm" -> convertPoly2Block(coefficients, true);
+            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
+        };
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("block", block);
