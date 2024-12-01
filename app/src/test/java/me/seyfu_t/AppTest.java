@@ -15,57 +15,57 @@ class AppTest {
 
     private static final Logger log = Logger.getLogger(AppTest.class.getName());
 
-    private static final String ADD_SUBTRACT_INPUT = "AddSubtractNumbersInput.json";
-    private static final String ADD_SUBTRACT_OUTPUT = "AddSubtractNumbersOutput.json";
-    private static final String POLY2BLOCK_INPUT = "Poly2BlockInput.json";
-    private static final String POLY2BLOCK_OUTPUT = "Poly2BlockOutput.json";
-    private static final String BLOCK2POLY_INPUT = "Block2PolyInput.json";
-    private static final String BLOCK2POLY_OUTPUT = "Block2PolyOutput.json";
-    private static final String SEA128_INPUT = "SEA128Input.json";
-    private static final String SEA128_OUTPUT = "SEA128Output.json";
-    private static final String XEX_INPUT = "XEXInput.json";
-    private static final String XEX_OUTPUT = "XEXOutput.json";
+    private static final String ADD_SUBTRACT_INPUT = "input/AddSubtractNumbersInput.json";
+    private static final String ADD_SUBTRACT_OUTPUT = "output/AddSubtractNumbersOutput.json";
+    private static final String POLY2BLOCK_INPUT = "input/Poly2BlockInput.json";
+    private static final String POLY2BLOCK_OUTPUT = "output/Poly2BlockOutput.json";
+    private static final String BLOCK2POLY_INPUT = "input/Block2PolyInput.json";
+    private static final String BLOCK2POLY_OUTPUT = "output/Block2PolyOutput.json";
+    private static final String SEA128_INPUT = "input/SEA128Input.json";
+    private static final String SEA128_OUTPUT = "output/SEA128Output.json";
+    private static final String XEX_INPUT = "input/XEXInput.json";
+    private static final String XEX_OUTPUT = "output/XEXOutput.json";
     
-    private static final String GCM_ENCRYPT_INPUT = "GCMEncryptInput.json";
-    private static final String GCM_ENCRYPT_OUTPUT = "GCMEncryptOutput.json";
-    private static final String GCM_DECRYPT_INPUT = "GCMDecryptInput.json";
-    private static final String GCM_DECRYPT_OUTPUT = "GCMDecryptOutput.json";
+    private static final String GCM_ENCRYPT_INPUT = "input/GCMEncryptInput.json";
+    private static final String GCM_ENCRYPT_OUTPUT = "output/GCMEncryptOutput.json";
+    private static final String GCM_DECRYPT_INPUT = "input/GCMDecryptInput.json";
+    private static final String GCM_DECRYPT_OUTPUT = "output/GCMDecryptOutput.json";
 
-    private static final String GF_POLY_ADD_INPUT = "GFPolyAddInput.json";
-    private static final String GF_POLY_ADD_OUTPUT = "GFPolyAddOutput.json";
-    private static final String GF_POLY_MUL_INPUT = "GFPolyMulInput.json";
-    private static final String GF_POLY_MUL_OUTPUT = "GFPolyMulOutput.json";
-    private static final String GF_POLY_DIV_MOD_INPUT = "GFPolyDivModInput.json";
-    private static final String GF_POLY_DIV_MOD_OUTPUT = "GFPolyDivModOutput.json";
-    private static final String GF_POLY_POW_INPUT = "GFPolyPowInput.json";
-    private static final String GF_POLY_POW_OUTPUT = "GFPolyPowOutput.json";
-    private static final String GF_POLY_POW_MOD_INPUT = "GFPolyPowModInput.json";
-    private static final String GF_POLY_POW_MOD_OUTPUT = "GFPolyPowModOutput.json";
-    private static final String GF_POLY_DIFF_INPUT = "GFPolyDiffInput.json";
-    private static final String GF_POLY_DIFF_OUTPUT = "GFPolyDiffOutput.json";
-    private static final String GF_POLY_MAKE_MONIC_INPUT = "GFPolyMakeMonicInput.json";
-    private static final String GF_POLY_MAKE_MONIC_OUTPUT = "GFPolyMakeMonicOutput.json";
-    private static final String GF_POLY_GCD_INPUT = "GFPolyGCDInput.json";
-    private static final String GF_POLY_GCD_OUTPUT = "GFPolyGCDOutput.json";
-    private static final String GF_POLY_SQRT_INPUT = "GFPolySqrtInput.json";
-    private static final String GF_POLY_SQRT_OUTPUT = "GFPolySqrtOutput.json";
-    private static final String GF_POLY_SORT_INPUT = "GFPolySortInput.json";
-    private static final String GF_POLY_SORT_OUTPUT = "GFPolySortOutput.json";
+    private static final String GF_POLY_ADD_INPUT = "input/GFPolyAddInput.json";
+    private static final String GF_POLY_ADD_OUTPUT = "output/GFPolyAddOutput.json";
+    private static final String GF_POLY_MUL_INPUT = "input/GFPolyMulInput.json";
+    private static final String GF_POLY_MUL_OUTPUT = "output/GFPolyMulOutput.json";
+    private static final String GF_POLY_DIV_MOD_INPUT = "input/GFPolyDivModInput.json";
+    private static final String GF_POLY_DIV_MOD_OUTPUT = "output/GFPolyDivModOutput.json";
+    private static final String GF_POLY_POW_INPUT = "input/GFPolyPowInput.json";
+    private static final String GF_POLY_POW_OUTPUT = "output/GFPolyPowOutput.json";
+    private static final String GF_POLY_POW_MOD_INPUT = "input/GFPolyPowModInput.json";
+    private static final String GF_POLY_POW_MOD_OUTPUT = "output/GFPolyPowModOutput.json";
+    private static final String GF_POLY_DIFF_INPUT = "input/GFPolyDiffInput.json";
+    private static final String GF_POLY_DIFF_OUTPUT = "output/GFPolyDiffOutput.json";
+    private static final String GF_POLY_MAKE_MONIC_INPUT = "input/GFPolyMakeMonicInput.json";
+    private static final String GF_POLY_MAKE_MONIC_OUTPUT = "output/GFPolyMakeMonicOutput.json";
+    private static final String GF_POLY_GCD_INPUT = "input/GFPolyGCDInput.json";
+    private static final String GF_POLY_GCD_OUTPUT = "output/GFPolyGCDOutput.json";
+    private static final String GF_POLY_SQRT_INPUT = "input/GFPolySqrtInput.json";
+    private static final String GF_POLY_SQRT_OUTPUT = "output/GFPolySqrtOutput.json";
+    private static final String GF_POLY_SORT_INPUT = "input/GFPolySortInput.json";
+    private static final String GF_POLY_SORT_OUTPUT = "output/GFPolySortOutput.json";
     
-    private static final String GF_MUL_INPUT = "GFMulInput.json";
-    private static final String GF_MUL_OUTPUT = "GFMulOutput.json";
-    private static final String GF_DIV_INPUT = "GFDivInput.json";
-    private static final String GF_DIV_OUTPUT = "GFDivOutput.json";
+    private static final String GF_MUL_INPUT = "input/GFMulInput.json";
+    private static final String GF_MUL_OUTPUT = "output/GFMulOutput.json";
+    private static final String GF_DIV_INPUT = "input/GFDivInput.json";
+    private static final String GF_DIV_OUTPUT = "output/GFDivOutput.json";
 
-    private static final String GF_POLY_FACTOR_SFF_INPUT = "GFPolyFactorSFFInput.json";
-    private static final String GF_POLY_FACTOR_SFF_OUTPUT = "GFPolyFactorSFFOutput.json";
-    private static final String GF_POLY_FACTOR_DDF_INPUT = "GFPolyFactorDDFInput.json";
-    private static final String GF_POLY_FACTOR_DDF_OUTPUT = "GFPolyFactorDDFOutput.json";
-    private static final String GF_POLY_FACTOR_EDF_INPUT = "GFPolyFactorEDFInput.json";
-    private static final String GF_POLY_FACTOR_EDF_OUTPUT = "GFPolyFactorEDFOutput.json";
+    private static final String GF_POLY_FACTOR_SFF_INPUT = "input/GFPolyFactorSFFInput.json";
+    private static final String GF_POLY_FACTOR_SFF_OUTPUT = "output/GFPolyFactorSFFOutput.json";
+    private static final String GF_POLY_FACTOR_DDF_INPUT = "input/GFPolyFactorDDFInput.json";
+    private static final String GF_POLY_FACTOR_DDF_OUTPUT = "output/GFPolyFactorDDFOutput.json";
+    private static final String GF_POLY_FACTOR_EDF_INPUT = "input/GFPolyFactorEDFInput.json";
+    private static final String GF_POLY_FACTOR_EDF_OUTPUT = "output/GFPolyFactorEDFOutput.json";
 
-    private static final String ALL_INPUT = "AllInput.json";
-    private static final String ALL_OUTPUT = "AllOutput.json";
+    private static final String ALL_INPUT = "input/AllInput.json";
+    private static final String ALL_OUTPUT = "output/AllOutput.json";
 
     @Test
     void testByteArrayBitShift() {
