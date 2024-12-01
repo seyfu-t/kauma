@@ -146,6 +146,9 @@ public class App {
             case "gfpoly_sort" -> new GFPolySortAction();
             case "gfpoly_diff" -> new GFPolyDiffAction();
             case "gfpoly_gcd" -> new GFPolyGCDAction();
+            case "gfpoly_factor_sff" -> new GFPolyFactorSFFAction();
+            case "gfpoly_factor_ddf" -> new GFPolyFactorDDFAction();
+            case "gfpoly_factor_edf" -> new GFPolyFactorEDFAction();
             default -> null;
         };
     }
