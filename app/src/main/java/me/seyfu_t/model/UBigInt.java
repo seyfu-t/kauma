@@ -199,7 +199,11 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean isZero() {
-        return Arrays.equals(this.byteArray, new byte[byteCount]);
+        for (byte b : this.byteArray) {
+            if (b != 0)
+                return false;
+        }
+        return true;
     }
 
     public boolean isGCM() {
@@ -346,12 +350,12 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     public T div(T divisor) {
         if (divisor.isZero())
             throw new ArithmeticException("Division by zero");
-            
+
         BigInteger dividend = new BigInteger(1, Util.swapByteOrder(this.byteArray));
         BigInteger div = new BigInteger(1, Util.swapByteOrder(divisor.byteArray));
 
         BigInteger result = dividend.divide(div);
-        
+
         return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
     }
 
