@@ -1,0 +1,79 @@
+{
+    "testcases": {
+        "gfpoly_factor_edf1": {
+            "action": "gfpoly_factor_edf",
+            "arguments": {
+                "F": [
+                    "uGG3XI/U3o7BwMNEiuJARg==",
+                    "qIi57nRrIElAP1X3EAndXg==",
+                    "M2w1vOnCNbi6eXh9Iupu+g==",
+                    "NfqbqVL8pEPkRx0VRCeI0Q==",
+                    "PUR/RU8BBa+/Y19MeKtWig==",
+                    "CO5kn6RqMnhcZKmtbPRQ3A==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "d": 3
+            }
+        },
+        "gfpoly_factor_edf2": {
+            "action": "gfpoly_factor_edf",
+            "arguments": {
+                "F": [
+                    "RwjT1Zax0RVkodJvjeyXJA==",
+                    "8Q9NBEwJ02+7hFCzQPVT9A==",
+                    "RMxndQ7IC8wEBthg88SbTw==",
+                    "a1mln5Zhld064okAJaFWiA==",
+                    "rSRkUNn1V4GIfnrB9hxmTw==",
+                    "nNvmbCdqFJBGNenDpuj1dg==",
+                    "e8o8WJqwLXo6QkaCbBucHA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "d": 2
+            }
+        },
+        "gfpoly_factor_edf3": {
+            "action": "gfpoly_factor_edf",
+            "arguments": {
+                "F": [
+                    "z9lf26zGJaApM08Ipr70PQ==",
+                    "OjXfLh4O2gtKIk17G85e6A==",
+                    "36Kgpax7nPKyldUp4KnG2Q==",
+                    "DCPlGW3i5CMFR0nMR1NDJQ==",
+                    "66THfsh4UimZLqGLBcIXKg==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "d": 5
+            }
+        },
+        "gfpoly_factor_edf4": {
+            "action": "gfpoly_factor_edf",
+            "arguments": {
+                "F": [
+                    "7/HM6HeG+KJSpm4CO1agyg==",
+                    "/C4haJAB16NlMMz2jjamFA==",
+                    "TaKNC9HeBagvemiRWrvSYw==",
+                    "OoOVK383SkkAyfEHZ7E2rg==",
+                    "J8c9EKhg4xuRMHidomcSLg==",
+                    "5HQsdrtc3ckr4Fw5aZYW0A==",
+                    "7hYLyXKS3850OPkXnwkgGQ==",
+                    "2XyI+1eqLb9QpkkU5AVg+A==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "d": 3
+            }
+        },
+        "gfpoly_factor_edf5": {
+            "action": "gfpoly_factor_edf",
+            "arguments": {
+                "F": [
+                    "XI79I612XmGnLVSv9TyHCw==",
+                    "AVBr+16FD0DL8rRhYYbV4g==",
+                    "3Rc7Lq3xdYBg2n3i75rOiQ==",
+                    "IbjbkypoqSANTk+JSAe6Cg==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "d": 3
+            }
+        }
+    }
+}
