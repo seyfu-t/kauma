@@ -17,7 +17,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
 
-    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero(true).setBit(128);
+    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero().setBit(128);
 
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
