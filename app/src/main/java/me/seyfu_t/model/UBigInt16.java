@@ -12,7 +12,7 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
     public static final long REDUCTION_POLY_LONG = 0x87;
     public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
 
-    private static final int BYTE_COUNT = 16;
+    public static final int BYTE_COUNT = 16;
 
     public UBigInt16() {
         super(UBigInt16.BYTE_COUNT, false);
