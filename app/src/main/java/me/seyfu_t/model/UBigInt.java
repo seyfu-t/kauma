@@ -306,11 +306,11 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         return false; // Equal values, so not greater
     }
 
-    public T pow(long exponent) {
+    public T pow(int exponent) {
         // Convert to BigInteger (which uses big-endian)
         BigInteger bigInt = new BigInteger(1, Util.swapByteOrder(this.byteArray));
 
-        BigInteger result = bigInt.pow((int) exponent);
+        BigInteger result = bigInt.pow(exponent);
 
         // Convert back to UBigInt
         return (T) createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
