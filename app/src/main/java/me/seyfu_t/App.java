@@ -45,7 +45,7 @@ public class App {
         JsonObject response = getResponseJsonFromInputPath(filePath);
 
         // output result
-        System.out.println(response.toString());
+        System.out.print(response.toString());
     }
 
     public static JsonObject getResponseJsonFromInputPath(String filePath) {
