@@ -30,11 +30,12 @@ public class GFPolyMakeMonicAction implements Action {
         UBigInt16 leadingCoefficient = a.getCoefficient(a.size() - 1);
 
         GF128Poly poly = new GF128Poly();
-        for (int i = 0; i < a.size(); i++) {
+        for (int i = 0; i < a.size() - 1; i++) {
             // Divide each coefficient
             UBigInt16 divided = GFDivAction.div(a.getCoefficient(i), leadingCoefficient);
             poly.setCoefficient(i, divided);
         }
+        poly.setCoefficient(a.size() - 1, UBigInt16.One(true));
 
         return poly;
     }

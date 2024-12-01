@@ -1,0 +1,15 @@
+{
+    "testcases": {
+        "gfpoly_pow1": {
+            "action": "gfpoly_pow",
+            "arguments": {
+                "A": [
+                    "JAAAAAAAAAAAAAAAAAAAAA==",
+                    "wAAAAAAAAAAAAAAAAAAAAA==",
+                    "ACAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                "k": 3
+            }
+        }
+    }
+}

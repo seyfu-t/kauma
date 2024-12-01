@@ -1,7 +1,7 @@
 package me.seyfu_t.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.seyfu_t.actions.Block2PolyAction;
@@ -16,7 +16,7 @@ public class GF128Poly implements Comparable<GF128Poly>{
             UBigInt16.Zero(true), UBigInt16.One(true)
     });
 
-    private final LinkedList<UBigInt16> coefficients = new LinkedList<>();
+    private final List<UBigInt16> coefficients = new ArrayList<>();
     private final boolean gcm = true;
 
     public GF128Poly() {
@@ -131,13 +131,13 @@ public class GF128Poly implements Comparable<GF128Poly>{
     }
 
     public GF128Poly popLeadingZeros() {
-        while (this.coefficients.size() > 1 && this.coefficients.getLast().isZero())
-            this.coefficients.removeLast();
+        while (this.coefficients.size() > 1 && this.coefficients.get(this.coefficients.size()-1).isZero())
+            this.coefficients.remove(this.coefficients.size()-1);
 
         return this;
     }
 
-    public LinkedList<UBigInt16> getCoefficients() {
+    public List<UBigInt16> getCoefficients() {
         return this.coefficients;
     }
 
