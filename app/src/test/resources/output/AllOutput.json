@@ -1,0 +1,273 @@
+{
+    "responses": {
+        "add_numbers1": {
+            "sum": 357
+        },
+        "add_numbers2": {
+            "sum": 777
+        },
+        "subtract_numbers1": {
+            "difference": -120213
+        },
+        "poly2block1": {
+            "block": "ARIAAAAAAAAAAAAAAAAAgA=="
+        },
+        "block2poly1": {
+            "coefficients": [
+                0,
+                9,
+                12,
+                127
+            ]
+        },
+        "block2poly2": {
+            "coefficients": [
+                7,
+                11,
+                14,
+                120
+            ]
+        },
+        "block2poly3": {
+            "coefficients": [
+                0,
+                9,
+                12,
+                21,
+                40,
+                42,
+                43,
+                44,
+                45,
+                51,
+                53,
+                54,
+                59,
+                69,
+                127
+            ]
+        },
+        "block2poly4": {
+            "coefficients": [
+                7,
+                11,
+                14,
+                18,
+                42,
+                43,
+                44,
+                45,
+                47,
+                49,
+                50,
+                52,
+                60,
+                66,
+                120
+            ]
+        },
+        "gfmul1": {
+            "product": "hSQAAAAAAAAAAAAAAAAAAA=="
+        },
+        "gfmul2": {
+            "product": "oSQAAAAAAAAAAAAAAAAAAA=="
+        },
+        "sea128_1": {
+            "output": "D5FDo3iVBoBN9gVi9/MSKQ=="
+        },
+        "sea128_2": {
+            "output": "yv66vvrO263eyviIiDNEVQ=="
+        },
+        "xex1": {
+            "output": "mHAVhRCKPAPx0BcufG5BZ4+/CbneMV/gRvqK5rtLe0OJgpDU5iT7z2P0R7gEeRDO"
+        },
+        "xex2": {
+            "output": "SGV5IHdpZSBrcmFzcyBkYXMgZnVua3Rpb25pZXJ0IGphIG9mZmVuYmFyIGVjaHQu"
+        },
+        "gcm_encrypt1": {
+            "ciphertext": "ET3RmvH/Hbuxba63EuPRrw==",
+            "tag": "Mp0APJb/ZIURRwQlMgNN/w==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "Bu6ywbsUKlpmZXMQyuGAng=="
+        },
+        "gcm_encrypt2": {
+            "ciphertext": "0cI/Wg4R3URfrVFZ0hw/vg==",
+            "tag": "ysDdzOSnqLH0MQ+Mkb23gw==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "xhFcAUT66qWIpYz+Ch5ujw=="
+        },
+        "gcm_decrypt1": {
+            "authentic": true,
+            "plaintext": "EREavadt90qq"
+        },
+        "gcm_decrypt2": {
+            "authentic": false,
+            "plaintext": "AxSiKm93Gr2+"
+        },
+        "gfdiv1": {
+            "q": "OAAAAAAAAAAAAAAAAAAAAA=="
+        },
+        "gfpoly_add1": {
+            "S": [
+                "H1d3GuyA9/0OxeYouUpAAA==",
+                "OZuIncPAGEp4tYouDownAA==",
+                "NeverGonnaRunAroundAAA==",
+                "AndDesertYouAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_mul1": {
+            "P": [
+                "MoAAAAAAAAAAAAAAAAAAAA==",
+                "sUgAAAAAAAAAAAAAAAAAAA==",
+                "MbQAAAAAAAAAAAAAAAAAAA==",
+                "AAhAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_divmod1": {
+            "Q": [
+                "nAIAgCAIAgCAIAgCAIAgCg==",
+                "m85znOc5znOc5znOc5znOQ=="
+            ],
+            "R": [
+                "lQNA0DQNA0DQNA0DQNA0Dg=="
+            ]
+        },
+        "gfpoly_pow1": {
+            "Z": [
+                "AkkAAAAAAAAAAAAAAAAAAA==",
+                "DDAAAAAAAAAAAAAAAAAAAA==",
+                "LQIIAAAAAAAAAAAAAAAAAA==",
+                "8AAAAAAAAAAAAAAAAAAAAA==",
+                "ACgCQAAAAAAAAAAAAAAAAA==",
+                "AAAMAAAAAAAAAAAAAAAAAA==",
+                "AAAAAgAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_powmod1": {
+            "Z": [
+                "oNXl5P8xq2WpUTP92u25zg=="
+            ]
+        },
+        "gfpoly_make_monic1": {
+            "A*": [
+                "edY47onJ4MtCENDTHG/sZw==",
+                "oaXjCKnceBIxSavZ9eFT8w==",
+                "1Ial5rAJGOucIdUe3zh5bw==",
+                "gAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_sqrt1": {
+            "S": [
+                "NeverGonnaGiveYouUpAAA==",
+                "NeverGonnaLetYouDownAA==",
+                "NeverGonnaRunAroundAAA==",
+                "AndDesertYouAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_sort1": {
+            "sorted_polys": [
+                [
+                    "WereNoStrangersToLoveA==",
+                    "YouKnowTheRulesAAAAAAA==",
+                    "AndSoDoIAAAAAAAAAAAAAA=="
+                ],
+                [
+                    "NeverGonnaMakeYouCryAA==",
+                    "NeverGonnaSayGoodbyeAA==",
+                    "NeverGonnaTellALieAAAA==",
+                    "AndHurtYouAAAAAAAAAAAA=="
+                ],
+                [
+                    "NeverGonnaGiveYouUpAAA==",
+                    "NeverGonnaLetYouDownAA==",
+                    "NeverGonnaRunAroundAAA==",
+                    "AndDesertYouAAAAAAAAAA=="
+                ]
+            ]
+        },
+        "gfpoly_gcd1": {
+            "G": [
+                "NeverGonnaMakeYouCryAA==",
+                "NeverGonnaSayGoodbyeAA==",
+                "NeverGonnaTellALieAAAA==",
+                "AndHurtYouAAAAAAAAAAAA==",
+                "gAAAAAAAAAAAAAAAAAAAAA=="
+            ]
+        },
+        "gfpoly_diff1": {
+            "F'": [
+                "HowImFeelingAAAAAAAAAA==",
+                "AAAAAAAAAAAAAAAAAAAAAA==",
+                "UnderstaaaaaaaaaaaaanQ=="
+            ]
+        },
+        "gfpoly_factor_sff1": {
+            "factors": [
+                {
+                    "factor": [
+                        "q4AAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 1
+                },
+                {
+                    "factor": [
+                        "iwAAAAAAAAAAAAAAAAAAAA==",
+                        "CAAAAAAAAAAAAAAAAAAAAA==",
+                        "AAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 2
+                },
+                {
+                    "factor": [
+                        "kAAAAAAAAAAAAAAAAAAAAA==",
+                        "CAAAAAAAAAAAAAAAAAAAAA==",
+                        "wAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "exponent": 3
+                }
+            ]
+        },
+        "gfpoly_factor_ddf1": {
+            "factors": [
+                {
+                    "factor": [
+                        "q4AAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "degree": 1
+                },
+                {
+                    "factor": [
+                        "mmAAAAAAAAAAAAAAAAAAAA==",
+                        "AbAAAAAAAAAAAAAAAAAAAA==",
+                        "zgAAAAAAAAAAAAAAAAAAAA==",
+                        "FwAAAAAAAAAAAAAAAAAAAA==",
+                        "AAAAAAAAAAAAAAAAAAAAAA==",
+                        "wAAAAAAAAAAAAAAAAAAAAA==",
+                        "gAAAAAAAAAAAAAAAAAAAAA=="
+                    ],
+                    "degree": 3
+                }
+            ]
+        },
+        "gfpoly_factor_edf1": {
+            "factors": [
+                [
+                    "iwAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "AAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ],
+                [
+                    "kAAAAAAAAAAAAAAAAAAAAA==",
+                    "CAAAAAAAAAAAAAAAAAAAAA==",
+                    "wAAAAAAAAAAAAAAAAAAAAA==",
+                    "gAAAAAAAAAAAAAAAAAAAAA=="
+                ]
+            ]
+        }
+    }
+}
