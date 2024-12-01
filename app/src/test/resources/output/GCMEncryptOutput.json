@@ -1,0 +1,16 @@
+{
+    "responses": {
+        "gcm_encrypt1": {
+            "ciphertext": "ET3RmvH/Hbuxba63EuPRrw==",
+            "tag": "Mp0APJb/ZIURRwQlMgNN/w==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "Bu6ywbsUKlpmZXMQyuGAng=="
+        },
+        "gcm_encrypt2": {
+            "ciphertext": "0cI/Wg4R3URfrVFZ0hw/vg==",
+            "tag": "ysDdzOSnqLH0MQ+Mkb23gw==",
+            "L": "AAAAAAAAAEAAAAAAAAAAgA==",
+            "H": "xhFcAUT66qWIpYz+Ch5ujw=="
+        }
+    }
+}

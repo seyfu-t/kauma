@@ -13,3 +13,7 @@ app/bin
 gradle/
 gradlew*
 gradlew.bat
+
+tmp/
+*.jfr
+app/jfr/

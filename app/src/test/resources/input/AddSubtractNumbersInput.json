@@ -1,0 +1,25 @@
+{
+    "testcases": {
+        "add_numbers1": {
+            "action": "add_numbers",
+            "arguments": {
+                "number1": 123,
+                "number2": 234
+            }
+        },
+        "add_numbers2": {
+            "action": "add_numbers",
+            "arguments": {
+                "number1": 333,
+                "number2": 444
+            }
+        },
+        "subtract_numbers1": {
+            "action": "subtract_numbers",
+            "arguments": {
+                "number1": 999,
+                "number2": 121212
+            }
+        }
+    }
+}

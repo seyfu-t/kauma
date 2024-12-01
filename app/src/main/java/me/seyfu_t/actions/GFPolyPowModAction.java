@@ -59,7 +59,7 @@ public class GFPolyPowModAction implements Action {
             }
 
             // Square
-            base = GFPolyMulAction.mul(base, base);
+            base = GFPolyMulAction.square(base);
             // Reduce
             base = GFPolyDivModAction.divModRest(base, mod);
 
@@ -98,7 +98,7 @@ public class GFPolyPowModAction implements Action {
             }
 
             // Square
-            base = GFPolyMulAction.mul(base, base);
+            base = GFPolyMulAction.square(base);
             // Reduce
             base = GFPolyDivModAction.divModRest(base, mod);
 
