@@ -5,7 +5,10 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 input_path="$1"
 file_name=$(basename "$input_path")
 
-jfr_file="$script_dir/app/jfr/$file_name.jfr"
+# Generate a random 8-digit number for unique names
+random_number=$(printf "%08d" $((RANDOM * RANDOM)))
+
+jfr_file="$script_dir/app/jfr/${file_name}_${random_number}.jfr"
 
 mkdir -p "$script_dir/app/jfr"
 
