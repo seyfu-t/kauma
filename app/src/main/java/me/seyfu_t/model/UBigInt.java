@@ -57,22 +57,27 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (bits < 0 || bits >= maxBits)
             throw new IllegalArgumentException("Shift out of bounds");
 
-        byte[] workArray = this.gcm ? Util.swapBitOrderInAllBytes(this.byteArray)
-                : Arrays.copyOf(this.byteArray, this.byteArray.length);
-
         byte[] result = new byte[byteCount];
         int byteShift = bits / 8;
         int bitShift = bits % 8;
 
-        shiftFullBytes(result, workArray, byteShift, isLeft);
-        if (bitShift > 0)
-            shiftPartialBits(result, byteShift, bitShift, isLeft);
+        byte[] workArray;
 
         if (this.gcm) {
-            result = Util.swapBitOrderInAllBytes(result);
+            workArray = Util.swapByteOrder(this.byteArray);
+            shiftFullBytes(result, workArray, byteShift, !isLeft);
+            if (bitShift > 0)
+                shiftPartialBits(result, byteShift, bitShift, !isLeft);
+
+            return createInstance(Util.swapByteOrder(result), this.gcm);
+        } else {
+            workArray = Arrays.copyOf(this.byteArray, this.byteArray.length);
+            shiftFullBytes(result, workArray, byteShift, isLeft);
+            if (bitShift > 0)
+                shiftPartialBits(result, byteShift, bitShift, isLeft);
+            return createInstance(result, this.gcm);
         }
 
-        return createInstance(result, this.gcm);
     }
 
     private void shiftFullBytes(byte[] result, byte[] workArray, int byteShift, boolean isLeft) {
@@ -199,7 +204,11 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     public boolean isZero() {
-        return Arrays.equals(this.byteArray, new byte[byteCount]);
+        for (byte b : this.byteArray) {
+            if (b != 0)
+                return false;
+        }
+        return true;
     }
 
     public boolean isGCM() {
@@ -346,12 +355,12 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     public T div(T divisor) {
         if (divisor.isZero())
             throw new ArithmeticException("Division by zero");
-            
+
         BigInteger dividend = new BigInteger(1, Util.swapByteOrder(this.byteArray));
         BigInteger div = new BigInteger(1, Util.swapByteOrder(divisor.byteArray));
 
         BigInteger result = dividend.divide(div);
-        
+
         return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
     }
 

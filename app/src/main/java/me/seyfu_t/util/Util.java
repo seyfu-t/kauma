@@ -90,7 +90,7 @@ public class Util {
 
     public static boolean hasSignByte(BigInteger bigInteger) {
         byte[] byteArray = bigInteger.toByteArray();
-        
+
         // Check if the first byte is the sign byte
         byte signByte = byteArray[0];
         boolean isNegative = bigInteger.signum() < 0;
@@ -102,5 +102,31 @@ public class Util {
         // Negative numbers have a leading 0xFF as a sign byte
 
         return isNegative && signByte == (byte) 0xFF;
+    }
+
+    public static long bytesToLong(byte[] byteArray, int offset) {
+        return (long) ((byteArray[7 + offset] & 0xFF) << 56 |
+                (byteArray[6 + offset] & 0xFF) << 48 |
+                (byteArray[5 + offset] & 0xFF) << 40 |
+                (byteArray[4 + offset] & 0xFF) << 32 |
+                (byteArray[3 + offset] & 0xFF) << 24 |
+                (byteArray[2 + offset] & 0xFF) << 16 |
+                (byteArray[1 + offset] & 0xFF) << 8 |
+                (byteArray[0 + offset] & 0xFF));
+    }
+
+    public static byte[] longToBytes(long value) {
+        byte[] byteArray = new byte[Long.BYTES];
+
+        byteArray[7] = (byte) (value >>> 56);
+        byteArray[6] = (byte) (value >>> 48);
+        byteArray[5] = (byte) (value >>> 40);
+        byteArray[4] = (byte) (value >>> 32);
+        byteArray[3] = (byte) (value >>> 24);
+        byteArray[2] = (byte) (value >>> 16);
+        byteArray[1] = (byte) (value >>> 8);
+        byteArray[0] = (byte) (value);
+
+        return byteArray;
     }
 }

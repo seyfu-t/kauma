@@ -9,9 +9,10 @@ import me.seyfu_t.util.Util;
 public class UBigInt16 extends UBigInt<UBigInt16> {
     // Constants specific to UBigInt16
     public static final UBigInt16 REDUCTION_POLY = UBigInt16.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
+    public static final long REDUCTION_POLY_LONG = 0x87;
     public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
 
-    private static final int BYTE_COUNT = 16;
+    public static final int BYTE_COUNT = 16;
 
     public UBigInt16() {
         super(UBigInt16.BYTE_COUNT, false);
@@ -32,6 +33,14 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
     @Override
     protected UBigInt16 createInstance(byte[] bytes, boolean gcm) {
         return new UBigInt16(bytes, gcm);
+    }
+
+    public long toLongLow(){
+        return Util.bytesToLong(this.byteArray, 0);
+    }
+    
+    public long toLongHigh(){
+        return Util.bytesToLong(this.byteArray, Long.BYTES);
     }
 
     // Factory methods
