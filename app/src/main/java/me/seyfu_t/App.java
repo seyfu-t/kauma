@@ -51,39 +51,34 @@ public class App {
     }
 
     public static JsonObject getResponseJsonFromInputPath(String filePath) {
-        return getResponseJsonFromInputJsonVirtual(parseFilePathToJson(filePath));
+        return getResponseJsonFromInputJson(parseFilePathToJson(filePath));
     }
 
-    public static JsonObject getResponseJsonFromInputJsonVirtual(JsonObject fullJson) {
+    public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
-
-        // Track virtual threads to ensure they all complete
-        List<Thread> threads = new ArrayList<>();
-
-        // Use virtual threads to process the test cases concurrently
-        testcasesJson.entrySet().forEach(singleCase -> {
-            Thread thread = Thread.ofVirtual().start(() -> {
-                ProcessedTestCase result = processTestCase(singleCase);
-                if (result != null && result.result() != null) {
-                    synchronized (responseBuilder) {
-                        responseBuilder.addResponse(result.hash(), result.result());
-                    }
-                }
-            });
-
-            threads.add(thread);
-        });
-
-        // Ensure all threads complete before returning the response
-        threads.forEach(thread -> {
-            try {
-                thread.join(); // Wait for the thread to finish
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+    
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<ProcessedTestCase>> futures = new ArrayList<>();
+    
+            // Submit tasks to the virtual thread executor
+            for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+                Future<ProcessedTestCase> future = executor.submit(() -> processTestCase(singleCase));
+                futures.add(future);
             }
-        });
-
+    
+            // Collect results
+            for (Future<ProcessedTestCase> future : futures) {
+                ProcessedTestCase result = future.get(); // This will block until the task completes
+                if (result != null && result.result() != null) {
+                    responseBuilder.addResponse(result.hash(), result.result());
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.severe("Error processing test cases: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    
         return responseBuilder.build();
     }
 
