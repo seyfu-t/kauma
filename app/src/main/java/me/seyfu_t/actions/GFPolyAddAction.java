@@ -42,7 +42,7 @@ public class GFPolyAddAction implements Action {
             result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i).copy() : b.getCoefficient(i).copy());
         }
 
-        if (result.isEmpty())
+        if (result.isZero())
             result.setCoefficient(0, UBigInt16.Zero(true));
 
         result = result.popLeadingZeros();
@@ -54,7 +54,7 @@ public class GFPolyAddAction implements Action {
         GF128Poly result = new GF128Poly();
 
         for (GF128Poly summand : summands) {
-            if (result.isEmpty())
+            if (result.isZero())
                 result = summand;
 
             result = add(result, summand);
