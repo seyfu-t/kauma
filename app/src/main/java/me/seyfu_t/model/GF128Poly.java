@@ -19,6 +19,10 @@ public class GF128Poly implements Comparable<GF128Poly> {
     private final List<UBigInt16> coefficients = new ArrayList<>();
     private final boolean gcm = true;
 
+    /*
+     * Constructors
+     */
+    
     public GF128Poly() {
     }
 
@@ -29,28 +33,25 @@ public class GF128Poly implements Comparable<GF128Poly> {
         }
     }
 
-    public GF128Poly(List<UBigInt16> coefficients) {
-        growToSize(coefficients.size());
-        for (int i = 0; i < coefficients.size(); i++) {
-            this.coefficients.set(i, coefficients.get(i));
-        }
-    }
-
     public GF128Poly(String[] base64Array) {
         for (String base64Coefficient : base64Array) {
             this.coefficients.add(UBigInt16.fromBase64(base64Coefficient, gcm));
         }
     }
 
-    public String[] toBase64Array() {
-        String[] array = new String[this.coefficients.size()];
+    public GF128Poly copy() {
+        GF128Poly copy = new GF128Poly();
 
         for (int i = 0; i < this.coefficients.size(); i++) {
-            array[i] = this.coefficients.get(i).toBase64();
+            copy.coefficients.add(this.coefficients.get(i).copy());
         }
 
-        return array;
+        return copy;
     }
+
+    /*
+     * Getter
+     */
 
     public UBigInt16 getCoefficient(int index) {
         if (index >= this.totalSize())
@@ -58,19 +59,7 @@ public class GF128Poly implements Comparable<GF128Poly> {
         return this.coefficients.get(index);
     }
 
-    public GF128Poly setCoefficient(int index, UBigInt16 coefficient) {
-        growToSize(index);
-        this.coefficients.set(index, coefficient);
-        return this;
-    }
-
-    public GF128Poly insertCoefficient(int index, UBigInt16 coefficient) {
-        growToSize(this.coefficients.size() + 1);
-        this.coefficients.add(index, coefficient);
-        return this;
-    }
-
-    public boolean isEmpty() {
+    public boolean isZero() {
         if (this.coefficients.isEmpty())
             return true;
 
@@ -84,10 +73,6 @@ public class GF128Poly implements Comparable<GF128Poly> {
         }
 
         return true;
-    }
-
-    public boolean isZero() {
-        return this.isEmpty();
     }
 
     public int size() { // this method has ambiguity, totalSize() has not
@@ -114,20 +99,20 @@ public class GF128Poly implements Comparable<GF128Poly> {
         return this.coefficients.size();
     }
 
-    private void growToSize(int size) {
-        while (this.coefficients.size() <= size) {
-            this.coefficients.add(UBigInt16.Zero(gcm));
-        }
+    /*
+     * Method that explicitly change inner state
+     */
+
+    public GF128Poly setCoefficient(int index, UBigInt16 coefficient) {
+        growToSize(index);
+        this.coefficients.set(index, coefficient);
+        return this;
     }
 
-    public GF128Poly copy() {
-        GF128Poly copy = new GF128Poly();
-
-        for (int i = 0; i < this.coefficients.size(); i++) {
-            copy.coefficients.add(this.coefficients.get(i).copy());
-        }
-
-        return copy;
+    public GF128Poly insertCoefficient(int index, UBigInt16 coefficient) {
+        growToSize(this.coefficients.size() + 1);
+        this.coefficients.add(index, coefficient);
+        return this;
     }
 
     public GF128Poly popLeadingZeros() {
@@ -137,69 +122,29 @@ public class GF128Poly implements Comparable<GF128Poly> {
         return this;
     }
 
-    public List<UBigInt16> getCoefficients() {
-        return this.coefficients;
-    }
-
-    public boolean equals(GF128Poly otherPoly) {
-        if (this.size() != otherPoly.size())
-            return false;
-
-        if (this.isZero() && otherPoly.isZero())
-            return true;
-
-        for (int i = 0; i < (this.totalSize() == 0 ? otherPoly.size() : this.size()); i++) {
-            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
-                return false;
+    private void growToSize(int size) {
+        while (this.coefficients.size() <= size) {
+            this.coefficients.add(UBigInt16.Zero(gcm));
         }
-
-        return true;
     }
 
-    public boolean greaterThan(GF128Poly otherPoly) {
-        // If sizes differ, compare sizes
-        if (this.size() != otherPoly.size())
-            return this.size() > otherPoly.size();
-
-        // Both are effectively zero polynomials
-        if (this.isZero() && otherPoly.isZero())
-            return false;
-
-        int highestElement = (this.size() - 1 == -1 ? otherPoly.size() - 1 : this.size() - 1);
-
-        // Compare coefficients from highest degree to lowest
-        for (int i = highestElement; i >= 0; i--) {
-            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
-                return this.getCoefficient(i).greaterThan(otherPoly.getCoefficient(i));
-        }
-
-        // Polynomials are equal
-        return false;
-    }
-
-    public boolean lessThan(GF128Poly otherPoly) {
-        // If sizes differ, compare sizes
-        if (this.size() != otherPoly.size())
-            return this.size() < otherPoly.size();
-
-        // Both are effectively zero polynomials
-        if (this.isZero() && otherPoly.isZero())
-            return false;
-
-        int highestElement = (this.size() - 1 == -1 ? otherPoly.size() - 1 : this.size() - 1);
-        // Compare coefficients from highest degree to lowest
-        for (int i = highestElement; i >= 0; i--) {
-            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
-                return this.getCoefficient(i).lessThan(otherPoly.getCoefficient(i));
-        }
-
-        // Polynomials are equal
-        return false;
-    }
+    /*
+     * Converter
+     */
 
     @Override
     public String toString() {
         return Arrays.toString(this.toBase64Array());
+    }
+
+    public String[] toBase64Array() {
+        String[] array = new String[this.coefficients.size()];
+
+        for (int i = 0; i < this.coefficients.size(); i++) {
+            array[i] = this.coefficients.get(i).toBase64();
+        }
+
+        return array;
     }
 
     public String toHumanReadableString() {
@@ -255,6 +200,66 @@ public class GF128Poly implements Comparable<GF128Poly> {
 
         // Return "0" if no terms were added
         return sb.length() > 0 ? sb.toString() : "0";
+    }
+
+    /*
+     * Compare methods
+     */
+
+    public boolean equals(GF128Poly otherPoly) {
+        if (this.size() != otherPoly.size())
+            return false;
+
+        if (this.isZero() && otherPoly.isZero())
+            return true;
+
+        for (int i = 0; i < (this.totalSize() == 0 ? otherPoly.size() : this.size()); i++) {
+            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
+                return false;
+        }
+
+        return true;
+    }
+
+    public boolean greaterThan(GF128Poly otherPoly) {
+        // If sizes differ, compare sizes
+        if (this.size() != otherPoly.size())
+            return this.size() > otherPoly.size();
+
+        // Both are effectively zero polynomials
+        if (this.isZero() && otherPoly.isZero())
+            return false;
+
+        int highestElement = (this.size() - 1 == -1 ? otherPoly.size() - 1 : this.size() - 1);
+
+        // Compare coefficients from highest degree to lowest
+        for (int i = highestElement; i >= 0; i--) {
+            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
+                return this.getCoefficient(i).greaterThan(otherPoly.getCoefficient(i));
+        }
+
+        // Polynomials are equal
+        return false;
+    }
+
+    public boolean lessThan(GF128Poly otherPoly) {
+        // If sizes differ, compare sizes
+        if (this.size() != otherPoly.size())
+            return this.size() < otherPoly.size();
+
+        // Both are effectively zero polynomials
+        if (this.isZero() && otherPoly.isZero())
+            return false;
+
+        int highestElement = (this.size() - 1 == -1 ? otherPoly.size() - 1 : this.size() - 1);
+        // Compare coefficients from highest degree to lowest
+        for (int i = highestElement; i >= 0; i--) {
+            if (!this.getCoefficient(i).equals(otherPoly.getCoefficient(i)))
+                return this.getCoefficient(i).lessThan(otherPoly.getCoefficient(i));
+        }
+
+        // Polynomials are equal
+        return false;
     }
 
     @Override
