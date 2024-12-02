@@ -25,7 +25,7 @@ class AppTest {
     private static final String SEA128_OUTPUT = "output/SEA128Output.json";
     private static final String XEX_INPUT = "input/XEXInput.json";
     private static final String XEX_OUTPUT = "output/XEXOutput.json";
-    
+
     private static final String GCM_ENCRYPT_INPUT = "input/GCMEncryptInput.json";
     private static final String GCM_ENCRYPT_OUTPUT = "output/GCMEncryptOutput.json";
     private static final String GCM_DECRYPT_INPUT = "input/GCMDecryptInput.json";
@@ -51,7 +51,7 @@ class AppTest {
     private static final String GF_POLY_SQRT_OUTPUT = "output/GFPolySqrtOutput.json";
     private static final String GF_POLY_SORT_INPUT = "input/GFPolySortInput.json";
     private static final String GF_POLY_SORT_OUTPUT = "output/GFPolySortOutput.json";
-    
+
     private static final String GF_MUL_INPUT = "input/GFMulInput.json";
     private static final String GF_MUL_OUTPUT = "output/GFMulOutput.json";
     private static final String GF_DIV_INPUT = "input/GFDivInput.json";
@@ -63,6 +63,9 @@ class AppTest {
     private static final String GF_POLY_FACTOR_DDF_OUTPUT = "output/GFPolyFactorDDFOutput.json";
     private static final String GF_POLY_FACTOR_EDF_INPUT = "input/GFPolyFactorEDFInput.json";
     private static final String GF_POLY_FACTOR_EDF_OUTPUT = "output/GFPolyFactorEDFOutput.json";
+
+    private static final String PADDING_ORACLE_INPUT = "input/PaddingOracleInput.json";
+    private static final String PADDING_ORACLE_OUTPUT = "output/PaddingOracleOutput.json";
 
     private static final String ALL_INPUT = "input/AllInput.json";
     private static final String ALL_OUTPUT = "output/AllOutput.json";
@@ -151,27 +154,32 @@ class AppTest {
     }
 
     @Test
-    void testFactorEDF(){
+    void paddingOracle() {
+        createTest(PADDING_ORACLE_INPUT, PADDING_ORACLE_OUTPUT);
+    }
+
+    @Test
+    void testFactorEDF() {
         createTest(GF_POLY_FACTOR_EDF_INPUT, GF_POLY_FACTOR_EDF_OUTPUT);
     }
 
     @Test
-    void testFactorDDF(){
+    void testFactorDDF() {
         createTest(GF_POLY_FACTOR_DDF_INPUT, GF_POLY_FACTOR_DDF_OUTPUT);
     }
 
     @Test
-    void testFactorSFF(){
+    void testFactorSFF() {
         createTest(GF_POLY_FACTOR_SFF_INPUT, GF_POLY_FACTOR_SFF_OUTPUT);
     }
 
     @Test
-    void testGFPolyGCD(){
+    void testGFPolyGCD() {
         createTest(GF_POLY_GCD_INPUT, GF_POLY_GCD_OUTPUT);
     }
 
     @Test
-    void testGFPolyDiff(){
+    void testGFPolyDiff() {
         createTest(GF_POLY_DIFF_INPUT, GF_POLY_DIFF_OUTPUT);
     }
 
