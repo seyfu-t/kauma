@@ -55,7 +55,6 @@ public class GFMulAction implements Action {
             if (b.testBit(0))
                 result = result.xor(a);
 
-            // Combine shift and reduction
             boolean overflow = a.testBit(127);
             a = a.shiftLeft(1);
 
