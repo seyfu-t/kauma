@@ -57,22 +57,27 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (bits < 0 || bits >= maxBits)
             throw new IllegalArgumentException("Shift out of bounds");
 
-        byte[] workArray = this.gcm ? Util.swapBitOrderInAllBytes(this.byteArray)
-                : Arrays.copyOf(this.byteArray, this.byteArray.length);
-
         byte[] result = new byte[byteCount];
         int byteShift = bits / 8;
         int bitShift = bits % 8;
 
-        shiftFullBytes(result, workArray, byteShift, isLeft);
-        if (bitShift > 0)
-            shiftPartialBits(result, byteShift, bitShift, isLeft);
+        byte[] workArray;
 
         if (this.gcm) {
-            result = Util.swapBitOrderInAllBytes(result);
+            workArray = Util.swapByteOrder(this.byteArray);
+            shiftFullBytes(result, workArray, byteShift, !isLeft);
+            if (bitShift > 0)
+                shiftPartialBits(result, byteShift, bitShift, !isLeft);
+
+            return createInstance(Util.swapByteOrder(result), this.gcm);
+        } else {
+            workArray = Arrays.copyOf(this.byteArray, this.byteArray.length);
+            shiftFullBytes(result, workArray, byteShift, isLeft);
+            if (bitShift > 0)
+                shiftPartialBits(result, byteShift, bitShift, isLeft);
+            return createInstance(result, this.gcm);
         }
 
-        return createInstance(result, this.gcm);
     }
 
     private void shiftFullBytes(byte[] result, byte[] workArray, int byteShift, boolean isLeft) {
