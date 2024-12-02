@@ -85,7 +85,7 @@ public class GFPolyFactorEDFAction implements Action {
         int newDegree = random.nextInt(smallerThan)+1;
 
         byte[] randomBytes = new byte[16];
-        for (int i = 1; i < newDegree; i++) {
+        for (int i = 0; i < newDegree; i++) {
             random.nextBytes(randomBytes);
 
             UBigInt16 randomCoefficient = new UBigInt16(randomBytes, true);
