@@ -13,6 +13,10 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     protected final boolean gcm;
     protected final int byteCount;
 
+    /*
+     * Constructors and instance creation
+     */
+
     protected UBigInt(int byteCount, boolean gcm) {
         this.byteCount = byteCount;
         this.gcm = gcm;
@@ -41,6 +45,10 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     protected abstract T createInstance(byte[] bytes, boolean gcm);
+
+    /*
+     * Bit operations
+     */
 
     @SuppressWarnings("unchecked")
     public T shiftLeft(int bits) {
@@ -141,6 +149,14 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         return createInstance(bytes, this.gcm);
     }
 
+    public T copy() {
+        return (T) createInstance(this.byteArray, gcm);
+    }
+
+    /*
+     * Setter
+     */
+
     public T setBit(int bit) {
         if (bit < 0 || bit >= byteCount * 8)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
@@ -171,6 +187,23 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         return (T) createInstance(bytes, this.gcm);
     }
 
+    public T swapEndianness() {
+        return (T) createInstance(Util.swapByteOrder(this.byteArray), this.gcm);
+    }
+
+    /*
+     * Getter
+     */
+
+    public int countOfSetBytes() {
+        for (int i = byteCount - 1; i >= 0; i--) {
+            if ((byteArray[i] & 0xFF) != 0) {
+                return i + 1;
+            }
+        }
+        return 0;
+    }
+
     public boolean testBit(int bit) {
         if (bit < 0 || bit >= byteCount * 8)
             throw new IllegalArgumentException("Bit index out of bounds: " + bit);
@@ -182,21 +215,6 @@ public abstract class UBigInt<T extends UBigInt<T>> {
             bitIndex = 7 - bitIndex;
 
         return ((this.byteArray[byteIndex] >> bitIndex) & 0x1) == 1;
-    }
-
-    public byte[] toByteArray() {
-        return Arrays.copyOf(this.byteArray, this.byteArray.length);
-    }
-
-    public T swapEndianness() {
-        return (T) createInstance(Util.swapByteOrder(this.byteArray), this.gcm);
-    }
-
-    public boolean sameAs(T bigInt) {
-        if (bigInt == null || bigInt.byteCount != this.byteCount) {
-            return false;
-        }
-        return Arrays.equals(this.byteArray, bigInt.byteArray);
     }
 
     public boolean isEmpty() {
@@ -213,6 +231,89 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
     public boolean isGCM() {
         return this.gcm;
+    }
+
+    /*
+     * Compare
+     */
+
+    public boolean sameAs(T bigInt) {
+        if (bigInt == null || bigInt.byteCount != this.byteCount) {
+            return false;
+        }
+        return Arrays.equals(this.byteArray, bigInt.byteArray);
+    }
+
+    public boolean equals(T otherBigInt) {
+        UBigInt<T> a = this;
+        UBigInt<T> b = otherBigInt;
+
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = 0; i < a.byteCount; i++) {
+            if (a.byteArray[i] != b.byteArray[i])
+                return false;
+        }
+        return true;
+    }
+
+    public boolean greaterThan(T otherBigInt) {
+        UBigInt<T> a = this;
+        UBigInt<T> b = otherBigInt;
+
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = a.byteCount - 1; i >= 0; i--) {
+            if (a.byteArray[i] != b.byteArray[i]) {
+                return (int) (a.byteArray[i] & 0xFF) > (int) (b.byteArray[i] & 0xFF);
+            }
+        }
+
+        return false; // Equal values, so not greater
+    }
+
+    public boolean lessThan(T otherBigInt) {
+        UBigInt<T> a = this;
+        UBigInt<T> b = otherBigInt;
+
+        if (a.gcm)
+            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
+
+        if (b.gcm)
+            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
+
+        for (int i = a.byteCount - 1; i >= 0; i--) {
+            if (a.byteArray[i] != b.byteArray[i]) {
+                return (a.byteArray[i] & 0xFF) < (b.byteArray[i] & 0xFF);
+            }
+        }
+
+        return false; // Equal values, so not greater
+    }
+
+    /*
+     * Converter
+     */
+
+    @Override
+    public String toString() {
+        return this.toString(16);
+    }
+
+    public String toBase64() {
+        return Base64.getEncoder().encodeToString(this.byteArray);
+    }
+
+    public byte[] toByteArray() {
+        return Arrays.copyOf(this.byteArray, this.byteArray.length);
     }
 
     public String toString(int radix) {
@@ -237,131 +338,4 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         BigInteger bigInt = new BigInteger(1, Util.swapByteOrder(this.byteArray));
         return bigInt.toString(10);
     }
-
-    public String toBase64() {
-        return Base64.getEncoder().encodeToString(this.byteArray);
-    }
-
-    public int countOfSetBytes() {
-        for (int i = byteCount - 1; i >= 0; i--) {
-            if ((byteArray[i] & 0xFF) != 0) {
-                return i + 1;
-            }
-        }
-        return 0;
-    }
-
-    public T copy() {
-        return (T) createInstance(this.byteArray, gcm);
-    }
-
-    @Override
-    public String toString() {
-        return this.toString(16);
-    }
-
-    public boolean equals(T otherBigInt) {
-        UBigInt<T> a = this.copy();
-        UBigInt<T> b = otherBigInt.copy();
-
-        if (a.gcm)
-            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
-
-        if (b.gcm)
-            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
-
-        for (int i = 0; i < a.byteCount; i++) {
-            if (a.byteArray[i] != b.byteArray[i])
-                return false;
-        }
-        return true;
-    }
-
-    public boolean greaterThan(T otherBigInt) {
-        UBigInt<T> a = this.copy();
-        UBigInt<T> b = otherBigInt.copy();
-
-        if (a.gcm)
-            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
-
-        if (b.gcm)
-            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
-
-        for (int i = a.byteCount - 1; i >= 0; i--) {
-            if (a.byteArray[i] != b.byteArray[i]) {
-                return (int) (a.byteArray[i] & 0xFF) > (int) (b.byteArray[i] & 0xFF);
-            }
-        }
-
-        return false; // Equal values, so not greater
-    }
-
-    public boolean lessThan(T otherBigInt) {
-        UBigInt<T> a = this.copy();
-        UBigInt<T> b = otherBigInt.copy();
-
-        if (a.gcm)
-            a = (T) createInstance(Util.swapBitOrderInAllBytes(a.toByteArray()), false);
-
-        if (b.gcm)
-            b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
-
-        for (int i = a.byteCount - 1; i >= 0; i--) {
-            if (a.byteArray[i] != b.byteArray[i]) {
-                return (a.byteArray[i] & 0xFF) < (b.byteArray[i] & 0xFF);
-            }
-        }
-
-        return false; // Equal values, so not greater
-    }
-
-    public T pow(int exponent) {
-        // Convert to BigInteger (which uses big-endian)
-        BigInteger bigInt = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-
-        BigInteger result = bigInt.pow(exponent);
-
-        // Convert back to UBigInt
-        return (T) createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
-    }
-
-    public T mul(T other) {
-        BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-        BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
-
-        BigInteger result = a.multiply(b);
-
-        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
-    }
-
-    public T add(T other) {
-        BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-        BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
-
-        BigInteger result = a.add(b);
-
-        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
-    }
-
-    public T sub(T other) {
-        BigInteger a = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-        BigInteger b = new BigInteger(1, Util.swapByteOrder(other.byteArray));
-
-        BigInteger result = a.subtract(b); // undefined behavior when this goes below 0
-
-        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
-    }
-
-    public T div(T divisor) {
-        if (divisor.isZero())
-            throw new ArithmeticException("Division by zero");
-
-        BigInteger dividend = new BigInteger(1, Util.swapByteOrder(this.byteArray));
-        BigInteger div = new BigInteger(1, Util.swapByteOrder(divisor.byteArray));
-
-        BigInteger result = dividend.divide(div);
-
-        return createInstance(Util.swapByteOrder(result.toByteArray()), this.gcm);
-    }
-
 }
