@@ -48,9 +48,8 @@ public class GFPolyMulAction implements Action {
             for (int j = 0; j < b.size(); j++) {
                 // Again skip 0 terms
                 UBigInt16 coefB = b.getCoefficient(j);
-                if (coefB == null || coefB.isZero()) {
+                if (coefB == null || coefB.isZero())
                     continue;
-                }
 
                 // Multiply coefficients in GF(2^128)
                 UBigInt16 multipliedCoef = GFMulAction.combinedMulAndModReduction(coefA, coefB);
