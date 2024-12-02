@@ -1,5 +1,6 @@
 package me.seyfu_t.actions;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,8 +20,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDFAction implements Action {
 
-    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero().setBit(128);
-    private static final UBigInt512 THREE = new UBigInt512(new byte[] { 3 });
+    private static final BigInteger Q = BigInteger.ZERO.setBit(128);
     private static final Gson gson = new Gson();
 
     @Override
@@ -47,7 +47,9 @@ public class GFPolyFactorEDFAction implements Action {
 
         List<GF128Poly> polyList = new ArrayList<>();
         polyList.add(f);
-        UBigInt512 bigExponent = EXPONENT_Q.pow(d).sub(UBigInt512.One()).div(THREE);
+        
+        UBigInt512 bigExponent = UBigInt512.fromBigInt(Q.pow(d).subtract(BigInteger.ONE).divide(BigInteger.valueOf(3)));
+
         while (polyList.size() < n) {
             GF128Poly h = generateRandomPoly(f.degree());
 
