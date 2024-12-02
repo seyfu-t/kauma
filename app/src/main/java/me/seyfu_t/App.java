@@ -103,42 +103,41 @@ public class App {
     }
 
     public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
-        // Get the number of available processors, which will determine the number of
-        // threads
-        int availableThreads = Runtime.getRuntime().availableProcessors();
-
-        // Create an ExecutorService to manage a pool of threads
-        ExecutorService executorService = Executors.newFixedThreadPool(availableThreads);
-
-        // Create a list of tasks for each test case
-        List<Callable<Void>> tasks = new ArrayList<>();
+        // Separate padding_oracle cases from other cases
+        List<Entry<String, JsonElement>> paddingOracleCases = new ArrayList<>();
+        List<Entry<String, JsonElement>> otherCases = new ArrayList<>();
 
         for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
-            tasks.add(() -> {
-                JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-
-                // the 3 relevant parts of each case
-                String uniqueHash = singleCase.getKey();
-                String actionName = remainderJsonObject.get("action").getAsString();
-                JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
-
-                Action action = getActionClass(actionName); // get the appropriate instance
-
-                if (action == null)
-                    return null;
-
-                // execute
-                Map<String, Object> resultEntry = action.execute(arguments);
-
-                // Adding response to builder
-                builder.addResponse(uniqueHash, resultEntry);
-
-                return null;
-            });
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            
+            if ("padding_oracle".equals(actionName)) {
+                paddingOracleCases.add(singleCase);
+            } else {
+                otherCases.add(singleCase);
+            }
         }
 
+        // Get the number of available processors for other cases
+        int availableThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = Executors.newFixedThreadPool(availableThreads);
+
         try {
-            // Execute all tasks asynchronously and wait for completion
+            // Handle padding_oracle cases sequentially first
+            for (Entry<String, JsonElement> singleCase : paddingOracleCases) {
+                processCase(builder, singleCase);
+            }
+
+            // Handle other cases concurrently
+            List<Callable<Void>> tasks = new ArrayList<>();
+            for (Entry<String, JsonElement> singleCase : otherCases) {
+                tasks.add(() -> {
+                    processCase(builder, singleCase);
+                    return null;
+                });
+            }
+
+            // Execute all concurrent tasks
             List<Future<Void>> futures = executorService.invokeAll(tasks);
 
             // Ensure all tasks complete
@@ -146,11 +145,31 @@ public class App {
                 future.get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            log.severe("An error occurred during parallel execution: " + e.getMessage());
+            log.severe("An error occurred during execution: " + e.getMessage());
             Thread.currentThread().interrupt();
         } finally {
             executorService.shutdown(); // Shutdown the executor service
         }
+    }
+
+    private static void processCase(ResponseBuilder builder, Entry<String, JsonElement> singleCase) {
+        JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+
+        // the 3 relevant parts of each case
+        String uniqueHash = singleCase.getKey();
+        String actionName = remainderJsonObject.get("action").getAsString();
+        JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+        Action action = getActionClass(actionName); // get the appropriate instance
+
+        if (action == null)
+            return;
+
+        // execute
+        Map<String, Object> resultEntry = action.execute(arguments);
+
+        // Adding response to builder
+        builder.addResponse(uniqueHash, resultEntry);
     }
 
     public static JsonObject parseFilePathToJson(String filePath) {
