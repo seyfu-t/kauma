@@ -14,6 +14,10 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
 
     public static final int BYTE_COUNT = 16;
 
+    /*
+     * Instance creation
+     */
+
     public UBigInt16() {
         super(UBigInt16.BYTE_COUNT, false);
     }
@@ -35,15 +39,10 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
         return new UBigInt16(bytes, gcm);
     }
 
-    public long toLongLow(){
-        return Util.bytesToLong(this.byteArray, 0);
-    }
-    
-    public long toLongHigh(){
-        return Util.bytesToLong(this.byteArray, Long.BYTES);
-    }
+    /*
+     * Static definitions
+     */
 
-    // Factory methods
     public static UBigInt16 Zero() {
         return new UBigInt16();
     }
@@ -69,6 +68,10 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
         java.util.Arrays.fill(bytes, (byte) 0xFF);
         return new UBigInt16(bytes, gcm);
     }
+
+    /*
+     * Construct from other object
+     */
 
     public static UBigInt16 fromBase64(String base64) {
         return fromBase64(base64, false);
