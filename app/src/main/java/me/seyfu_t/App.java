@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,16 +56,45 @@ public class App {
     public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
-    
+
+        // Separate padding_oracle cases from other cases
+        List<Entry<String, JsonElement>> paddingOracleCases = new ArrayList<>();
+        List<Entry<String, JsonElement>> concurrentCases = new ArrayList<>();
+
+        // Categorize test cases in concurrent and sequential
+        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            String actionName = remainderJsonObject.get("action").getAsString();
+
+            if ("padding_oracle".equals(actionName)) {
+                paddingOracleCases.add(singleCase);
+            } else {
+                concurrentCases.add(singleCase);
+            }
+        }
+
+        // Process padding_oracle cases sequentially
+        for (Entry<String, JsonElement> paddingOracleCase : paddingOracleCases) {
+            ProcessedTestCase result = processTestCase(paddingOracleCase);
+            if (result != null && result.result() != null) {
+                responseBuilder.addResponse(result.hash(), result.result());
+            }
+        }
+
+        // Return early if there is only padding_oracle
+        if (concurrentCases.isEmpty())
+            return responseBuilder.build();
+
+        // Process other cases concurrently
         try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<ProcessedTestCase>> futures = new ArrayList<>();
-    
+
             // Submit tasks to the virtual thread executor
-            for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            for (Entry<String, JsonElement> singleCase : concurrentCases) {
                 Future<ProcessedTestCase> future = executor.submit(() -> processTestCase(singleCase));
                 futures.add(future);
             }
-    
+
             // Collect results
             for (Future<ProcessedTestCase> future : futures) {
                 ProcessedTestCase result = future.get(); // This will block until the task completes
@@ -74,11 +102,12 @@ public class App {
                     responseBuilder.addResponse(result.hash(), result.result());
                 }
             }
+
         } catch (InterruptedException | ExecutionException e) {
             log.severe("Error processing test cases: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
-    
+
         return responseBuilder.build();
     }
 
@@ -133,76 +162,6 @@ public class App {
             case "gfpoly_factor_edf" -> new GFPolyFactorEDFAction();
             default -> null;
         };
-    }
-
-    public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
-        // Separate padding_oracle cases from other cases
-        List<Entry<String, JsonElement>> paddingOracleCases = new ArrayList<>();
-        List<Entry<String, JsonElement>> otherCases = new ArrayList<>();
-
-        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
-            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-            String actionName = remainderJsonObject.get("action").getAsString();
-            
-            if ("padding_oracle".equals(actionName)) {
-                paddingOracleCases.add(singleCase);
-            } else {
-                otherCases.add(singleCase);
-            }
-        }
-
-        // Get the number of available processors for other cases
-        int availableThreads = Runtime.getRuntime().availableProcessors();
-        ExecutorService executorService = Executors.newFixedThreadPool(availableThreads);
-
-        try {
-            // Handle padding_oracle cases sequentially first
-            for (Entry<String, JsonElement> singleCase : paddingOracleCases) {
-                processCase(builder, singleCase);
-            }
-
-            // Handle other cases concurrently
-            List<Callable<Void>> tasks = new ArrayList<>();
-            for (Entry<String, JsonElement> singleCase : otherCases) {
-                tasks.add(() -> {
-                    processCase(builder, singleCase);
-                    return null;
-                });
-            }
-
-            // Execute all concurrent tasks
-            List<Future<Void>> futures = executorService.invokeAll(tasks);
-
-            // Ensure all tasks complete
-            for (Future<Void> future : futures) {
-                future.get();
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.severe("An error occurred during execution: " + e.getMessage());
-            Thread.currentThread().interrupt();
-        } finally {
-            executorService.shutdown(); // Shutdown the executor service
-        }
-    }
-
-    private static void processCase(ResponseBuilder builder, Entry<String, JsonElement> singleCase) {
-        JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-
-        // the 3 relevant parts of each case
-        String uniqueHash = singleCase.getKey();
-        String actionName = remainderJsonObject.get("action").getAsString();
-        JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
-
-        Action action = getActionClass(actionName); // get the appropriate instance
-
-        if (action == null)
-            return;
-
-        // execute
-        Map<String, Object> resultEntry = action.execute(arguments);
-
-        // Adding response to builder
-        builder.addResponse(uniqueHash, resultEntry);
     }
 
     public static JsonObject parseFilePathToJson(String filePath) {
