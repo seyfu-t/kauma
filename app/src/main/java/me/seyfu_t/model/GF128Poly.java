@@ -22,6 +22,7 @@ public class GF128Poly implements Comparable<GF128Poly> {
     /*
      * Constructors
      */
+    
     public GF128Poly() {
     }
 

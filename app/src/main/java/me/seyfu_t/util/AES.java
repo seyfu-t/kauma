@@ -5,7 +5,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
 
-    @SuppressWarnings("UseSpecificCatch")
     public static byte[] encrypt(byte[] plainText, byte[] key) {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
@@ -16,7 +15,6 @@ public class AES {
         }
     }
 
-    @SuppressWarnings("UseSpecificCatch")
     public static byte[] decrypt(byte[] encryptedText, byte[] key) {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
