@@ -7,7 +7,7 @@ import java.util.List;
 import me.seyfu_t.actions.Block2PolyAction;
 
 // implementing Comparable allows Java's sort() to be used in the context of Lists
-public class GF128Poly implements Comparable<GF128Poly>{
+public class GF128Poly implements Comparable<GF128Poly> {
 
     public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly(new UBigInt16[] {
             UBigInt16.One(true)
@@ -131,8 +131,8 @@ public class GF128Poly implements Comparable<GF128Poly>{
     }
 
     public GF128Poly popLeadingZeros() {
-        while (this.coefficients.size() > 1 && this.coefficients.get(this.coefficients.size()-1).isZero())
-            this.coefficients.remove(this.coefficients.size()-1);
+        while (this.coefficients.size() > 1 && this.coefficients.get(this.coefficients.size() - 1).isZero())
+            this.coefficients.remove(this.coefficients.size() - 1);
 
         return this;
     }
@@ -262,29 +262,32 @@ public class GF128Poly implements Comparable<GF128Poly>{
         // Returning 1 means this > other
         // Returning 0 means this = other
         // Returning -1 means this < other
-    
+
+        int thisDegree = this.degree();
+
         // First compare by degree
-        int degreeComparison = Integer.compare(this.degree(), other.degree());
+        int degreeComparison = Integer.compare(thisDegree, other.degree());
         if (degreeComparison != 0) {
             return degreeComparison;
         }
-    
+
         // If both polynomials are empty (degree == -1)
-        if (this.degree() == -1) {
+        if (thisDegree == -1) {
             return 0;
         }
-    
+
         // Compare coefficients from highest to lowest degree
-        for (int i = this.degree(); i >= 0; i--) {
-            if (this.getCoefficient(i).greaterThan(other.getCoefficient(i))) {
+        for (int i = thisDegree; i >= 0; i--) {
+            UBigInt16 thisCoefficient = this.getCoefficient(i);
+            UBigInt16 otherCoefficient = other.getCoefficient(i);
+
+            if (thisCoefficient.greaterThan(otherCoefficient))
                 return 1;
-            } else if (other.getCoefficient(i).greaterThan(this.getCoefficient(i))) {
+            else if (otherCoefficient.greaterThan(thisCoefficient))
                 return -1;
-            }
         }
-    
+
         return 0; // Polynomials are equal
     }
-    
 
 }
