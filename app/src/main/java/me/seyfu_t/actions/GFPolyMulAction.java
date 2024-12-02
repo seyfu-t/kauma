@@ -32,7 +32,7 @@ public class GFPolyMulAction implements Action {
         GF128Poly result = new GF128Poly();
 
         // 0 times anything is 0
-        if (a.isEmpty() || b.isEmpty()) {
+        if (a.isZero() || b.isZero()) {
             result.setCoefficient(0, UBigInt16.Zero(true));
             return result;
         }
@@ -63,14 +63,14 @@ public class GFPolyMulAction implements Action {
             }
         }
 
-        if (result.isEmpty())
+        if (result.isZero())
             result.setCoefficient(0, UBigInt16.Zero(true));
 
         return result;
     }
 
     public static GF128Poly square(GF128Poly a) {
-        if (a.isEmpty())
+        if (a.isZero())
             return new GF128Poly().setCoefficient(0, UBigInt16.Zero(true));
 
         GF128Poly result = new GF128Poly();
