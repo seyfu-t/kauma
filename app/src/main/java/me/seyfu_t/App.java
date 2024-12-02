@@ -3,8 +3,15 @@ package me.seyfu_t;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,23 +103,53 @@ public class App {
     }
 
     public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
+        // Get the number of available processors, which will determine the number of
+        // threads
+        int availableThreads = Runtime.getRuntime().availableProcessors();
+
+        // Create an ExecutorService to manage a pool of threads
+        ExecutorService executorService = Executors.newFixedThreadPool(availableThreads);
+
+        // Create a list of tasks for each test case
+        List<Callable<Void>> tasks = new ArrayList<>();
+
         for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
-            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            tasks.add(() -> {
+                JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
 
-            // the 3 relevant parts of each case
-            String uniqueHash = singleCase.getKey();
-            String actionName = remainderJsonObject.get("action").getAsString();
-            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+                // the 3 relevant parts of each case
+                String uniqueHash = singleCase.getKey();
+                String actionName = remainderJsonObject.get("action").getAsString();
+                JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
 
-            Action action = getActionClass(actionName); // get the appropriate instance
+                Action action = getActionClass(actionName); // get the appropriate instance
 
-            if (action == null)
-                continue;
+                if (action == null)
+                    return null;
 
-            // execute
-            Map<String, Object> resultEntry = action.execute(arguments);
+                // execute
+                Map<String, Object> resultEntry = action.execute(arguments);
 
-            builder.addResponse(uniqueHash, resultEntry);
+                // Adding response to builder
+                builder.addResponse(uniqueHash, resultEntry);
+
+                return null;
+            });
+        }
+
+        try {
+            // Execute all tasks asynchronously and wait for completion
+            List<Future<Void>> futures = executorService.invokeAll(tasks);
+
+            // Ensure all tasks complete
+            for (Future<Void> future : futures) {
+                future.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.severe("An error occurred during parallel execution: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        } finally {
+            executorService.shutdown(); // Shutdown the executor service
         }
     }
 
