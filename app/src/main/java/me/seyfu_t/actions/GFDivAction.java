@@ -43,7 +43,7 @@ public class GFDivAction implements Action {
 
     public static UBigInt16 inverse(UBigInt16 a) {
         UBigInt16 result = UBigInt16.Zero(true).setBit(0); // 1
-        UBigInt16 base = a.copy();
+        UBigInt16 base = a;
 
         UBigInt16 pow = UBigInt16.AllOne().unsetBit(0); // 2^128 - 2
 
