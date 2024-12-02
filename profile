@@ -22,5 +22,5 @@ java -XX:+UnlockDiagnosticVMOptions \
 # Check if the environment variable to open VisualVM is set
 if [ -n "$OPEN_JFR_WITH_VISUALVM" ]; then
     # Open the JFR file with VisualVM (assuming it's installed and available in your PATH)
-    visualvm --openfile "$jfr_file" > /dev/null 2>&1 &
+    visualvm --laf GTK --openfile "$jfr_file" > /dev/null 2>&1 &
 fi
