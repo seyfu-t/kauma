@@ -1,5 +1,6 @@
 package me.seyfu_t.actions;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
 
-    private static final UBigInt512 EXPONENT_Q = UBigInt512.Zero().setBit(128);
+    private static final BigInteger Q = BigInteger.ZERO.setBit(128);
 
     @Override
     public Map<String, Object> execute(JsonObject arguments) {
@@ -45,7 +46,7 @@ public class GFPolyFactorDDFAction implements Action {
         GF128Poly fStar = f.copy();
 
         while (fStar.degree() >= 2 * d) {
-            UBigInt512 bigExponent = EXPONENT_Q.pow(d);
+            UBigInt512 bigExponent = UBigInt512.fromBigInt(Q.pow(d));
             // X^(q^d) mod f*
             GF128Poly h = GFPolyPowModAction.powMod(GF128Poly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
