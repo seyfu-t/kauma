@@ -131,20 +131,13 @@ public abstract class UBigInt<T extends UBigInt<T>> {
     }
 
     private UBigInt<T> applyOperation(UBigInt<T> bigInt, BinaryOperator<Byte> operator) {
-        if (bigInt == null)
-            throw new NullPointerException("Input UBigInt is null");
-        if (bigInt.byteCount != this.byteCount)
-            throw new IllegalArgumentException("Operands must have the same byte length");
+        byte[] bytes = bigInt.toByteArray();
 
-        byte[] bytes = Arrays.copyOf(bigInt.toByteArray(), bigInt.toByteArray().length);
-
-        if (this.gcm != bigInt.gcm) {
+        if (this.gcm != bigInt.gcm)
             bytes = Util.swapBitOrderInAllBytes(bytes);
-        }
 
-        for (int i = 0; i < byteCount; i++) {
+        for (int i = 0; i < byteCount; i++)
             bytes[i] = operator.apply(bytes[i], this.byteArray[i]);
-        }
 
         return createInstance(bytes, this.gcm);
     }
