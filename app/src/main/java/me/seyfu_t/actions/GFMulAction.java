@@ -43,23 +43,32 @@ public class GFMulAction implements Action {
     }
 
     public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
-        UBigInt16 result = new UBigInt16(a.isGCM()); // take the gcm of a (doesn't matter which one is used)
-        while (!b.isZero()) {
-            boolean overflow;
-            if (b.testBit(0)) {
+        // Early zero checks
+        if (a.isZero() || b.isZero()) {
+            return UBigInt16.Zero(a.isGCM());
+        }
+
+        UBigInt16 result = new UBigInt16(a.isGCM());
+
+        // doing more than 128 rounds isn't possible
+        for (int i = 0; i < UBigInt16.BYTE_COUNT * Byte.SIZE; i++) {
+            if (b.testBit(0))
                 result = result.xor(a);
-            }
 
-            overflow = a.testBit(127);
-
+            // Combine shift and reduction
+            boolean overflow = a.testBit(127);
             a = a.shiftLeft(1);
 
-            if (overflow) {
+            if (overflow)
                 a = a.xor(UBigInt16.REDUCTION_POLY);
-            }
 
             b = b.shiftRight(1);
+
+            // Early termination if b becomes zero
+            if (b.isZero())
+                break;
         }
+
         return result;
     }
 
