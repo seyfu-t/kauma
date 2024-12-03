@@ -20,8 +20,6 @@ public class GCMCrackAction implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
-        String base64Nonce = arguments.get("nonce").getAsString();
-
         JsonObject m1 = arguments.get("m1").getAsJsonObject();
         String base64C1 = m1.get("ciphertext").getAsString();
         String base64AD1 = m1.get("associated_data").getAsString();
@@ -41,11 +39,11 @@ public class GCMCrackAction implements Action {
         String base64ForgeryC = forgery.get("ciphertext").getAsString();
         String base64ForgeryAD = forgery.get("associated_data").getAsString();
 
-        return gcmCrack(base64Nonce, base64C1, base64AD1, base64Tag1, base64C2, base64AD2, base64Tag2, base64C3,
+        return gcmCrack(base64C1, base64AD1, base64Tag1, base64C2, base64AD2, base64Tag2, base64C3,
                 base64AD3, base64Tag3, base64ForgeryC, base64ForgeryAD);
     }
 
-    private JsonObject gcmCrack(String base64Nonce, String base64C1, String base64AD1, String base64Tag1,
+    private JsonObject gcmCrack(String base64C1, String base64AD1, String base64Tag1,
             String base64C2, String base64AD2, String base64Tag2, String base64C3, String base64AD3,
             String base64Tag3, String base64ForgeryC, String base64ForgeryAD) {
 
