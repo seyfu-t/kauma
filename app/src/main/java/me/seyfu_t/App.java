@@ -159,6 +159,7 @@ public class App {
             case "gfpoly_factor_sff" -> new GFPolyFactorSFFAction();
             case "gfpoly_factor_ddf" -> new GFPolyFactorDDFAction();
             case "gfpoly_factor_edf" -> new GFPolyFactorEDFAction();
+            case "gcm_crack" -> new GCMCrackAction();
             default -> null;
         };
     }
