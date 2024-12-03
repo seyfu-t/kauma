@@ -16,6 +16,8 @@ import me.seyfu_t.util.Util;
 
 public class GCMEncryptAction implements Action {
 
+    public static final int AUTH_TAG_INDEX = -1;
+
     @Override
     public JsonObject execute(JsonObject arguments) {
         String algorithm = arguments.get("algorithm").getAsString();
@@ -39,7 +41,7 @@ public class GCMEncryptAction implements Action {
         UBigInt16 L = calculateLengthOfADAndCiphertexts(adBytes, ciphertextBytes);
         UBigInt16 ghashResult = ghash(H, adBytes, ciphertextBytes, L);
         // index -1 because 0 is the first ciphertext and this is one before that
-        UBigInt16 authTag = generateSingleTextBlock(-1, algorithm, base64Nonce, key, ghashResult);
+        UBigInt16 authTag = generateSingleTextBlock(AUTH_TAG_INDEX, algorithm, base64Nonce, key, ghashResult);
 
         String ciphertext = Base64.getEncoder().encodeToString(ciphertextBytes);
         String base64L = L.toBase64();
@@ -101,8 +103,8 @@ public class GCMEncryptAction implements Action {
     private static UBigInt16 concatNonceAndCounter(String base64Nonce, long counter) {
         byte[] ctr = new byte[4]; // counter is assumed to have non-gcm bit order
         ctr[0] = (byte) ((counter >> 24) & 0xFF);
-        ctr[2] = (byte) ((counter >> 8) & 0xFF);
         ctr[1] = (byte) ((counter >> 16) & 0xFF);
+        ctr[2] = (byte) ((counter >> 8) & 0xFF);
         ctr[3] = (byte) (counter & 0xFF);
 
         // 12 byte nonce, rest will be filed with 0s
