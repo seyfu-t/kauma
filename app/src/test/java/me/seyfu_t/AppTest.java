@@ -64,6 +64,9 @@ class AppTest {
     private static final String GF_POLY_FACTOR_EDF_INPUT = "input/GFPolyFactorEDFInput.json";
     private static final String GF_POLY_FACTOR_EDF_OUTPUT = "output/GFPolyFactorEDFOutput.json";
 
+    private static final String GCM_CRACK_INPUT = "input/GCMCrackInput.json";
+    private static final String GCM_CRACK_OUTPUT = "output/GCMCrackOutput.json";
+
     private static final String PADDING_ORACLE_INPUT = "input/PaddingOracleInput.json";
     private static final String PADDING_ORACLE_OUTPUT = "output/PaddingOracleOutput.json";
 
@@ -156,6 +159,11 @@ class AppTest {
     @Test
     void paddingOracle() {
         createTest(PADDING_ORACLE_INPUT, PADDING_ORACLE_OUTPUT);
+    }
+
+    @Test
+    void testGCMCrack() {
+        createTest(GCM_CRACK_INPUT, GCM_CRACK_OUTPUT);
     }
 
     @Test
