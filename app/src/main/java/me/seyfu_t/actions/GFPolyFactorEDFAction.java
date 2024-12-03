@@ -2,10 +2,8 @@ package me.seyfu_t.actions;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.google.gson.Gson;
@@ -16,6 +14,7 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.model.UBigInt512;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDFAction implements Action {
@@ -24,7 +23,7 @@ public class GFPolyFactorEDFAction implements Action {
     private static final Gson gson = new Gson();
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] base64ArrayPoly = Util.convertJsonArrayToStringArray(arguments.get("F").getAsJsonArray());
         int degree = arguments.get("d").getAsInt();
 
@@ -36,10 +35,7 @@ public class GFPolyFactorEDFAction implements Action {
         for (int i = 0; i < resultList.size(); i++)
             array.add(gson.toJsonTree(resultList.get(i).toBase64Array()));
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("factors", array);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("factors", array);
     }
 
     public static List<GF128Poly> edf(GF128Poly f, int d) {

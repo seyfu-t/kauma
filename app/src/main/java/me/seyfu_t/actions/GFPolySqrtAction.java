@@ -1,29 +1,22 @@
 package me.seyfu_t.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolySqrtAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("Q").getAsJsonArray());
 
         GF128Poly q = new GF128Poly(poly);
 
-        GF128Poly s = sqrt(q);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("S", s.toBase64Array());
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("S", sqrt(q).toBase64Array());
     }
 
     public static GF128Poly sqrt(GF128Poly poly) {

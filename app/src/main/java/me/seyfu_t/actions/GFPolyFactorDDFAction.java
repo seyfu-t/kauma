@@ -3,9 +3,7 @@ package me.seyfu_t.actions;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -14,6 +12,7 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.model.UBigInt512;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
@@ -21,7 +20,7 @@ public class GFPolyFactorDDFAction implements Action {
     private static final BigInteger Q = BigInteger.ZERO.setBit(128);
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] base64ArrayPoly = Util.convertJsonArrayToStringArray(arguments.get("F").getAsJsonArray());
 
         GF128Poly poly = new GF128Poly(base64ArrayPoly);
@@ -34,10 +33,7 @@ public class GFPolyFactorDDFAction implements Action {
             array.add(tuple.toJSON("factor", "degree"));
         }
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("factors", array);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("factors", array);
     }
 
     public static List<Tuple<GF128Poly, Integer>> ddf(GF128Poly f) {

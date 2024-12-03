@@ -7,33 +7,27 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.Log;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class PaddingOracleAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String hostname = arguments.get("hostname").getAsString();
         int port = arguments.get("port").getAsInt();
         String iv = arguments.get("iv").getAsString();
         String ciphertext = arguments.get("ciphertext").getAsString();
 
-        String plaintext = paddingOracle(hostname, port, iv, ciphertext);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("plaintext", plaintext);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("plaintext", paddingOracle(hostname, port, iv, ciphertext));
     }
 
     private static String paddingOracle(String hostname, int port, String base64IV, String base64Ciphertext) {

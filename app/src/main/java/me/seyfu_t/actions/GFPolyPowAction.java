@@ -1,30 +1,23 @@
 package me.seyfu_t.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyPowAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
 
         GF128Poly a = new GF128Poly(poly);
 
-        GF128Poly z = pow(a, k);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("Z", z.toBase64Array());
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("Z", pow(a, k).toBase64Array());
     }
 
     // Square and multiply algorithm

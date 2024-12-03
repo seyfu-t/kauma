@@ -3,32 +3,31 @@ package me.seyfu_t.actions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.Tuple;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.AES;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GCMEncryptAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String algorithm = arguments.get("algorithm").getAsString();
         String nonce = arguments.get("nonce").getAsString();
         String key = arguments.get("key").getAsString();
         String plaintext = arguments.get("plaintext").getAsString();
         String ad = arguments.get("ad").getAsString();
 
-        Map<String, Object> resultMap = gcmEncrypt(algorithm, nonce, key, plaintext, ad);
-        return resultMap;
+        return gcmEncrypt(algorithm, nonce, key, plaintext, ad);
     }
 
-    public static Map<String, Object> gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
+    public static JsonObject gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
             String base64Plaintext, String base64AD) {
 
         UBigInt16 key = UBigInt16.fromBase64(base64Key, true);
@@ -47,12 +46,11 @@ public class GCMEncryptAction implements Action {
         String base64H = H.toBase64();
         String base64AuthTag = authTag.toBase64();
 
-        Map<String, Object> resultMap = new LinkedHashMap<>(); // retain insertion order
-        resultMap.put("ciphertext", ciphertext);
-        resultMap.put("tag", base64AuthTag);
-        resultMap.put("L", base64L);
-        resultMap.put("H", base64H);
-        return resultMap;
+        return ResponseBuilder.multiResponse(Arrays.asList(
+                new Tuple<>("ciphertext", ciphertext),
+                new Tuple<>("tag", base64AuthTag),
+                new Tuple<>("L", base64L),
+                new Tuple<>("H", base64H)));
     }
 
     public static UBigInt16 calculateAuthKey(String algorithm, UBigInt16 key) {

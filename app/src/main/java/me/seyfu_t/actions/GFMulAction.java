@@ -1,18 +1,17 @@
 package me.seyfu_t.actions;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 
 public class GFMulAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String semantic = arguments.get("semantic").getAsString();
         String a = arguments.get("a").getAsString();
         String b = arguments.get("b").getAsString();
@@ -23,10 +22,7 @@ public class GFMulAction implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("product", product);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("product", product);
     }
 
     private static String mul(String base64A, String base64B, boolean gcm) {

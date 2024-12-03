@@ -1,38 +1,41 @@
 package me.seyfu_t.actions;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.Tuple;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyDivModAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] a = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] b = Util.convertJsonArrayToStringArray(arguments.get("B").getAsJsonArray());
 
         GF128Poly polyA = new GF128Poly(a);
         GF128Poly polyB = new GF128Poly(b);
 
-        Map<String, Object> resultMap = divMod(polyA, polyB);
-
-        return resultMap;
+        return divMod(polyA, polyB);
     }
 
-    public static Map<String, Object> divMod(GF128Poly dividend, GF128Poly divisor) {
+    public static JsonObject divMod(GF128Poly dividend, GF128Poly divisor) {
+        Tuple<GF128Poly, GF128Poly> result = divModTuple(dividend, divisor);
+
+        return ResponseBuilder.multiResponse(Arrays.asList(
+                new Tuple<>("Q", result.getFirst().toBase64Array()),
+                new Tuple<>("R", result.getSecond().toBase64Array())));
+    }
+
+    private static Tuple<GF128Poly, GF128Poly> divModTuple(GF128Poly dividend, GF128Poly divisor) {
         // If dividend degree < divisor degree, quotient is 0 and remainder is dividend
-        if (dividend.size() < divisor.size()) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("Q", new GF128Poly().setCoefficient(0, UBigInt16.Zero()).toBase64Array());
-            map.put("R", dividend.toBase64Array());
-            return map;
-        }
+        if (dividend.size() < divisor.size())
+            return new Tuple<GF128Poly, GF128Poly>(new GF128Poly().setCoefficient(0, UBigInt16.Zero()), dividend);
 
         // Initialize quotient and remainder
         GF128Poly quotient = new GF128Poly();
@@ -60,18 +63,15 @@ public class GFPolyDivModAction implements Action {
             remainder = remainder.popLeadingZeros();
         }
 
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("Q", quotient.toBase64Array());
-        map.put("R", remainder.toBase64Array());
-        return map;
+        return new Tuple<GF128Poly, GF128Poly>(quotient, remainder);
     }
 
     public static GF128Poly divModRest(GF128Poly dividend, GF128Poly divisor) {
-        return new GF128Poly((String[]) divMod(dividend, divisor).get("R"));
+        return divModTuple(dividend, divisor).getSecond();
     }
 
     public static GF128Poly divModQuotient(GF128Poly dividend, GF128Poly divisor) {
-        return new GF128Poly((String[]) divMod(dividend, divisor).get("Q"));
+        return divModTuple(dividend, divisor).getFirst();
     }
 
 }
