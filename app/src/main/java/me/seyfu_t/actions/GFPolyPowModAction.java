@@ -1,7 +1,5 @@
 package me.seyfu_t.actions;
 
-import java.math.BigInteger;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
@@ -17,8 +15,8 @@ public class GFPolyPowModAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        // UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
-        BigInteger k = arguments.get("k").getAsBigInteger();
+        UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
+        // BigInteger k = arguments.get("k").getAsBigInteger();
 
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
@@ -26,39 +24,39 @@ public class GFPolyPowModAction implements Action {
         return ResponseBuilder.singleResponse("Z", powMod(a, k, m).toBase64Array());
     }
 
-    public static GF128Poly powMod(GF128Poly poly, BigInteger pow, GF128Poly mod) {
-        if (pow.equals(BigInteger.ZERO))
-            return GF128Poly.DEGREE_ZERO_POLY_ONE;
+    // public static GF128Poly powMod(GF128Poly poly, BigInteger pow, GF128Poly mod) {
+    //     if (pow.equals(BigInteger.ZERO))
+    //         return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
-        // Check if power is 1
-        if (pow.equals(BigInteger.ONE))
-            return poly.copy();
+    //     // Check if power is 1
+    //     if (pow.equals(BigInteger.ONE))
+    //         return poly.copy();
 
-        // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
+    //     // Initialize result as 1 (identity element for multiplication)
+    //     GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
 
-        GF128Poly base = poly.copy();
+    //     GF128Poly base = poly.copy();
 
-        UBigInt16 p = UBigInt16.fromBigInt(pow, false);
-        // Square and multiply
-        while (!p.isZero()) {
-            // If odd, multiply
-            if (p.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
-            }
+    //     UBigInt16 p = UBigInt16.fromBigInt(pow, false);
+    //     // Square and multiply
+    //     while (!p.isZero()) {
+    //         // If odd, multiply
+    //         if (p.testBit(0)) {
+    //             result = GFPolyMulAction.mul(result, base);
+    //             result = GFPolyDivModAction.divModRest(result, mod);
+    //         }
 
-            // Square
-            base = GFPolyMulAction.square(base);
-            // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
+    //         // Square
+    //         base = GFPolyMulAction.square(base);
+    //         // Reduce
+    //         base = GFPolyDivModAction.divModRest(base, mod);
 
-            // Divide power by 2
-            p = p.shiftRight(1);
-        }
+    //         // Divide power by 2
+    //         p = p.shiftRight(1);
+    //     }
 
-        return result.popLeadingZeros();
-    }
+    //     return result.popLeadingZeros();
+    // }
 
 
 
@@ -68,7 +66,7 @@ public class GFPolyPowModAction implements Action {
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.One(true)))
+        if (pow.sameAs(UBigInt16.One()))
             return poly.copy();
 
         // Initialize result as 1 (identity element for multiplication)
