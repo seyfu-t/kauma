@@ -39,7 +39,7 @@ public class GFPolyPowModAction implements Action {
 
         GF128Poly base = poly.copy();
 
-        UBigInt16 p = UBigInt16.fromBigInt(pow, true);
+        UBigInt16 p = UBigInt16.fromBigInt(pow, false);
         // Square and multiply
         while (!p.isZero()) {
             // If odd, multiply
