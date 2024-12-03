@@ -17,7 +17,7 @@ public class GFPolyPowModAction implements Action {
     public Map<String, Object> execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
+        long k = arguments.get("k").getAsInt();
 
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
@@ -31,17 +31,16 @@ public class GFPolyPowModAction implements Action {
     }
 
     // Square and multiply algorithm
-    public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
-        if (pow.isZero()) {
+    public static GF128Poly powMod(GF128Poly poly, long pow, GF128Poly mod) {
+        if (pow == 0L) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
             return one;
         }
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.Zero().setBit(0))) {
+        if (pow == 1L)
             return poly.copy();
-        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = new GF128Poly();
@@ -49,11 +48,10 @@ public class GFPolyPowModAction implements Action {
 
         GF128Poly base = poly.copy();
 
-        UBigInt16 p = pow.copy();
         // Square and multiply
-        while (!p.isZero()) {
+        while (pow != 0) {
             // If odd, multiply
-            if (p.testBit(0)) {
+            if ((pow & 0x01) == 1) {
                 result = GFPolyMulAction.mul(result, base);
                 result = GFPolyDivModAction.divModRest(result, mod);
             }
@@ -64,7 +62,7 @@ public class GFPolyPowModAction implements Action {
             base = GFPolyDivModAction.divModRest(base, mod);
 
             // Divide power by 2
-            p = p.shiftRight(1);
+            pow >>= 1L;
         }
 
         return result.popLeadingZeros();
