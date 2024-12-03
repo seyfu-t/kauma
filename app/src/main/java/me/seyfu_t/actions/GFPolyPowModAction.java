@@ -1,5 +1,7 @@
 package me.seyfu_t.actions;
 
+import java.math.BigInteger;
+
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
@@ -15,7 +17,8 @@ public class GFPolyPowModAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
+        BigInteger k = arguments.get("k").getAsBigInteger();
+        // UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
 
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
@@ -23,13 +26,48 @@ public class GFPolyPowModAction implements Action {
         return ResponseBuilder.singleResponse("Z", powMod(a, k, m).toBase64Array());
     }
 
+    public static GF128Poly powMod(GF128Poly poly, BigInteger pow, GF128Poly mod) {
+        if (pow.equals(BigInteger.ZERO))
+            return GF128Poly.DEGREE_ZERO_POLY_ONE;
+
+        // Check if power is 1
+        if (pow.equals(BigInteger.ONE))
+            return poly.copy();
+
+        // Initialize result as 1 (identity element for multiplication)
+        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
+
+        GF128Poly base = poly.copy();
+
+        // Square and multiply
+        while (!pow.equals(BigInteger.ZERO)) {
+            // If odd, multiply
+            if (pow.testBit(0)) {
+                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyDivModAction.divModRest(result, mod);
+            }
+
+            // Square
+            base = GFPolyMulAction.square(base);
+            // Reduce
+            base = GFPolyDivModAction.divModRest(base, mod);
+
+            // Divide power by 2
+            pow = pow.shiftRight(1);
+        }
+
+        return result.popLeadingZeros();
+    }
+
+
+
     // Square and multiply algorithm
     public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
         if (pow.isZero())
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.One(true)))
+        if (pow.sameAs(UBigInt16.One()))
             return poly.copy();
 
         // Initialize result as 1 (identity element for multiplication)
