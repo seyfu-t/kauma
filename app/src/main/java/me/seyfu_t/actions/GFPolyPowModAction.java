@@ -17,7 +17,7 @@ public class GFPolyPowModAction implements Action {
     public Map<String, Object> execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        long k = arguments.get("k").getAsInt();
+        UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
 
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
@@ -31,16 +31,17 @@ public class GFPolyPowModAction implements Action {
     }
 
     // Square and multiply algorithm
-    public static GF128Poly powMod(GF128Poly poly, long pow, GF128Poly mod) {
-        if (pow == 0L) {
+    public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
+        if (pow.isZero()) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
             return one;
         }
 
         // Check if power is 1
-        if (pow == 1L)
+        if (pow.sameAs(UBigInt16.Zero(true).setBit(0))) {
             return poly.copy();
+        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = new GF128Poly();
@@ -48,10 +49,11 @@ public class GFPolyPowModAction implements Action {
 
         GF128Poly base = poly.copy();
 
+        UBigInt16 p = pow.copy();
         // Square and multiply
-        while (pow != 0) {
+        while (!p.isZero()) {
             // If odd, multiply
-            if ((pow & 0x01) == 1) {
+            if (p.testBit(0)) {
                 result = GFPolyMulAction.mul(result, base);
                 result = GFPolyDivModAction.divModRest(result, mod);
             }
@@ -62,7 +64,7 @@ public class GFPolyPowModAction implements Action {
             base = GFPolyDivModAction.divModRest(base, mod);
 
             // Divide power by 2
-            pow >>= 1L;
+            p = p.shiftRight(1);
         }
 
         return result.popLeadingZeros();
@@ -76,7 +78,7 @@ public class GFPolyPowModAction implements Action {
         }
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt512.Zero().setBit(0))) {
+        if (pow.sameAs(UBigInt512.Zero(true).setBit(0))) {
             return poly.copy();
         }
 
