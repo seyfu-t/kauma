@@ -36,7 +36,7 @@ public class GFPolyPowModAction implements Action {
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.Zero(true).setBit(0)))
+        if (pow.sameAs(UBigInt16.Zero().setBit(0)))
             return poly.copy();
 
         // Initialize result as 1 (identity element for multiplication)
