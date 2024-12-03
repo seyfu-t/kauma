@@ -9,12 +9,8 @@ import me.seyfu_t.actions.Block2PolyAction;
 // implementing Comparable allows Java's sort() to be used in the context of Lists
 public class GF128Poly implements Comparable<GF128Poly> {
 
-    public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly(new UBigInt16[] {
-            UBigInt16.One(true)
-    });
-    public static final GF128Poly DEGREE_ONE_POLY_ONE = new GF128Poly(new UBigInt16[] {
-            UBigInt16.Zero(true), UBigInt16.One(true)
-    });
+    public static final GF128Poly DEGREE_ZERO_POLY_ONE = new GF128Poly().setCoefficient(0, UBigInt16.One(true));
+    public static final GF128Poly DEGREE_ONE_POLY_ONE = new GF128Poly().setCoefficient(1, UBigInt16.One(true));
 
     private final List<UBigInt16> coefficients = new ArrayList<>();
     private final boolean gcm = true;
