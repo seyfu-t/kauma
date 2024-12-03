@@ -18,12 +18,12 @@ public class GF128Poly implements Comparable<GF128Poly> {
     /*
      * Constructors
      */
-    
+
     public GF128Poly() {
     }
 
     public GF128Poly(UBigInt16[] coefficients) {
-        growToSize(coefficients.length);
+        growToSize(coefficients.length - 1);
         for (int i = 0; i < coefficients.length; i++) {
             this.coefficients.set(i, coefficients[i]);
         }
@@ -106,7 +106,7 @@ public class GF128Poly implements Comparable<GF128Poly> {
     }
 
     public GF128Poly insertCoefficient(int index, UBigInt16 coefficient) {
-        growToSize(this.coefficients.size() + 1);
+        growToSize(this.coefficients.size());
         this.coefficients.add(index, coefficient);
         return this;
     }
