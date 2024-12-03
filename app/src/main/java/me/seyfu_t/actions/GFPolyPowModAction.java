@@ -32,16 +32,12 @@ public class GFPolyPowModAction implements Action {
 
     // Square and multiply algorithm
     public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
-        if (pow.isZero()) {
-            GF128Poly one = new GF128Poly();
-            one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
-            return one;
-        }
+        if (pow.isZero())
+            return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.Zero(true).setBit(0))) {
+        if (pow.sameAs(UBigInt16.Zero(true).setBit(0)))
             return poly.copy();
-        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = new GF128Poly();
