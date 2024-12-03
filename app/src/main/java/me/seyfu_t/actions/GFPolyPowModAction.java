@@ -17,8 +17,8 @@ public class GFPolyPowModAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        BigInteger k = arguments.get("k").getAsBigInteger();
         // UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
+        BigInteger k = arguments.get("k").getAsBigInteger();
 
         GF128Poly a = new GF128Poly(poly);
         GF128Poly m = new GF128Poly(modPoly);
@@ -39,10 +39,11 @@ public class GFPolyPowModAction implements Action {
 
         GF128Poly base = poly.copy();
 
+        UBigInt16 p = UBigInt16.fromBigInt(pow, true);
         // Square and multiply
-        while (!pow.equals(BigInteger.ZERO)) {
+        while (!p.isZero()) {
             // If odd, multiply
-            if (pow.testBit(0)) {
+            if (p.testBit(0)) {
                 result = GFPolyMulAction.mul(result, base);
                 result = GFPolyDivModAction.divModRest(result, mod);
             }
@@ -53,7 +54,7 @@ public class GFPolyPowModAction implements Action {
             base = GFPolyDivModAction.divModRest(base, mod);
 
             // Divide power by 2
-            pow = pow.shiftRight(1);
+            p = p.shiftRight(1);
         }
 
         return result.popLeadingZeros();
@@ -67,7 +68,7 @@ public class GFPolyPowModAction implements Action {
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.One()))
+        if (pow.sameAs(UBigInt16.One(true)))
             return poly.copy();
 
         // Initialize result as 1 (identity element for multiplication)
