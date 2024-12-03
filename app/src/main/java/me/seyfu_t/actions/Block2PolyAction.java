@@ -2,17 +2,16 @@ package me.seyfu_t.actions;
 
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.util.ResponseBuilder;
 
 public class Block2PolyAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String semantic = arguments.get("semantic").getAsString();
         String base64Block = arguments.get("block").getAsString();
 
@@ -22,10 +21,7 @@ public class Block2PolyAction implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("coefficients", coefficients);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("coefficients", coefficients);
     }
 
     public static int[] convertBlock2Poly(String base64Block, boolean gcm) {

@@ -1,27 +1,21 @@
 package me.seyfu_t.actions;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 
 public class GFDivAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String a = arguments.get("a").getAsString();
         String b = arguments.get("b").getAsString();
 
-        String quotient = div(a, b);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("q", quotient);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("q", div(a, b));
     }
 
     private static String div(String base64A, String base64B) {

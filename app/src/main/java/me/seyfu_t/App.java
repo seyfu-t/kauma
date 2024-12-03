@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -123,7 +122,7 @@ public class App {
                 return null;
             }
 
-            Map<String, Object> resultEntry = action.execute(arguments);
+            JsonObject resultEntry = action.execute(arguments);
             return new ProcessedTestCase(uniqueHash, resultEntry);
         } catch (Exception e) {
             log.warning("Error processing testcase: " + e.getMessage());
@@ -131,7 +130,7 @@ public class App {
         }
     }
 
-    private record ProcessedTestCase(String hash, Map<String, Object> result) {
+    private record ProcessedTestCase(String hash, JsonObject result) {
     }
 
     public static Action getActionClass(String actionName) {

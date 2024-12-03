@@ -1,29 +1,22 @@
 package me.seyfu_t.actions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyMakeMonicAction implements Action {
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String[] polyA = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
 
         GF128Poly a = new GF128Poly(polyA);
 
-        GF128Poly monic = makeMonic(a);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("A*", monic.toBase64Array());
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("A*", makeMonic(a).toBase64Array());
     }
 
     public static GF128Poly makeMonic(GF128Poly a) {

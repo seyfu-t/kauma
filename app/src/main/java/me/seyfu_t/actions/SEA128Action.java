@@ -1,14 +1,13 @@
 package me.seyfu_t.actions;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.AES;
+import me.seyfu_t.util.ResponseBuilder;
 
 public class SEA128Action implements Action {
 
@@ -21,17 +20,12 @@ public class SEA128Action implements Action {
     });
 
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String mode = arguments.get("mode").getAsString();
         String key = arguments.get("key").getAsString();
         String input = arguments.get("input").getAsString();
 
-        String output = sea128(mode, input, key);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("output", output);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("output", sea128(mode, input, key));
     }
 
     public static String sea128(String mode, String base64Input, String base64Key) {
