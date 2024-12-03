@@ -105,12 +105,6 @@ public class GF128Poly implements Comparable<GF128Poly> {
         return this;
     }
 
-    public GF128Poly insertCoefficient(int index, UBigInt16 coefficient) {
-        growToSize(this.coefficients.size());
-        this.coefficients.add(index, coefficient);
-        return this;
-    }
-
     public GF128Poly popLeadingZeros() {
         while (this.coefficients.size() > 1 && this.coefficients.get(this.coefficients.size() - 1).isZero())
             this.coefficients.remove(this.coefficients.size() - 1);

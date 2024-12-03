@@ -37,8 +37,7 @@ public class GFPolyPowAction implements Action {
         }
 
         // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = new GF128Poly();
-        result.insertCoefficient(0, UBigInt16.Zero(true).setBit(0));
+        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         GF128Poly base = poly.copy();
 
@@ -71,8 +70,7 @@ public class GFPolyPowAction implements Action {
         }
 
         // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = new GF128Poly();
-        result.insertCoefficient(0, UBigInt16.Zero(true).setBit(0));
+        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         GF128Poly base = poly.copy();
 
