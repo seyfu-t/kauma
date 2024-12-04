@@ -79,7 +79,7 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
 
     public static UBigInt16 fromBase64(String base64, boolean gcm) {
         if (base64 == null)
-            throw new NullPointerException("Base64 string cannot be null");
+            return null;
         return new UBigInt16(Base64.getDecoder().decode(base64), gcm);
     }
 
