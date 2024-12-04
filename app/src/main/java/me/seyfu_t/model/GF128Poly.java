@@ -24,23 +24,20 @@ public class GF128Poly implements Comparable<GF128Poly> {
 
     public GF128Poly(UBigInt16[] coefficients) {
         growToSize(coefficients.length - 1);
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < coefficients.length; i++)
             this.coefficients.set(i, coefficients[i]);
-        }
     }
 
     public GF128Poly(String[] base64Array) {
-        for (String base64Coefficient : base64Array) {
+        for (String base64Coefficient : base64Array)
             this.coefficients.add(UBigInt16.fromBase64(base64Coefficient, gcm));
-        }
     }
 
     public GF128Poly copy() {
         GF128Poly copy = new GF128Poly();
 
-        for (int i = 0; i < this.coefficients.size(); i++) {
+        for (int i = 0; i < this.coefficients.size(); i++)
             copy.coefficients.add(this.coefficients.get(i).copy());
-        }
 
         return copy;
     }
@@ -113,9 +110,8 @@ public class GF128Poly implements Comparable<GF128Poly> {
     }
 
     private void growToSize(int size) {
-        while (this.coefficients.size() <= size) {
+        while (this.coefficients.size() <= size)
             this.coefficients.add(UBigInt16.Zero(gcm));
-        }
     }
 
     /*
@@ -130,9 +126,8 @@ public class GF128Poly implements Comparable<GF128Poly> {
     public String[] toBase64Array() {
         String[] array = new String[this.coefficients.size()];
 
-        for (int i = 0; i < this.coefficients.size(); i++) {
+        for (int i = 0; i < this.coefficients.size(); i++)
             array[i] = this.coefficients.get(i).toBase64();
-        }
 
         return array;
     }
@@ -143,9 +138,8 @@ public class GF128Poly implements Comparable<GF128Poly> {
         for (int i = 0; i < this.coefficients.size(); i++) {
             UBigInt16 coefficient = this.coefficients.get(i);
 
-            if (coefficient == null || coefficient.isZero()) {
+            if (coefficient == null || coefficient.isZero())
                 continue; // Skip zero coefficients
-            }
 
             // Convert the field element to its polynomial representation
             int[] elementPoly = Block2PolyAction.convertBlock2Poly(coefficient.toBase64(), gcm);
@@ -155,36 +149,36 @@ public class GF128Poly implements Comparable<GF128Poly> {
             if (elementPoly.length == 1) {
                 // Single element in the polynomial representation
                 coefStr.append("a");
-                if (elementPoly[0] != 1) {
+                if (elementPoly[0] != 1)
                     coefStr.append("^").append(elementPoly[0]);
-                }
+
             } else if (elementPoly.length > 1) {
                 // Multi-term polynomial representation
                 coefStr.append("(");
                 for (int j = 0; j < elementPoly.length; j++) {
-                    if (j > 0) {
+                    if (j > 0)
                         coefStr.append(" + ");
-                    }
+
                     coefStr.append("a");
-                    if (elementPoly[j] != 1) {
+                    if (elementPoly[j] != 1)
                         coefStr.append("^").append(elementPoly[j]);
-                    }
+
                 }
                 coefStr.append(")");
             }
 
             // Append the coefficient and variable (X) term
-            if (sb.length() > 0) {
+            if (sb.length() > 0)
                 sb.append(" + ");
-            }
+
             sb.append(coefStr);
 
             // Append the power of X
             if (i > 0) {
                 sb.append("X");
-                if (i > 1) {
+                if (i > 1)
                     sb.append("^").append(i);
-                }
+
             }
         }
 
@@ -262,14 +256,12 @@ public class GF128Poly implements Comparable<GF128Poly> {
 
         // First compare by degree
         int degreeComparison = Integer.compare(thisDegree, other.degree());
-        if (degreeComparison != 0) {
+        if (degreeComparison != 0)
             return degreeComparison;
-        }
 
         // If both polynomials are empty (degree == -1)
-        if (thisDegree == -1) {
+        if (thisDegree == -1)
             return 0;
-        }
 
         // Compare coefficients from highest to lowest degree
         for (int i = thisDegree; i >= 0; i--) {

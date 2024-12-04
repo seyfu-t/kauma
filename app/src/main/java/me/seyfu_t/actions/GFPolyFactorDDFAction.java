@@ -29,9 +29,8 @@ public class GFPolyFactorDDFAction implements Action {
 
         JsonArray array = new JsonArray();
 
-        for (Tuple<GF128Poly, Integer> tuple : tupleList) {
+        for (Tuple<GF128Poly, Integer> tuple : tupleList)
             array.add(tuple.toJSON("factor", "degree"));
-        }
 
         return ResponseBuilder.singleResponse("factors", array);
     }

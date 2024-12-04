@@ -22,9 +22,8 @@ public class GFPolyPowAction implements Action {
 
     // Square and multiply algorithm
     public static GF128Poly pow(GF128Poly poly, int exp) {
-        if (exp < 0) {
+        if (exp < 0)
             throw new IllegalArgumentException("Negative powers are not supported");
-        }
 
         if (exp == 0) {
             GF128Poly one = new GF128Poly();
@@ -32,9 +31,8 @@ public class GFPolyPowAction implements Action {
             return one;
         }
 
-        if (exp == 1) {
+        if (exp == 1)
             return poly.copy();
-        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
@@ -44,9 +42,8 @@ public class GFPolyPowAction implements Action {
         // Binary exponentiation algorithm
         while (exp > 0) {
             // If odd, multiply
-            if ((exp & 1) == 1) {
+            if ((exp & 1) == 1)
                 result = GFPolyMulAction.mul(result, base);
-            }
 
             // Square
             base = GFPolyMulAction.square(base);
@@ -65,9 +62,8 @@ public class GFPolyPowAction implements Action {
             return one;
         }
 
-        if (exp.sameAs(UBigInt16.Zero(true).setBit(0))) {
+        if (exp.sameAs(UBigInt16.Zero(true).setBit(0)))
             return poly.copy();
-        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
@@ -77,9 +73,8 @@ public class GFPolyPowAction implements Action {
         // Binary exponentiation algorithm
         while (!exp.isZero()) {
             // If odd, multiply
-            if (exp.testBit(0)) {
+            if (exp.testBit(0))
                 result = GFPolyMulAction.mul(result, base);
-            }
 
             // Square
             base = GFPolyMulAction.square(base);

@@ -29,9 +29,8 @@ public class GFPolySortAction implements Action {
         JsonArray resultArray = new JsonArray();
         Gson gson = new Gson();
 
-        for (GF128Poly poly : sortedList) {
+        for (GF128Poly poly : sortedList)
             resultArray.add(gson.toJsonTree(poly.toBase64Array()));
-        }
 
         return ResponseBuilder.singleResponse("sorted_polys", resultArray);
     }

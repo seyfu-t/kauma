@@ -43,9 +43,8 @@ public class Poly2BlockAction implements Action {
     private static int[] convertJsonArrayToIntArray(JsonArray array) {
         int[] intArray = new int[array.size()];
 
-        for (int i = 0; i < array.size(); i++) {
+        for (int i = 0; i < array.size(); i++)
             intArray[i] = array.get(i).getAsInt();
-        }
 
         return intArray;
     }

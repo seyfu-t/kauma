@@ -46,9 +46,8 @@ public class SEA128Action implements Action {
         // Throw into AES
         byte[] aes = AES.encrypt(msg, key);
 
-        if (aes == null) {
+        if (aes == null)
             throw new RuntimeException("AES encryption failed");
-        }
 
         // Then XOR with constant and return
         return new UBigInt16(aes).xor(XOR).toByteArray();
@@ -60,9 +59,8 @@ public class SEA128Action implements Action {
         // Then AES decrypt
         byte[] decrypted = AES.decrypt(xored, key);
 
-        if (decrypted == null) {
+        if (decrypted == null)
             throw new RuntimeException("AES decryption failed");
-        }
 
         return decrypted;
     }

@@ -42,9 +42,9 @@ public class GFDivAction implements Action {
         UBigInt16 pow = UBigInt16.AllOne().unsetBit(0); // 2^128 - 2
 
         while (!pow.isZero()) {
-            if (pow.testBit(0)) { // if odd
+            if (pow.testBit(0)) // if odd
                 result = GFMulAction.combinedMulAndModReduction(result, base);
-            }
+
             base = GFMulAction.combinedMulAndModReduction(base, base);
 
             pow = pow.shiftRight(1); // div by 2
