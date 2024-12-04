@@ -20,6 +20,8 @@ import me.seyfu_t.util.Util;
 
 public class PaddingOracleAction implements Action {
 
+    private static final int DEBUG_VALUE = 500000;
+
     @Override
     public JsonObject execute(JsonObject arguments) {
         String hostname = arguments.get("hostname").getAsString();
@@ -124,7 +126,9 @@ public class PaddingOracleAction implements Action {
         byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // 256
         out.write(lengthBytes);
 
-        for (int i = 0; i < 256; i++) {// double loop required
+        UBigInt16[] DEBUG_SENT = new UBigInt16[256];
+
+        for (int i = 0; i < 256; i++) {
             UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
             if (byteIndex < 15) {
                 byte[] array = pad.toByteArray();
@@ -132,12 +136,25 @@ public class PaddingOracleAction implements Action {
                     array[j] = (byte) (currentBaseBytes[j] ^ (16 - byteIndex));
                 pad = new UBigInt16(array);
             }
+            DEBUG_SENT[i] = pad;
             out.write(pad.toByteArray());
             Log.info("Writing:", pad.toString());
         }
 
         byte[] response = new byte[256];
         in.read(response);
+
+        // DEBUG
+        if (getValidPaddingIndex(response) == DEBUG_VALUE) {
+            System.err.println("ALL 0s DETECTED");
+            System.err.println("CURRENT BYTE INDEX IS: " + byteIndex);
+            System.err.println("THESE BYTES HAVE ALREADY BEEN DETERMINED: "
+                    + (currentBaseBytes == null ? "NONE" : new UBigInt16(currentBaseBytes)));
+            System.err.println("THESE WERE SENT TO THE PADDING ORACLE: ");
+            for (UBigInt16 sentBytes : DEBUG_SENT)
+                System.err.println(sentBytes + " : " + sentBytes.toBase64());
+        }
+
         return response;
     }
 
@@ -177,7 +194,9 @@ public class PaddingOracleAction implements Action {
             if (response[i] == 0x01)
                 return i;
         }
-        throw new RuntimeException("Got all 0s as response");
+
+        return DEBUG_VALUE; // DEBUG
+        // throw new RuntimeException("Got all 0s as response");
     }
 
     private static UBigInt16 genPaddedBlock(int byteIndex, byte pad) {
