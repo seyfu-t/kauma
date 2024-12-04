@@ -36,12 +36,12 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
         if (bytes.length < byteCount) {
             System.arraycopy(bytes, 0, this.byteArray, 0, bytes.length);
-            for (int i = bytes.length; i < byteCount; i++) {
+            for (int i = bytes.length; i < byteCount; i++)
                 this.byteArray[i] = 0;
-            }
-        } else {
+
+        } else
             System.arraycopy(bytes, 0, this.byteArray, 0, byteCount);
-        }
+
     }
 
     protected abstract T createInstance(byte[] bytes, boolean gcm);
@@ -90,13 +90,13 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
     private void shiftFullBytes(byte[] result, byte[] workArray, int byteShift, boolean isLeft) {
         if (isLeft)
-            for (int i = byteCount - 1 - byteShift; i >= 0; i--) {
+            for (int i = byteCount - 1 - byteShift; i >= 0; i--)
                 result[i + byteShift] = workArray[i];
-            }
+
         else
-            for (int i = byteShift; i < byteCount; i++) {
+            for (int i = byteShift; i < byteCount; i++)
                 result[i - byteShift] = workArray[i];
-            }
+
     }
 
     private void shiftPartialBits(byte[] result, int byteShift, int bitShift, boolean isLeft) {
@@ -189,11 +189,10 @@ public abstract class UBigInt<T extends UBigInt<T>> {
      */
 
     public int countOfSetBytes() {
-        for (int i = byteCount - 1; i >= 0; i--) {
-            if ((byteArray[i] & 0xFF) != 0) {
+        for (int i = byteCount - 1; i >= 0; i--)
+            if ((byteArray[i] & 0xFF) != 0)
                 return i + 1;
-            }
-        }
+
         return 0;
     }
 
@@ -231,9 +230,9 @@ public abstract class UBigInt<T extends UBigInt<T>> {
      */
 
     public boolean sameAs(T bigInt) {
-        if (bigInt == null || bigInt.byteCount != this.byteCount) {
+        if (bigInt == null || bigInt.byteCount != this.byteCount)
             return false;
-        }
+
         return Arrays.equals(this.byteArray, bigInt.byteArray);
     }
 
@@ -247,10 +246,10 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (b.gcm)
             b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
 
-        for (int i = 0; i < a.byteCount; i++) {
+        for (int i = 0; i < a.byteCount; i++)
             if (a.byteArray[i] != b.byteArray[i])
                 return false;
-        }
+
         return true;
     }
 
@@ -264,11 +263,9 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (b.gcm)
             b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
 
-        for (int i = a.byteCount - 1; i >= 0; i--) {
-            if (a.byteArray[i] != b.byteArray[i]) {
+        for (int i = a.byteCount - 1; i >= 0; i--)
+            if (a.byteArray[i] != b.byteArray[i])
                 return (int) (a.byteArray[i] & 0xFF) > (int) (b.byteArray[i] & 0xFF);
-            }
-        }
 
         return false; // Equal values, so not greater
     }
@@ -283,11 +280,9 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         if (b.gcm)
             b = (T) createInstance(Util.swapBitOrderInAllBytes(b.toByteArray()), false);
 
-        for (int i = a.byteCount - 1; i >= 0; i--) {
-            if (a.byteArray[i] != b.byteArray[i]) {
+        for (int i = a.byteCount - 1; i >= 0; i--)
+            if (a.byteArray[i] != b.byteArray[i])
                 return (a.byteArray[i] & 0xFF) < (b.byteArray[i] & 0xFF);
-            }
-        }
 
         return false; // Equal values, so not greater
     }
@@ -320,9 +315,9 @@ public abstract class UBigInt<T extends UBigInt<T>> {
 
     private String formatBinary() {
         StringBuilder binaryString = new StringBuilder();
-        for (byte b : byteArray) {
+        for (byte b : byteArray)
             binaryString.append(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0')).append(" ");
-        }
+
         return binaryString.toString().trim();
     }
 

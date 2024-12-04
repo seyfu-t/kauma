@@ -13,16 +13,14 @@ import me.seyfu_t.model.UBigInt16;
 public class Util {
 
     public static byte[] swapByteOrder(byte[] byteArray) {
-        if (byteArray == null) {
+        if (byteArray == null)
             return null; // Handle null input
-        }
 
         int length = byteArray.length;
         byte[] swappedArray = new byte[length];
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++)
             swappedArray[i] = byteArray[length - i - 1];
-        }
 
         return swappedArray;
     }
@@ -30,9 +28,8 @@ public class Util {
     public static byte[] swapBitOrderInAllBytes(byte[] byteArray) {
         byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
 
-        for (int i = 0; i < copy.length; i++) {
+        for (int i = 0; i < copy.length; i++)
             copy[i] = Util.swapBitOrder(byteArray[i]);
-        }
 
         return copy;
     }
@@ -81,9 +78,8 @@ public class Util {
     public static String[] convertJsonArrayToStringArray(JsonArray array) {
         String[] stringArray = new String[array.size()];
 
-        for (int i = 0; i < array.size(); i++) {
+        for (int i = 0; i < array.size(); i++)
             stringArray[i] = array.get(i).getAsString();
-        }
 
         return stringArray;
     }
@@ -96,9 +92,9 @@ public class Util {
         boolean isNegative = bigInteger.signum() < 0;
 
         // Non-negative numbers have a leading 0x00 as a sign byte
-        if (!isNegative && signByte == 0x00) {
+        if (!isNegative && signByte == 0x00)
             return true;
-        }
+
         // Negative numbers have a leading 0xFF as a sign byte
 
         return isNegative && signByte == (byte) 0xFF;

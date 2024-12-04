@@ -40,9 +40,8 @@ public class GFMulAction implements Action {
 
     public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
         // Early zero checks
-        if (a.isZero() || b.isZero()) {
+        if (a.isZero() || b.isZero())
             return UBigInt16.Zero(a.isGCM());
-        }
 
         UBigInt16 result = new UBigInt16(a.isGCM());
 

@@ -41,10 +41,8 @@ public class Block2PolyAction implements Action {
                 else // non-gcm condition
                     condition = (blockByteArray[byteIndex] & (1 << bitIndex)) != 0;
 
-                if (condition) {
-                    coefficients[slot] = (byteIndex * 8) + bitIndex;
-                    slot++;
-                }
+                if (condition)
+                    coefficients[slot++] = (byteIndex * 8) + bitIndex;
             }
         }
 

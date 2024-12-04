@@ -65,19 +65,19 @@ public class App {
             JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
             String actionName = remainderJsonObject.get("action").getAsString();
 
-            if ("padding_oracle".equals(actionName)) {
+            if ("padding_oracle".equals(actionName))
                 paddingOracleCases.add(singleCase);
-            } else {
+            else
                 concurrentCases.add(singleCase);
-            }
+
         }
 
         // Process padding_oracle cases sequentially
         for (Entry<String, JsonElement> paddingOracleCase : paddingOracleCases) {
             ProcessedTestCase result = processTestCase(paddingOracleCase);
-            if (result != null && result.result() != null) {
+            if (result != null && result.result() != null)
                 responseBuilder.addResponse(result.hash(), result.result());
-            }
+
         }
 
         // Return early if there is only padding_oracle
@@ -97,9 +97,9 @@ public class App {
             // Collect results
             for (Future<ProcessedTestCase> future : futures) {
                 ProcessedTestCase result = future.get(); // This will block until the task completes
-                if (result != null && result.result() != null) {
+                if (result != null && result.result() != null)
                     responseBuilder.addResponse(result.hash(), result.result());
-                }
+
             }
 
         } catch (InterruptedException | ExecutionException e) {
@@ -118,9 +118,8 @@ public class App {
             JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
 
             Action action = getActionClass(actionName);
-            if (action == null) {
+            if (action == null)
                 return null;
-            }
 
             JsonObject resultEntry = action.execute(arguments);
             return new ProcessedTestCase(uniqueHash, resultEntry);

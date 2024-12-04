@@ -28,10 +28,9 @@ public class GFPolyDiffAction implements Action {
         }
 
         // Skip first one, effectively reduce all exponents by 1
-        for (int i = 1; i < poly.size(); i++) {
+        for (int i = 1; i < poly.size(); i++)
             if (i % 2 == 1)
                 result.setCoefficient(i - 1, poly.getCoefficient(i));
-        }
 
         result = result.popLeadingZeros();
 
