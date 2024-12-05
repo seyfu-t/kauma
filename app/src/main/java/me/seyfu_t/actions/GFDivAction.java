@@ -1,7 +1,5 @@
 package me.seyfu_t.actions;
 
-import java.util.Base64;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
@@ -12,23 +10,13 @@ public class GFDivAction implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
-        String a = arguments.get("a").getAsString();
-        String b = arguments.get("b").getAsString();
+        String base64A = arguments.get("a").getAsString();
+        String base64B = arguments.get("b").getAsString();
 
-        return ResponseBuilder.singleResponse("q", div(a, b));
-    }
-
-    private static String div(String base64A, String base64B) {
-        byte[] blockA = Base64.getDecoder().decode(base64A);
-        byte[] blockB = Base64.getDecoder().decode(base64B);
-
-        UBigInt16 bigIntA = new UBigInt16(blockA, true);
-        UBigInt16 bigIntB = new UBigInt16(blockB, true);
-
-        UBigInt16 quotient = div(bigIntA, bigIntB);
-        String base64 = Base64.getEncoder().encodeToString(quotient.toByteArray());
-
-        return base64;
+        UBigInt16 a = UBigInt16.fromBase64(base64A, true);
+        UBigInt16 b = UBigInt16.fromBase64(base64B, true);
+    
+        return ResponseBuilder.singleResponse("q", div(a, b).toBase64());
     }
 
     public static UBigInt16 div(UBigInt16 a, UBigInt16 b) {
