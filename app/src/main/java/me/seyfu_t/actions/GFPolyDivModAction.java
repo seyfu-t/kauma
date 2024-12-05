@@ -59,8 +59,6 @@ public class GFPolyDivModAction implements Action {
             // Subtract (divisor * term) from remainder
             GF128Poly subtrahend = GFPolyMulAction.mul(divisor, term);
             remainder = GFPolyAddAction.add(remainder, subtrahend);
-
-            remainder = remainder.popLeadingZeros();
         }
 
         return new Tuple<GF128Poly, GF128Poly>(quotient, remainder);
