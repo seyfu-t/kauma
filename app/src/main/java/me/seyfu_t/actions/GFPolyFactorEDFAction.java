@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
+import java.util.SplittableRandom;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,7 +43,7 @@ public class GFPolyFactorEDFAction implements Action {
 
         List<GF128Poly> polyList = new ArrayList<>();
         polyList.add(f);
-        
+
         UBigInt512 bigExponent = UBigInt512.fromBigInt(Q.pow(d).subtract(BigInteger.ONE).divide(BigInteger.valueOf(3)));
 
         while (polyList.size() < n) {
@@ -75,14 +75,16 @@ public class GFPolyFactorEDFAction implements Action {
     }
 
     private static GF128Poly generateRandomPoly(int smallerThan) {
-        Random random = new Random();
+        SplittableRandom random = new SplittableRandom();
         GF128Poly randomPoly = new GF128Poly();
 
-        int newDegree = random.nextInt(smallerThan)+1;
+        int newDegree = random.nextInt(1, smallerThan + 1);
 
-        byte[] randomBytes = new byte[16];
         for (int i = 0; i < newDegree; i++) {
-            random.nextBytes(randomBytes);
+            byte[] randomBytes = new byte[16];
+
+            for (int j = 0; j < randomBytes.length; j++)
+                randomBytes[j] = (byte) random.nextInt(UBigInt16.BIT_COUNT);
 
             UBigInt16 randomCoefficient = new UBigInt16(randomBytes, true);
             randomPoly.setCoefficient(i, randomCoefficient);
