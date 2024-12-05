@@ -64,7 +64,7 @@ public class XEXAction implements Action {
 
         // For every other block, multiply with alpha in GF2^128
         for (int i = 0; i < round; i++) {
-            UBigInt16 roundKey = GFMulAction.combinedMulAndModReduction(UBigInt16.fromBase64(base64MasterKey), UBigInt16.ALPHA);
+            UBigInt16 roundKey = GFMulAction.mulAndReduce(UBigInt16.fromBase64(base64MasterKey), UBigInt16.ALPHA);
             base64MasterKey = roundKey.toBase64();
         }
 

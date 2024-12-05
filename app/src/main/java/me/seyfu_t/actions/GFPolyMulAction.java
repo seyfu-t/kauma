@@ -45,7 +45,7 @@ public class GFPolyMulAction implements Action {
                     continue;
 
                 // Multiply coefficients in GF(2^128)
-                UBigInt16 multipliedCoef = GFMulAction.combinedMulAndModReduction(coefA, coefB);
+                UBigInt16 multipliedCoef = GFMulAction.mulAndReduce(coefA, coefB);
 
                 // Create a polynomial with single term at degree i+j
                 GF128Poly term = new GF128Poly();
@@ -70,7 +70,7 @@ public class GFPolyMulAction implements Action {
 
         for (int i = 0; i < a.size(); i++) {
             if (!a.getCoefficient(i).isZero()) {
-                UBigInt16 squared = GFMulAction.combinedMulAndModReduction(a.getCoefficient(i), a.getCoefficient(i));
+                UBigInt16 squared = GFMulAction.mulAndReduce(a.getCoefficient(i), a.getCoefficient(i));
                 result.setCoefficient(i * 2, squared);
             }
         }

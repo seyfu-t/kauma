@@ -32,7 +32,7 @@ public class GFDivAction implements Action {
     }
 
     public static UBigInt16 div(UBigInt16 a, UBigInt16 b) {
-        return GFMulAction.combinedMulAndModReduction(a, inverse(b));
+        return GFMulAction.mulAndReduce(a, inverse(b));
     }
 
     public static UBigInt16 inverse(UBigInt16 a) {
@@ -43,9 +43,9 @@ public class GFDivAction implements Action {
 
         while (!pow.isZero()) {
             if (pow.testBit(0)) // if odd
-                result = GFMulAction.combinedMulAndModReduction(result, base);
+                result = GFMulAction.mulAndReduce(result, base);
 
-            base = GFMulAction.combinedMulAndModReduction(base, base);
+            base = GFMulAction.mulAndReduce(base, base);
 
             pow = pow.shiftRight(1); // div by 2
         }

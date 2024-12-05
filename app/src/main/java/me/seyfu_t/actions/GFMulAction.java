@@ -13,32 +13,21 @@ public class GFMulAction implements Action {
     @Override
     public JsonObject execute(JsonObject arguments) {
         String semantic = arguments.get("semantic").getAsString();
-        String a = arguments.get("a").getAsString();
-        String b = arguments.get("b").getAsString();
+        String base64A = arguments.get("a").getAsString();
+        String base64B = arguments.get("b").getAsString();
 
-        String product = switch (semantic) {
-            case "xex" -> mul(a, b, false);
-            case "gcm" -> mul(a, b, true);
-            default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
-        };
-
-        return ResponseBuilder.singleResponse("product", product);
-    }
-
-    private static String mul(String base64A, String base64B, boolean gcm) {
         byte[] blockA = Base64.getDecoder().decode(base64A);
         byte[] blockB = Base64.getDecoder().decode(base64B);
+
+        boolean gcm = (semantic == "gcm");
 
         UBigInt16 bigIntA = new UBigInt16(blockA, gcm);
         UBigInt16 bigIntB = new UBigInt16(blockB, gcm);
 
-        UBigInt16 product = combinedMulAndModReduction(bigIntA, bigIntB);
-        String base64 = Base64.getEncoder().encodeToString(product.toByteArray());
-
-        return base64;
+        return ResponseBuilder.singleResponse("product", mulAndReduce(bigIntA, bigIntB).toBase64());
     }
 
-    public static UBigInt16 combinedMulAndModReduction(UBigInt16 a, UBigInt16 b) {
+    public static UBigInt16 mulAndReduce(UBigInt16 a, UBigInt16 b) {
         // Early zero checks
         if (a.isZero() || b.isZero())
             return UBigInt16.Zero(a.isGCM());

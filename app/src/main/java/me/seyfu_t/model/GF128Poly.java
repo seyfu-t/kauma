@@ -142,7 +142,7 @@ public class GF128Poly implements Comparable<GF128Poly> {
                 continue; // Skip zero coefficients
 
             // Convert the field element to its polynomial representation
-            int[] elementPoly = Block2PolyAction.convertBlock2Poly(coefficient.toBase64(), gcm);
+            int[] elementPoly = Block2PolyAction.block2Poly(coefficient.toBase64(), gcm);
 
             // Build the coefficient representation
             StringBuilder coefStr = new StringBuilder();
