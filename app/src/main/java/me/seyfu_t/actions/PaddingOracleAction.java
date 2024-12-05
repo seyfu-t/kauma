@@ -18,7 +18,8 @@ import me.seyfu_t.util.Util;
 
 public class PaddingOracleAction implements Action {
 
-    private static final int RESPONSE_SIZE = 256;
+    private static final int Q_BLOCK_COUNT = 256;
+    private static final int LENGTH_BYTES_COUNT = 2;
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -43,8 +44,6 @@ public class PaddingOracleAction implements Action {
             UBigInt16 qBlock = (i == 0) ? iv : new UBigInt16(ciphertextByteBlocks.get(i - 1));
 
             UBigInt16 decryptedBlock = decryptSingleBlock(qBlock, ciphertextBlock, hostname, port);
-            if (decryptedBlock == null)
-                return null;
             decryptedBlocksList.add(decryptedBlock);
         }
 
@@ -103,21 +102,33 @@ public class PaddingOracleAction implements Action {
 
     private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
             throws IOException {
-        byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // = 256
-        out.write(lengthBytes);
+        byte[] payload = new byte[LENGTH_BYTES_COUNT + Q_BLOCK_COUNT * UBigInt16.BYTE_COUNT];
 
-        for (int i = 0; i < RESPONSE_SIZE; i++) {
+        // length bytes
+        payload[0] = 0;
+        payload[1] = 1;
+
+        // q blocks
+        for (int i = 0; i < Q_BLOCK_COUNT; i++) {
             UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
+
+            // Fill in already known bytes
             if (byteIndex < 15) {
                 byte[] array = pad.toByteArray();
                 for (int j = 15; j > byteIndex; j--)
                     array[j] = (byte) (currentBaseBytes[j] ^ (16 - byteIndex));
-                pad = new UBigInt16(array);
-            }
-            out.write(pad.toByteArray());
+                System.arraycopy(
+                        array, 0,
+                        payload, LENGTH_BYTES_COUNT + i * UBigInt16.BYTE_COUNT, UBigInt16.BYTE_COUNT);
+            } else
+                System.arraycopy(
+                        pad.toByteArray(), 0,
+                        payload, LENGTH_BYTES_COUNT + i * UBigInt16.BYTE_COUNT, UBigInt16.BYTE_COUNT);
         }
 
-        return readInResponse(in, RESPONSE_SIZE);
+        out.write(payload);
+
+        return readInResponse(in, Q_BLOCK_COUNT);
     }
 
     private static boolean is01Padding(OutputStream out, InputStream in, byte toTest) throws IOException {
@@ -141,6 +152,7 @@ public class PaddingOracleAction implements Action {
         return !result;
     }
 
+    // This is for the first run, since there can be two correct answers
     private static List<Integer> getValidPaddingIndexes(byte[] response) {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < response.length; i++)
@@ -150,6 +162,7 @@ public class PaddingOracleAction implements Action {
         return list;
     }
 
+    // For every packet after the first one
     private static int getValidPaddingIndex(byte[] response) {
         for (int i = 0; i < response.length; i++) {
             if (response[i] == 0x01)
