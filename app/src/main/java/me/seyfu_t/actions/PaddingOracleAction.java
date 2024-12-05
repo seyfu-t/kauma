@@ -19,6 +19,7 @@ import me.seyfu_t.util.Util;
 public class PaddingOracleAction implements Action {
 
     private static final int DEBUG_VALUE = 500000;
+    private static final int RESPONSE_SIZE = 256;
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -105,12 +106,12 @@ public class PaddingOracleAction implements Action {
 
     private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
             throws IOException {
-        byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // 256
+        byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // = 256
         out.write(lengthBytes);
 
-        UBigInt16[] DEBUG_SENT = new UBigInt16[256];
+        UBigInt16[] DEBUG_SENT = new UBigInt16[RESPONSE_SIZE];
 
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < RESPONSE_SIZE; i++) {
             UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
             if (byteIndex < 15) {
                 byte[] array = pad.toByteArray();
@@ -122,13 +123,10 @@ public class PaddingOracleAction implements Action {
             out.write(pad.toByteArray());
         }
 
-        byte[] response = new byte[256];
-        int responseInt = in.read(response);
-
+        byte[] response = ensureFullyReadInAllBytes(in, RESPONSE_SIZE);
         // DEBUG
         if (getValidPaddingIndex(response) == DEBUG_VALUE) {
             System.err.println("ALL 0s DETECTED");
-            System.err.println("RESPONSE INT: " + responseInt);
             System.err.println("CURRENT BYTE INDEX IS: " + byteIndex);
             System.err.println("THESE BYTES HAVE ALREADY BEEN DETERMINED: "
                     + (currentBaseBytes == null ? "NONE" : new UBigInt16(currentBaseBytes)));
@@ -184,6 +182,18 @@ public class PaddingOracleAction implements Action {
         byte[] array = UBigInt16.Zero().toByteArray();
         array[byteIndex] = pad;
         return new UBigInt16(array);
+    }
+
+    private static byte[] ensureFullyReadInAllBytes(InputStream in, int expectedLength) throws IOException {
+        byte[] buffer = new byte[expectedLength];
+        int bytesRead = 0;
+        while (bytesRead < expectedLength) {
+            int count = in.read(buffer, bytesRead, expectedLength - bytesRead);
+            if (count == -1)
+                throw new IOException("Padding oracle stream ended before reading required bytes");
+            bytesRead += count;
+        }
+        return buffer;
     }
 
 }
