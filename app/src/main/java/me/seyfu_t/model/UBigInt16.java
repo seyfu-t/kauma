@@ -13,6 +13,7 @@ public class UBigInt16 extends UBigInt<UBigInt16> {
     public static final UBigInt16 ALPHA = UBigInt16.Zero().setBit(1);
 
     public static final int BYTE_COUNT = 16;
+    public static final int BIT_COUNT = BYTE_COUNT * Byte.SIZE;
 
     /*
      * Instance creation
