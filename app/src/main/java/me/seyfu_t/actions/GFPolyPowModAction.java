@@ -67,9 +67,16 @@ public class GFPolyPowModAction implements Action {
         if (pow.isZero())
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
+        UBigInt16 one = UBigInt16.One();
+        boolean condition = pow.sameAs(one); 
         // Check if power is 1
-        if (pow.sameAs(UBigInt16.One(true)))
+        if (condition){
+            System.err.println("CONDITION TRUE AT:");
+            System.err.println("POW: "+pow);
+            System.err.println("ONE: "+one);
+            System.err.println("CONDITION: "+condition);
             return poly.copy();
+        }
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
