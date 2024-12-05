@@ -143,7 +143,7 @@ public class GCMEncryptAction implements Action {
 
     private static UBigInt16 singleGashBlock(UBigInt16 inputA, UBigInt16 inputB, UBigInt16 authKey) {
         UBigInt16 xor = inputA.xor(inputB);
-        return GFMulAction.combinedMulAndModReduction(xor, authKey);
+        return GFMulAction.mulAndReduce(xor, authKey);
     }
 
     public static UBigInt16 calculateLengthOfADAndCiphertexts(byte[] ad, byte[] ciphertext) {

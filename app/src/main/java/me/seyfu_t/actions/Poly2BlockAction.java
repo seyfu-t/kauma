@@ -18,20 +18,20 @@ public class Poly2BlockAction implements Action {
         Arrays.sort(coefficients); // sort ascending, using O(n*log(n)) algorithm BTW
 
         String block = switch (semantic) {
-            case "xex" -> convertPoly2Block(coefficients, false);
-            case "gcm" -> convertPoly2Block(coefficients, true);
+            case "xex" -> poly2Block(coefficients, false);
+            case "gcm" -> poly2Block(coefficients, true);
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
         return ResponseBuilder.singleResponse("block", block);
     }
 
-    private static String convertPoly2Block(int[] coefficients, boolean gcm) {
+    private static String poly2Block(int[] coefficients, boolean gcm) {
         byte[] blockByteArray = new byte[16];
 
-        for (int co : coefficients) {
-            byte byteIndex = (byte) Math.floor(co / 8);
-            byte bitIndex = (byte) (gcm ? (7 - (co % 8)) : (co % 8));
+        for (int coefficient : coefficients) {
+            byte byteIndex = (byte) Math.floor(coefficient / 8);
+            byte bitIndex = (byte) (gcm ? (7 - (coefficient % 8)) : (coefficient % 8));
             blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
         }
 

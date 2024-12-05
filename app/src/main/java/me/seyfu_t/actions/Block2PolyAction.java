@@ -16,15 +16,15 @@ public class Block2PolyAction implements Action {
         String base64Block = arguments.get("block").getAsString();
 
         int[] coefficients = switch (semantic) {
-            case "xex" -> convertBlock2Poly(base64Block, false);
-            case "gcm" -> convertBlock2Poly(base64Block, true);
+            case "xex" -> block2Poly(base64Block, false);
+            case "gcm" -> block2Poly(base64Block, true);
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
         return ResponseBuilder.singleResponse("coefficients", coefficients);
     }
 
-    public static int[] convertBlock2Poly(String base64Block, boolean gcm) {
+    public static int[] block2Poly(String base64Block, boolean gcm) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
 
         int[] coefficients = new int[blockByteArray.length * 8];
