@@ -48,6 +48,8 @@ public class PaddingOracleAction implements Action {
             UBigInt16 qBlock = (i == 0) ? iv : new UBigInt16(ciphertextByteBlocks.get(i - 1));
 
             UBigInt16 decryptedBlock = decryptSingleBlock(qBlock, ciphertextBlock, hostname, port);
+            if (decryptedBlock == null)
+                return null;
             decryptedBlocksList.add(decryptedBlock);
         }
 
@@ -80,6 +82,8 @@ public class PaddingOracleAction implements Action {
                 Log.info("response: " + HexFormat.of().formatHex(response));
 
                 int index = getValidPaddingIndex(response);
+                if (index == DEBUG_VALUE)
+                    return null;
                 Log.debug("Index:", String.format("0x%02X", index & 0xFF));
                 Log.debug("XOR:", String.format("0x%02X", (byte) (16 - i)));
 
@@ -142,11 +146,12 @@ public class PaddingOracleAction implements Action {
         }
 
         byte[] response = new byte[256];
-        in.read(response);
+        int responseInt = in.read(response);
 
         // DEBUG
         if (getValidPaddingIndex(response) == DEBUG_VALUE) {
             System.err.println("ALL 0s DETECTED");
+            System.err.println("RESPONSE INT: " + responseInt);
             System.err.println("CURRENT BYTE INDEX IS: " + byteIndex);
             System.err.println("THESE BYTES HAVE ALREADY BEEN DETERMINED: "
                     + (currentBaseBytes == null ? "NONE" : new UBigInt16(currentBaseBytes)));
