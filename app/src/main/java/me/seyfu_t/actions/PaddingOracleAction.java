@@ -18,7 +18,6 @@ import me.seyfu_t.util.Util;
 
 public class PaddingOracleAction implements Action {
 
-    private static final int DEBUG_VALUE = 500000;
     private static final int RESPONSE_SIZE = 256;
 
     @Override
@@ -75,8 +74,6 @@ public class PaddingOracleAction implements Action {
                 byte[] response = sendAllPossibilities(out, in, i, baseBytes);
 
                 int index = getValidPaddingIndex(response);
-                if (index == DEBUG_VALUE)
-                    return null;
 
                 baseBytes[i] = (byte) (index & 0xFF ^ (16 - i));
             }
@@ -109,8 +106,6 @@ public class PaddingOracleAction implements Action {
         byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // = 256
         out.write(lengthBytes);
 
-        UBigInt16[] DEBUG_SENT = new UBigInt16[RESPONSE_SIZE];
-
         for (int i = 0; i < RESPONSE_SIZE; i++) {
             UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
             if (byteIndex < 15) {
@@ -119,23 +114,10 @@ public class PaddingOracleAction implements Action {
                     array[j] = (byte) (currentBaseBytes[j] ^ (16 - byteIndex));
                 pad = new UBigInt16(array);
             }
-            DEBUG_SENT[i] = pad;
             out.write(pad.toByteArray());
         }
 
-        byte[] response = ensureFullyReadInAllBytes(in, RESPONSE_SIZE);
-        // DEBUG
-        if (getValidPaddingIndex(response) == DEBUG_VALUE) {
-            System.err.println("ALL 0s DETECTED");
-            System.err.println("CURRENT BYTE INDEX IS: " + byteIndex);
-            System.err.println("THESE BYTES HAVE ALREADY BEEN DETERMINED: "
-                    + (currentBaseBytes == null ? "NONE" : new UBigInt16(currentBaseBytes)));
-            System.err.println("THESE WERE SENT TO THE PADDING ORACLE: ");
-            for (UBigInt16 sentBytes : DEBUG_SENT)
-                System.err.println(sentBytes + " : " + sentBytes.toBase64());
-        }
-
-        return response;
+        return readInResponse(in, RESPONSE_SIZE);
     }
 
     private static boolean is01Padding(OutputStream out, InputStream in, byte toTest) throws IOException {
@@ -174,8 +156,7 @@ public class PaddingOracleAction implements Action {
                 return i;
         }
 
-        return DEBUG_VALUE; // DEBUG
-        // throw new RuntimeException("Got all 0s as response");
+        throw new RuntimeException("Got all 0s as response");
     }
 
     private static UBigInt16 genPaddedBlock(int byteIndex, byte pad) {
@@ -184,7 +165,7 @@ public class PaddingOracleAction implements Action {
         return new UBigInt16(array);
     }
 
-    private static byte[] ensureFullyReadInAllBytes(InputStream in, int expectedLength) throws IOException {
+    private static byte[] readInResponse(InputStream in, int expectedLength) throws IOException {
         byte[] buffer = new byte[expectedLength];
         int bytesRead = 0;
         while (bytesRead < expectedLength) {
