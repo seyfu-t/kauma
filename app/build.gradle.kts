@@ -65,7 +65,7 @@ tasks.register<Exec>("compileC") {
     group = "build"
     description = "Compile the C code for JNI"
 
-    val srcDir = file("src/main/c") // Directory containing C source files
+    val srcDir = file("src/main/jni") // Directory containing C source files
     val buildDir = file("$buildDir/native") // Output directory for compiled files
 
     inputs.dir(srcDir)
