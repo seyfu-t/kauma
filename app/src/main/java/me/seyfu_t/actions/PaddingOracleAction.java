@@ -7,14 +7,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HexFormat;
 import java.util.List;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.util.Log;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
@@ -35,9 +33,6 @@ public class PaddingOracleAction implements Action {
     private static String paddingOracle(String hostname, int port, String base64IV, String base64Ciphertext) {
         UBigInt16 iv = UBigInt16.fromBase64(base64IV);
         byte[] ciphertext = Base64.getDecoder().decode(base64Ciphertext);
-
-        Log.debug("IV:", iv);
-        Log.debug("Ciphertext:", HexFormat.of().formatHex(ciphertext));
 
         List<UBigInt16> decryptedBlocksList = new ArrayList<>();
 
@@ -67,36 +62,25 @@ public class PaddingOracleAction implements Action {
             // Handling the first Byte and its edge-case
             out.write(ciphertextBlock.toByteArray());
             byte[] firstResponse = sendAllPossibilities(out, in, 15, null);
-            Log.info("response: " + HexFormat.of().formatHex(firstResponse));
 
             // (if two) Check which byte is not the result of having 0x01 at the end
             byte validPaddingByte = findRelevantPaddingByte(out, in, firstResponse);
 
             byte[] baseBytes = new byte[16];
             baseBytes[15] = (byte) (validPaddingByte ^ 0x01);
-            Log.debug(String.format("Valid base byte: 0x%02X", baseBytes[15] & 0xFF));
 
             // Handling the remaining bytes
             for (int i = 14; i >= 0; i--) {
                 byte[] response = sendAllPossibilities(out, in, i, baseBytes);
-                Log.info("response: " + HexFormat.of().formatHex(response));
 
                 int index = getValidPaddingIndex(response);
                 if (index == DEBUG_VALUE)
                     return null;
-                Log.debug("Index:", String.format("0x%02X", index & 0xFF));
-                Log.debug("XOR:", String.format("0x%02X", (byte) (16 - i)));
 
                 baseBytes[i] = (byte) (index & 0xFF ^ (16 - i));
-                Log.debug(String.format("Valid base byte: 0x%02X", baseBytes[i] & 0xFF));
             }
             UBigInt16 base = new UBigInt16(baseBytes); // D(C_n)
             UBigInt16 result = base.xor(qBlock);
-
-            Log.debug("Ciphertext:          ", ciphertextBlock.toString());
-            Log.debug("Base:                ", base.toString());
-            Log.debug("Q-Block:             ", qBlock.toString());
-            Log.debug("Base XOR Q-Block:    ", result.toString());
 
             return result; // Plaintext = D(C_n) XOR C_(n-1)
         } catch (IOException e) {
@@ -109,18 +93,12 @@ public class PaddingOracleAction implements Action {
         // Possibly two valid indexes
         List<Integer> validIndexes = getValidPaddingIndexes(response);
 
-        Log.debug("Valid indexes size:", validIndexes.size());
-
-        if (validIndexes.size() == 1) {
+        if (validIndexes.size() == 1)
             return (byte) (validIndexes.get(0) & 0xFF);
-        }
 
-        for (int index : validIndexes) {
-            if (!is01Padding(out, in, (byte) (index & 0xFF))) {
-                Log.debug("correct index:", (index & 0xFF));
+        for (int index : validIndexes)
+            if (!is01Padding(out, in, (byte) (index & 0xFF)))
                 return (byte) (index & 0xFF);
-            }
-        }
 
         throw new RuntimeException("Not a single valid padding found.");
     }
@@ -142,7 +120,6 @@ public class PaddingOracleAction implements Action {
             }
             DEBUG_SENT[i] = pad;
             out.write(pad.toByteArray());
-            Log.info("Writing:", pad.toString());
         }
 
         byte[] response = new byte[256];
@@ -181,7 +158,6 @@ public class PaddingOracleAction implements Action {
         in.read(response);
 
         boolean result = (response[0] == 0x01 && response[1] == 0x01);
-        Log.debug("is01Padding:", result);
         return !result;
     }
 
