@@ -26,18 +26,16 @@ public class GFPolyPowModAction implements Action {
         return ResponseBuilder.singleResponse("Z", powMod(a, k, m).toBase64Array());
     }
 
-    public static GF128Poly powMod(GF128Poly poly, BigInteger pow, GF128Poly mod) {
+    public static GF128Poly powMod(GF128Poly base, BigInteger pow, GF128Poly mod) {
         if (pow.equals(BigInteger.ZERO))
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
         if (pow.equals(BigInteger.ONE))
-            return poly.copy();
+            return GFPolyDivModAction.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        GF128Poly base = poly.copy();
 
         UBigInt16 p = UBigInt16.fromBigInt(pow, false);
         // Square and multiply
@@ -60,28 +58,17 @@ public class GFPolyPowModAction implements Action {
         return result.popLeadingZeros();
     }
 
-
-
     // Square and multiply algorithm
-    public static GF128Poly powMod(GF128Poly poly, UBigInt16 pow, GF128Poly mod) {
+    public static GF128Poly powMod(GF128Poly base, UBigInt16 pow, GF128Poly mod) {
         if (pow.isZero())
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
-        UBigInt16 one = UBigInt16.One();
-        boolean condition = pow.sameAs(one); 
         // Check if power is 1
-        if (condition){
-            System.err.println("CONDITION TRUE AT:");
-            System.err.println("POW: "+pow);
-            System.err.println("ONE: "+one);
-            System.err.println("CONDITION: "+condition);
-            return poly.copy();
-        }
+        if (pow.sameAs(UBigInt16.One()))
+            return GFPolyDivModAction.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        GF128Poly base = poly.copy();
 
         UBigInt16 p = pow.copy();
         // Square and multiply
@@ -104,18 +91,16 @@ public class GFPolyPowModAction implements Action {
         return result.popLeadingZeros();
     }
 
-    public static GF128Poly powMod(GF128Poly poly, UBigInt512 pow, GF128Poly mod) {
+    public static GF128Poly powMod(GF128Poly base, UBigInt512 pow, GF128Poly mod) {
         if (pow.isZero())
             return GF128Poly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
         if (pow.sameAs(UBigInt512.One(true)))
-            return poly.copy();
+            return GFPolyDivModAction.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        GF128Poly base = poly.copy();
 
         UBigInt512 p = pow.copy();
         // Square and multiply
