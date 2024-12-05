@@ -14,7 +14,7 @@ public class GFMulAction implements Action {
         String base64A = arguments.get("a").getAsString();
         String base64B = arguments.get("b").getAsString();
 
-        boolean gcm = (semantic == "gcm");
+        boolean gcm = (semantic.equals("gcm"));
 
         UBigInt16 a = UBigInt16.fromBase64(base64A, gcm);
         UBigInt16 b = UBigInt16.fromBase64(base64B, gcm);
