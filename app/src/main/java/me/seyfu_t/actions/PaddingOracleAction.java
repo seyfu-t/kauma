@@ -63,7 +63,7 @@ public class PaddingOracleAction implements Action {
             byte[] firstResponse = sendAllPossibilities(out, in, 15, null);
 
             // (if two) Check which byte is not the result of having 0x01 at the end
-            byte validPaddingByte = findRelevantPaddingByte(out, in, firstResponse);
+            byte validPaddingByte = findRelevantPaddingByteInFirstResponse(out, in, firstResponse);
 
             byte[] baseBytes = new byte[16];
             baseBytes[15] = (byte) (validPaddingByte ^ 0x01);
@@ -85,21 +85,6 @@ public class PaddingOracleAction implements Action {
         }
     }
 
-    private static byte findRelevantPaddingByte(OutputStream out, InputStream in, byte[] response)
-            throws IOException {
-        // Possibly two valid indexes
-        List<Integer> validIndexes = getValidPaddingIndexes(response);
-
-        if (validIndexes.size() == 1)
-            return (byte) (validIndexes.get(0) & 0xFF);
-
-        for (int index : validIndexes)
-            if (!is01Padding(out, in, (byte) (index & 0xFF)))
-                return (byte) (index & 0xFF);
-
-        throw new RuntimeException("Not a single valid padding found.");
-    }
-
     private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
             throws IOException {
         byte[] payload = new byte[LENGTH_BYTES_COUNT + Q_BLOCK_COUNT * UBigInt16.BYTE_COUNT];
@@ -110,7 +95,7 @@ public class PaddingOracleAction implements Action {
 
         // q blocks
         for (int i = 0; i < Q_BLOCK_COUNT; i++) {
-            UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
+            UBigInt16 pad = toPaddedBlock(byteIndex, (byte) i);
 
             // Fill in already known bytes
             if (byteIndex < 15) {
@@ -131,19 +116,35 @@ public class PaddingOracleAction implements Action {
         return readInResponse(in, Q_BLOCK_COUNT);
     }
 
+    private static byte findRelevantPaddingByteInFirstResponse(OutputStream out, InputStream in, byte[] response)
+            throws IOException {
+        // Possibly two valid indexes
+        List<Integer> validIndexes = getValidPaddingIndexes(response);
+
+        if (validIndexes.size() == 1)
+            return (byte) (validIndexes.get(0) & 0xFF);
+
+        for (int index : validIndexes)
+            if (!is01Padding(out, in, (byte) (index & 0xFF)))
+                return (byte) (index & 0xFF);
+
+        throw new RuntimeException("Not a single valid padding found.");
+    }
+
     private static boolean is01Padding(OutputStream out, InputStream in, byte toTest) throws IOException {
-        byte[] length = new byte[2];
-        length[0] = 0x02;
-        out.write(length);
+        byte[] testerPayload = new byte[LENGTH_BYTES_COUNT + UBigInt16.BYTE_COUNT * 2];
 
-        byte[] array = UBigInt16.Zero().toByteArray();
-        array[15] = toTest;
+        // length bytes
+        testerPayload[0] = 2;
+        testerPayload[1] = 0;
+
         // Test 2 diff. possibilities for other byte to not get it accidentally right
-        array[14] = 0x02;
-        out.write(array);
+        testerPayload[LENGTH_BYTES_COUNT + UBigInt16.BYTE_COUNT - 1] = toTest;
+        testerPayload[LENGTH_BYTES_COUNT + UBigInt16.BYTE_COUNT - 2] = 0x02; // some value
+        testerPayload[LENGTH_BYTES_COUNT + UBigInt16.BYTE_COUNT * 2 - 1] = toTest;
+        testerPayload[LENGTH_BYTES_COUNT + UBigInt16.BYTE_COUNT * 2 - 2] = 0x01; // some other value
 
-        array[14] = 0x01;
-        out.write(array);
+        out.write(testerPayload);
 
         byte[] response = new byte[2];
         in.read(response);
@@ -172,7 +173,7 @@ public class PaddingOracleAction implements Action {
         throw new RuntimeException("Got all 0s as response");
     }
 
-    private static UBigInt16 genPaddedBlock(int byteIndex, byte pad) {
+    private static UBigInt16 toPaddedBlock(int byteIndex, byte pad) {
         byte[] array = UBigInt16.Zero().toByteArray();
         array[byteIndex] = pad;
         return new UBigInt16(array);
