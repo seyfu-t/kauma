@@ -115,6 +115,8 @@ public abstract class UBigInt<T extends UBigInt<T>> {
         }
     }
 
+    public native T fastXor(T bigInt);
+
     @SuppressWarnings("unchecked")
     public T xor(T bigInt) {
         return (T) applyOperation(bigInt, (a, b) -> (byte) (a ^ b));
