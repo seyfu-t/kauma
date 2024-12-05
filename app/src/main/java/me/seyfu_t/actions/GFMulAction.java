@@ -1,7 +1,5 @@
 package me.seyfu_t.actions;
 
-import java.util.Base64;
-
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
@@ -16,15 +14,12 @@ public class GFMulAction implements Action {
         String base64A = arguments.get("a").getAsString();
         String base64B = arguments.get("b").getAsString();
 
-        byte[] blockA = Base64.getDecoder().decode(base64A);
-        byte[] blockB = Base64.getDecoder().decode(base64B);
-
         boolean gcm = (semantic == "gcm");
 
-        UBigInt16 bigIntA = new UBigInt16(blockA, gcm);
-        UBigInt16 bigIntB = new UBigInt16(blockB, gcm);
+        UBigInt16 a = UBigInt16.fromBase64(base64A, gcm);
+        UBigInt16 b = UBigInt16.fromBase64(base64B, gcm);
 
-        return ResponseBuilder.singleResponse("product", mulAndReduce(bigIntA, bigIntB).toBase64());
+        return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64());
     }
 
     public static UBigInt16 mulAndReduce(UBigInt16 a, UBigInt16 b) {
