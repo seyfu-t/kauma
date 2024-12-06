@@ -61,6 +61,22 @@ public class FieldElementGCM {
         return new FieldElementGCM(-1L, -1L); // two's complement
     }
 
+    public static FieldElementGCM fromBase64(String base64) {
+        if (base64 == null)
+            return null;
+        byte[] swappedToGCM = Util.swapByteOrder(Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64)));
+        System.out.println(Arrays.toString(swappedToGCM));
+        return new FieldElementGCM(swappedToGCM);
+    }
+
+    public static FieldElementGCM fromBase64XEX(String base64) {
+        if (base64 == null)
+            return null;
+        byte[] swappedToGCM = Util.swapByteOrder(Base64.getDecoder().decode(base64));
+        System.out.println(Arrays.toString(swappedToGCM));
+        return new FieldElementGCM(swappedToGCM);
+    }
+
     // Bit manipulation methods
     public FieldElementGCM setBit(int bit) {
         FieldElementGCM result = new FieldElementGCM(this.high, this.low);
@@ -123,6 +139,7 @@ public class FieldElementGCM {
         }
     }
 
+    // Compare operators
     public boolean equals(FieldElementGCM other) {
         return this.high == other.high && this.low == other.low;
     }
@@ -139,6 +156,7 @@ public class FieldElementGCM {
                         Long.compareUnsigned(this.low, other.low) < 0);
     }
 
+    // Getters
     public boolean isZero() {
         return high == 0 && low == 0;
     }
@@ -151,6 +169,7 @@ public class FieldElementGCM {
         return this.high;
     }
 
+    // Converter
     private byte[] toByteArray() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {
@@ -161,7 +180,11 @@ public class FieldElementGCM {
     }
 
     public String toBase64() {
-        return Base64.getEncoder().encodeToString(Util.swapBitOrderInAllBytes(this.toByteArray()));
+        return Base64.getEncoder().encodeToString(Util.swapByteOrder(Util.swapBitOrderInAllBytes(this.toByteArray())));
+    }
+
+    public String toBase64XEX() {
+        return Base64.getEncoder().encodeToString(Util.swapByteOrder(this.toByteArray()));
     }
 
     @Override
@@ -206,13 +229,6 @@ public class FieldElementGCM {
         return bigInt.toString(10);
     }
 
-    public static FieldElementGCM fromBase64(String base64) {
-        if (base64 == null)
-            return null;
-        byte[] swappedToGCM = Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64));
-        System.out.println(Arrays.toString(swappedToGCM));
-        return new FieldElementGCM(swappedToGCM);
-    }
 
     // private long swapBitOrderInLong(long value) {
     // long result = 0;
