@@ -17,16 +17,18 @@ public class GFMulAction implements Action {
 
         boolean gcm = (semantic.equals("gcm"));
 
+        FieldElementGCM a;
+        FieldElementGCM b;
         if (gcm) {
-            FieldElementGCM a = FieldElementGCM.fromBase64(base64A);
-            FieldElementGCM b = FieldElementGCM.fromBase64(base64B);
+            a = FieldElementGCM.fromBase64(base64A);
+            b = FieldElementGCM.fromBase64(base64B);
 
             return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64());
         } else {
-            UBigInt16 a = UBigInt16.fromBase64(base64A);
-            UBigInt16 b = UBigInt16.fromBase64(base64B);
-
-            return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64());
+            a = FieldElementGCM.fromBase64XEX(base64A);
+            b = FieldElementGCM.fromBase64XEX(base64B);
+            
+            return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64XEX());
         }
 
     }
@@ -50,7 +52,7 @@ public class GFMulAction implements Action {
                 a = a.xor(FieldElementGCM.REDUCTION_POLY);
 
             b = b.shiftRight(1);
-
+            System.out.println("B: "+b);
             // Early termination if b becomes zero
             if (b.isZero())
                 break;
