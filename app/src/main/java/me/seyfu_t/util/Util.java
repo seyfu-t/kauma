@@ -25,6 +25,15 @@ public class Util {
         return swappedArray;
     }
 
+    public static byte[] swapByteAndBitOrder(byte[] byteArray) {
+        byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
+
+        for (int i = 0; i < copy.length; i++)
+            copy[copy.length-i] = Util.swapBitOrder(byteArray[i]);
+
+        return copy;
+    }
+
     public static byte[] swapBitOrderInAllBytes(byte[] byteArray) {
         byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
 
