@@ -3,7 +3,7 @@ package me.seyfu_t.actions;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.FieldElementGCM;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.ResponseBuilder;
 
@@ -17,28 +17,28 @@ public class GFMulAction implements Action {
 
         boolean gcm = (semantic.equals("gcm"));
 
-        FieldElementGCM a;
-        FieldElementGCM b;
+        FieldElement a;
+        FieldElement b;
         if (gcm) {
-            a = FieldElementGCM.fromBase64(base64A);
-            b = FieldElementGCM.fromBase64(base64B);
+            a = FieldElement.fromBase64(base64A);
+            b = FieldElement.fromBase64(base64B);
 
             return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64());
         } else {
-            a = FieldElementGCM.fromBase64XEX(base64A);
-            b = FieldElementGCM.fromBase64XEX(base64B);
+            a = FieldElement.fromBase64XEX(base64A);
+            b = FieldElement.fromBase64XEX(base64B);
             
             return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64XEX());
         }
 
     }
 
-    public static FieldElementGCM mulAndReduce(FieldElementGCM a, FieldElementGCM b) {
+    public static FieldElement mulAndReduce(FieldElement a, FieldElement b) {
         // Early zero checks
         if (a.isZero() || b.isZero())
-            return FieldElementGCM.Zero();
+            return FieldElement.Zero();
 
-        FieldElementGCM result = FieldElementGCM.Zero();
+        FieldElement result = FieldElement.Zero();
 
         // doing more than 128 rounds isn't possible
         for (int i = 0; i < UBigInt16.BYTE_COUNT * Byte.SIZE; i++) {
@@ -49,7 +49,7 @@ public class GFMulAction implements Action {
             a = a.shiftLeft(1);
 
             if (overflow)
-                a = a.xor(FieldElementGCM.REDUCTION_POLY);
+                a = a.xor(FieldElement.REDUCTION_POLY);
 
             b = b.shiftRight(1);
             System.out.println("B: "+b);
