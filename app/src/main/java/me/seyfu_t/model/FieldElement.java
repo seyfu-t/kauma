@@ -1,7 +1,6 @@
 package me.seyfu_t.model;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Base64;
 
 import me.seyfu_t.util.Util;
@@ -65,7 +64,6 @@ public class FieldElement {
         if (base64 == null)
             return null;
         byte[] swappedToGCM = Util.swapByteOrder(Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64)));
-        System.out.println(Arrays.toString(swappedToGCM));
         return new FieldElement(swappedToGCM);
     }
 
@@ -73,7 +71,6 @@ public class FieldElement {
         if (base64 == null)
             return null;
         byte[] swappedToGCM = Util.swapByteOrder(Base64.getDecoder().decode(base64));
-        System.out.println(Arrays.toString(swappedToGCM));
         return new FieldElement(swappedToGCM);
     }
 

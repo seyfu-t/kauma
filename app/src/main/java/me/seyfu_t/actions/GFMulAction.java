@@ -52,7 +52,6 @@ public class GFMulAction implements Action {
                 a = a.xor(FieldElement.REDUCTION_POLY);
 
             b = b.shiftRight(1);
-            System.out.println("B: "+b);
             // Early termination if b becomes zero
             if (b.isZero())
                 break;
