@@ -1,6 +1,7 @@
 package me.seyfu_t.model;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Base64;
 
 import me.seyfu_t.util.Util;
@@ -11,6 +12,7 @@ public class FieldElementGCM {
     private long low;
 
     // Constants
+    public static final FieldElementGCM REDUCTION_POLY = FieldElementGCM.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
     public static final long REDUCTION_POLY_LONG = 0x87; // when reducing, the big at index 128 will fall off anyway
     public static final long ALPHA_LONG = 0x02;
 
@@ -29,17 +31,20 @@ public class FieldElementGCM {
         if (bytes == null || bytes.length == 0) {
             this.high = 0;
             this.low = 0;
-        } else if (bytes.length < 16) {
-            for (int i = 0; i < Math.min(bytes.length, 16); i++) {
-                this.low |= ((long) (bytes[bytes.length - 1 - i] & 0xFF)) << (i * 8);
-                if (i < bytes.length - 1)
-                    this.high |= ((long) (bytes[bytes.length - 1 - i + 8] & 0xFF)) << (i * 8);
-            }
-        } else { // yes this is seems redundant, but there is one compare less at every iteration
-            for (int i = 0; i < Math.min(bytes.length, 16); i++) {
-                this.low |= ((long) (bytes[bytes.length - 1 - i] & 0xFF)) << (i * 8);
-                this.high |= ((long) (bytes[bytes.length - 1 - i + 8] & 0xFF)) << (i * 8);
-            }
+            return;
+        }
+
+        // Ensure we take exactly 16 bytes, zero-padding if shorter
+        byte[] fullBytes = new byte[16];
+        int copyLength = Math.min(bytes.length, 16);
+        int sourceOffset = Math.max(0, bytes.length - 16);
+
+        System.arraycopy(bytes, sourceOffset, fullBytes, 16 - copyLength, copyLength);
+
+        // Convert to two longs, treating as big-endian
+        for (int i = 0; i < 8; i++) {
+            this.high = (this.high << 8) | (fullBytes[i] & 0xFF);
+            this.low = (this.low << 8) | (fullBytes[i + 8] & 0xFF);
         }
     }
 
@@ -138,6 +143,14 @@ public class FieldElementGCM {
         return high == 0 && low == 0;
     }
 
+    public long low() {
+        return this.low;
+    }
+
+    public long high() {
+        return this.high;
+    }
+
     private byte[] toByteArray() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {
@@ -196,27 +209,29 @@ public class FieldElementGCM {
     public static FieldElementGCM fromBase64(String base64) {
         if (base64 == null)
             return null;
-        return new FieldElementGCM(Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64)));
+        byte[] swappedToGCM = Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64));
+        System.out.println(Arrays.toString(swappedToGCM));
+        return new FieldElementGCM(swappedToGCM);
     }
 
     // private long swapBitOrderInLong(long value) {
-    //     long result = 0;
-    //     for (int byteIndex = 0; byteIndex < 8; byteIndex++) {
-    //         // Extract the byte
-    //         long byte_slice = (value >> (byteIndex * 8)) & 0xFF;
+    // long result = 0;
+    // for (int byteIndex = 0; byteIndex < 8; byteIndex++) {
+    // // Extract the byte
+    // long byte_slice = (value >> (byteIndex * 8)) & 0xFF;
 
-    //         // Swap bits within this byte
-    //         long swapped_byte = 0;
-    //         for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-    //             if (((byte_slice >> bitIndex) & 1) == 1) {
-    //                 swapped_byte |= 1L << (7 - bitIndex);
-    //             }
-    //         }
+    // // Swap bits within this byte
+    // long swapped_byte = 0;
+    // for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+    // if (((byte_slice >> bitIndex) & 1) == 1) {
+    // swapped_byte |= 1L << (7 - bitIndex);
+    // }
+    // }
 
-    //         // Place the swapped byte back into the result
-    //         result |= swapped_byte << (byteIndex * 8);
-    //     }
-    //     return result;
+    // // Place the swapped byte back into the result
+    // result |= swapped_byte << (byteIndex * 8);
+    // }
+    // return result;
     // }
 
 }
