@@ -138,8 +138,15 @@ public class FieldElement {
 
     public FieldElement divBy2() {
         // Optimized path for a single bit shift right
-        long newLow = (low >>> 1) | ((high & 1) << 63);
-        long newHigh = high >>> 1;
+        long newLow = (this.low >>> 1) | ((this.high & 1) << 63);
+        long newHigh = this.high >>> 1;
+        return new FieldElement(newHigh, newLow);
+    }
+
+    public FieldElement mulBy2() {
+        // Optimized path for single bit shift left
+        long newHigh = (this.high << 1) | ((this.low >>> 63) & 1);
+        long newLow = this.low << 1;
         return new FieldElement(newHigh, newLow);
     }
 
