@@ -61,7 +61,6 @@ public class App {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
 
-        System.out.println(PROFILE_MODE);
         if (PROFILE_MODE) {
             iterateOverAllCasesSingleThreaded(responseBuilder, testcasesJson);
             return responseBuilder.build();
