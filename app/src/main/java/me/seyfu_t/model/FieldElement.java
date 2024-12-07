@@ -66,7 +66,7 @@ public class FieldElement {
     public static FieldElement fromBase64(String base64) {
         if (base64 == null)
             return null;
-        byte[] swappedToGCM = Util.swapByteOrder(Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64)));
+        byte[] swappedToGCM = Util.swapByteAndBitOrder(Base64.getDecoder().decode(base64));
         return new FieldElement(swappedToGCM);
     }
 
@@ -194,7 +194,7 @@ public class FieldElement {
     }
 
     public String toBase64() {
-        return Base64.getEncoder().encodeToString(Util.swapByteOrder(Util.swapBitOrderInAllBytes(this.toByteArray())));
+        return Base64.getEncoder().encodeToString(Util.swapByteAndBitOrder(this.toByteArray()));
     }
 
     public String toBase64XEX() {
