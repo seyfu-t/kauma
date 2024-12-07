@@ -5,7 +5,9 @@ import java.util.Arrays;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.ResponseBuilder;
@@ -18,10 +20,58 @@ public class GFPolyDivModAction implements Action {
         String[] a = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] b = Util.convertJsonArrayToStringArray(arguments.get("B").getAsJsonArray());
 
-        GF128Poly polyA = new GF128Poly(a);
-        GF128Poly polyB = new GF128Poly(b);
+        GFPoly polyA = new GFPoly(a);
+        GFPoly polyB = new GFPoly(b);
 
         return divMod(polyA, polyB);
+    }
+
+    public static JsonObject divMod(GFPoly dividend, GFPoly divisor) {
+        Tuple<GFPoly, GFPoly> result = divModTuple(dividend, divisor);
+
+        return ResponseBuilder.multiResponse(Arrays.asList(
+                new Tuple<>("Q", result.getFirst().toBase64Array()),
+                new Tuple<>("R", result.getSecond().toBase64Array())));
+    }
+
+    private static Tuple<GFPoly, GFPoly> divModTuple(GFPoly dividend, GFPoly divisor) {
+        // If dividend degree < divisor degree, quotient is 0 and remainder is dividend
+        if (dividend.size() < divisor.size())
+            return new Tuple<GFPoly, GFPoly>(GFPoly.ZERO_POLY, dividend);
+
+        // Initialize quotient and remainder
+        GFPoly quotient = new GFPoly();
+        GFPoly remainder = dividend.copy();
+
+        // leading coefficient
+        FieldElement divisorLC = divisor.getCoefficient(divisor.degree());
+
+        while (!remainder.isZero() && remainder.degree() >= divisor.degree()) {
+            int degDiff = remainder.degree() - divisor.degree();
+
+            // Calculate the quotient term
+            FieldElement quotientTerm = GFDivAction.div(remainder.getCoefficient(remainder.degree()), divisorLC);
+
+            // Create a new polynomial for the term
+            GFPoly term = new GFPoly();
+            term.setCoefficient(degDiff, quotientTerm);
+
+            quotient = GFPolyAddAction.add(quotient, term);
+
+            // Subtract (divisor * term) from remainder
+            GFPoly subtrahend = GFPolyMulAction.mul(divisor, term);
+            remainder = GFPolyAddAction.add(remainder, subtrahend);
+        }
+
+        return new Tuple<GFPoly, GFPoly>(quotient, remainder);
+    }
+
+    public static GFPoly divModRest(GFPoly dividend, GFPoly divisor) {
+        return divModTuple(dividend, divisor).getSecond();
+    }
+
+    public static GFPoly divModQuotient(GFPoly dividend, GFPoly divisor) {
+        return divModTuple(dividend, divisor).getFirst();
     }
 
     public static JsonObject divMod(GF128Poly dividend, GF128Poly divisor) {

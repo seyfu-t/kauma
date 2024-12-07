@@ -3,7 +3,9 @@ package me.seyfu_t.actions;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
@@ -14,9 +16,23 @@ public class GFPolyMakeMonicAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] polyA = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
 
-        GF128Poly a = new GF128Poly(polyA);
+        GFPoly a = new GFPoly(polyA);
 
         return ResponseBuilder.singleResponse("A*", makeMonic(a).toBase64Array());
+    }
+
+    public static GFPoly makeMonic(GFPoly a) {
+        FieldElement leadingCoefficient = a.getCoefficient(a.size() - 1);
+
+        GFPoly poly = new GFPoly();
+        for (int i = 0; i < a.size() - 1; i++) {
+            // Divide each coefficient
+            FieldElement divided = GFDivAction.div(a.getCoefficient(i), leadingCoefficient);
+            poly.setCoefficient(i, divided);
+        }
+        poly.setCoefficient(a.size() - 1, FieldElement.One());
+
+        return poly;
     }
 
     public static GF128Poly makeMonic(GF128Poly a) {
