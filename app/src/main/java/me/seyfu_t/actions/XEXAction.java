@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
@@ -26,10 +26,10 @@ public class XEXAction implements Action {
 
     private static String xex(String mode, String base64Key, String base64Tweak, String base64Input) {
         byte[] fullKey = Base64.getDecoder().decode(base64Key);
-        UBigInt16 keyOne = new UBigInt16(Arrays.copyOfRange(fullKey, 0, fullKey.length / 2));
-        UBigInt16 keyTwo = new UBigInt16(Arrays.copyOfRange(fullKey, fullKey.length / 2, fullKey.length));
+        FieldElement keyOne = new FieldElement(Arrays.copyOfRange(fullKey, 0, fullKey.length / 2));
+        FieldElement keyTwo = new FieldElement(Arrays.copyOfRange(fullKey, fullKey.length / 2, fullKey.length));
 
-        UBigInt16 tweak = UBigInt16.fromBase64(base64Tweak);
+        FieldElement tweak = FieldElement.fromBase64XEX(base64Tweak);
 
         byte[] input = Base64.getDecoder().decode(base64Input);
 
@@ -43,40 +43,40 @@ public class XEXAction implements Action {
         return out;
     }
 
-    private static byte[] cryptAllBlocks(String mode, byte[] input, UBigInt16 tweak, UBigInt16 keyOne,
-            UBigInt16 keyTwo) {
-        List<UBigInt16> blocksList = new ArrayList<>();
+    private static byte[] cryptAllBlocks(String mode, byte[] input, FieldElement tweak, FieldElement keyOne,
+            FieldElement keyTwo) {
+        List<FieldElement> blocksList = new ArrayList<>();
 
         for (int i = 0; i < input.length / 16; i++) {
-            UBigInt16 roundPlainOrCipherText = new UBigInt16(Arrays.copyOfRange(input, i * 16, (i + 1) * 16));
+            FieldElement roundPlainOrCipherText = new FieldElement(Arrays.copyOfRange(input, i * 16, (i + 1) * 16));
 
-            UBigInt16 roundKey = getMasterKeyForRound(i, tweak, keyTwo);
+            FieldElement roundKey = getMasterKeyForRound(i, tweak, keyTwo);
 
-            UBigInt16 block = cryptSingleBlock(mode, roundPlainOrCipherText, roundKey, keyOne);
+            FieldElement block = cryptSingleBlock(mode, roundPlainOrCipherText, roundKey, keyOne);
             blocksList.add(block);
         }
-        return Util.concatUBigInt16s(blocksList);
+        return Util.concatFieldElements(blocksList);
     }
 
-    private static UBigInt16 getMasterKeyForRound(int round, UBigInt16 tweak, UBigInt16 keyTwo) {
+    private static FieldElement getMasterKeyForRound(int round, FieldElement tweak, FieldElement keyTwo) {
         // Starter key
-        String base64MasterKey = SEA128Action.sea128("encrypt", tweak.toBase64(), keyTwo.toBase64());
+        String base64MasterKey = SEA128Action.sea128("encrypt", tweak.toBase64XEX(), keyTwo.toBase64XEX());
 
         // For every other block, multiply with alpha in GF2^128
         for (int i = 0; i < round; i++) {
-            UBigInt16 roundKey = GFMulAction.mulAndReduce(UBigInt16.fromBase64(base64MasterKey), UBigInt16.ALPHA);
-            base64MasterKey = roundKey.toBase64();
+            FieldElement roundKey = GFMulAction.mulAndReduce(FieldElement.fromBase64XEX(base64MasterKey), FieldElement.ALPHA);
+            base64MasterKey = roundKey.toBase64XEX();
         }
 
-        return UBigInt16.fromBase64(base64MasterKey);
+        return FieldElement.fromBase64XEX(base64MasterKey);
     }
 
-    private static UBigInt16 cryptSingleBlock(String mode, UBigInt16 text, UBigInt16 roundKey, UBigInt16 keyOne) {
+    private static FieldElement cryptSingleBlock(String mode, FieldElement text, FieldElement roundKey, FieldElement keyOne) {
         // XOR
-        UBigInt16 block = text.xor(roundKey);
+        FieldElement block = text.xor(roundKey);
 
         // Encrypt or Decrypt
-        block = UBigInt16.fromBase64(SEA128Action.sea128(mode, block.toBase64(), keyOne.toBase64()));
+        block = FieldElement.fromBase64XEX(SEA128Action.sea128(mode, block.toBase64XEX(), keyOne.toBase64XEX()));
 
         // XOR
         block = block.xor(roundKey);
