@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
@@ -13,18 +14,44 @@ public class GFPolyPowAction implements Action {
     @Override
     public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
-        UBigInt16 k = UBigInt16.fromBigInt(arguments.get("k").getAsBigInteger());
+        long k = arguments.get("k").getAsLong();
 
-        GF128Poly a = new GF128Poly(poly);
+        GFPoly a = new GFPoly(poly);
 
         return ResponseBuilder.singleResponse("Z", pow(a, k).toBase64Array());
     }
 
     // Square and multiply algorithm
-    public static GF128Poly pow(GF128Poly poly, int exp) {
-        if (exp < 0)
-            throw new IllegalArgumentException("Negative powers are not supported");
+    public static GFPoly pow(GFPoly poly, long exp) {
+        if (exp == 0)
+            return GFPoly.DEGREE_ZERO_POLY_ONE;
 
+        if (exp == 1)
+            return poly;
+
+        // Initialize result as 1 (identity element for multiplication)
+        GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
+
+        GFPoly base = poly.copy();
+
+        // Binary exponentiation algorithm
+        while (exp > 0) {
+            // If odd, multiply
+            if ((exp & 1) == 1)
+                result = GFPolyMulAction.mul(result, base);
+
+            // Square
+            base = GFPolyMulAction.square(base);
+
+            // Divide exponent by 2
+            exp >>= 1;
+        }
+
+        return result.popLeadingZeros();
+    }
+
+    // Square and multiply algorithm
+    public static GF128Poly pow(GF128Poly poly, int exp) {
         if (exp == 0) {
             GF128Poly one = new GF128Poly();
             one.setCoefficient(0, UBigInt16.Zero(true).setBit(0));
