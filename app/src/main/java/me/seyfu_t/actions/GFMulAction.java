@@ -22,10 +22,10 @@ public class GFMulAction implements Action {
         String response;
         
         if (gcm) {
-            a = FieldElement.fromBase64(base64A);
-            b = FieldElement.fromBase64(base64B);
+            a = FieldElement.fromBase64GCM(base64A);
+            b = FieldElement.fromBase64GCM(base64B);
             
-            response = mulAndReduce(a, b).toBase64();
+            response = mulAndReduce(a, b).toBase64GCM();
         } else {
             a = FieldElement.fromBase64XEX(base64A);
             b = FieldElement.fromBase64XEX(base64B);
