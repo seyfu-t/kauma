@@ -43,8 +43,8 @@ public class FieldElement {
 
         // Convert to two longs, treating as little-endian
         for (int i = 0; i < 8; i++) {
-            this.low |= ((long)(fullBytes[i] & 0xFF) << (i * 8));
-            this.high |= ((long)(fullBytes[i + 8] & 0xFF) << (i * 8));
+            this.low |= ((long) (fullBytes[i] & 0xFF) << (i * 8));
+            this.high |= ((long) (fullBytes[i + 8] & 0xFF) << (i * 8));
         }
     }
 
