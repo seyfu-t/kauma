@@ -57,8 +57,8 @@ public class GCMEncryptAction implements Action {
 
     public static FieldElement calculateAuthKey(String algorithm, FieldElement key) {
         return switch (algorithm) {
-            case "aes128" -> new FieldElement(AES.encrypt(new byte[16], key.toByteArray()));
-            case "sea128" -> new FieldElement(SEA128Action.encryptSEA128(new byte[16], key.toByteArray()));
+            case "aes128" -> new FieldElement(AES.encrypt(new byte[16], key.toByteArrayGCM()));
+            case "sea128" -> new FieldElement(SEA128Action.encryptSEA128(new byte[16], key.toByteArrayGCM()));
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
     }
@@ -76,7 +76,7 @@ public class GCMEncryptAction implements Action {
             ciphertextBlocksList.add(ciphertextBlock);
         }
 
-        byte[] concatedCiphertext = Util.concatFieldElements(ciphertextBlocksList);
+        byte[] concatedCiphertext = Util.concatFieldElementsGCM(ciphertextBlocksList);
         // undo the part that resulted from padding the last ciphertext block
         byte[] result = Arrays.copyOfRange(concatedCiphertext, 0, text.length);
 
@@ -91,10 +91,10 @@ public class GCMEncryptAction implements Action {
 
         return switch (algorithm) {
             case "aes128" ->
-                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArray(), key.toByteArray()))
+                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayGCM(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             case "sea128" ->
-                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArray(), key.toByteArray()))
+                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayGCM(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
@@ -109,7 +109,7 @@ public class GCMEncryptAction implements Action {
 
         // 12 byte nonce, rest will be filed with 0s
         FieldElement nonce = FieldElement.fromBase64GCM(base64Nonce);
-        byte[] result = nonce.toByteArray();
+        byte[] result = nonce.toByteArrayGCM();
 
         // copy counter into remaining 4 bytes
         System.arraycopy(ctr, 0, result, 12, 4);

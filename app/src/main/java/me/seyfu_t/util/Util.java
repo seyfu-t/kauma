@@ -61,13 +61,25 @@ public class Util {
         return (byte) x;
     }
 
-    public static byte[] concatFieldElements(List<FieldElement> list) {
+    public static byte[] concatFieldElementsXEX(List<FieldElement> list) {
         // Calculate size for resulting byte array
         byte[] result = new byte[list.size() * 16];
 
         // piece-wise copy byte arrays into result array
         for (int listItem = 0; listItem < list.size(); listItem++) {
-            byte[] currentBytes = list.get(listItem).toByteArray();
+            byte[] currentBytes = list.get(listItem).toByteArrayXEX();
+            System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
+        }
+        return result;
+    }
+
+    public static byte[] concatFieldElementsGCM(List<FieldElement> list) {
+        // Calculate size for resulting byte array
+        byte[] result = new byte[list.size() * 16];
+
+        // piece-wise copy byte arrays into result array
+        for (int listItem = 0; listItem < list.size(); listItem++) {
+            byte[] currentBytes = list.get(listItem).toByteArrayGCM();
             System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
         }
         return result;

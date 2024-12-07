@@ -55,7 +55,7 @@ public class XEXAction implements Action {
             FieldElement block = cryptSingleBlock(mode, roundPlainOrCipherText, roundKey, keyOne);
             blocksList.add(block);
         }
-        return Util.concatFieldElements(blocksList);
+        return Util.concatFieldElementsXEX(blocksList);
     }
 
     private static FieldElement getMasterKeyForRound(int round, FieldElement tweak, FieldElement keyTwo) {
