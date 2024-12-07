@@ -1,9 +1,7 @@
 package me.seyfu_t.actions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
 
 import com.google.gson.JsonObject;
 
@@ -12,166 +10,140 @@ import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.AES;
 import me.seyfu_t.util.ResponseBuilder;
-import me.seyfu_t.util.Util;
 
 public class GCMEncryptAction implements Action {
 
-    public static final int AUTH_TAG_INDEX = -1;
+    public static final int AUTH_TAG_COUNTER = 1;
+    private static final int BLOCK_SIZE = 16;
 
     @Override
     public JsonObject execute(JsonObject arguments) {
         String algorithm = arguments.get("algorithm").getAsString();
-        String nonce = arguments.get("nonce").getAsString();
-        String key = arguments.get("key").getAsString();
-        String plaintext = arguments.get("plaintext").getAsString();
-        String ad = arguments.get("ad").getAsString();
+        byte[] nonce = Base64.getDecoder().decode(arguments.get("nonce").getAsString());
+        byte[] key = Base64.getDecoder().decode(arguments.get("key").getAsString());
+        byte[] plaintext = Base64.getDecoder().decode(arguments.get("plaintext").getAsString());
+        byte[] ad = Base64.getDecoder().decode(arguments.get("ad").getAsString());
 
         return gcmEncrypt(algorithm, nonce, key, plaintext, ad);
     }
 
-    public static JsonObject gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
-            String base64Plaintext, String base64AD) {
+    public static JsonObject gcmEncrypt(String algorithm, byte[] nonce, byte[] key, byte[] plaintext, byte[] ad) {
 
-        FieldElement key = FieldElement.fromBase64GCM(base64Key);
-        byte[] plaintextBytes = Base64.getDecoder().decode(base64Plaintext);
-        byte[] ciphertextBytes = generateFullText(algorithm, base64Nonce, key, plaintextBytes);
-        byte[] adBytes = Base64.getDecoder().decode(base64AD);
+        byte[] ciphertext = crypt(algorithm, nonce, key, plaintext);
 
-        FieldElement H = calculateAuthKey(algorithm, key);
-        FieldElement L = calculateLengthOfADAndCiphertexts(adBytes, ciphertextBytes);
-        FieldElement ghashResult = ghash(H, adBytes, ciphertextBytes, L);
-        // index -1 because 0 is the first ciphertext and this is one before that
-        FieldElement authTag = generateSingleTextBlock(AUTH_TAG_INDEX, algorithm, base64Nonce, key, ghashResult);
-
-        String ciphertext = Base64.getEncoder().encodeToString(ciphertextBytes);
-        String base64L = L.toBase64XEX();
-        String base64H = H.toBase64XEX();
-        String base64AuthTag = authTag.toBase64XEX();
+        FieldElement authTagMask = new FieldElement(mask(algorithm, key, nonce, AUTH_TAG_COUNTER));
+        FieldElement authKey = authKey(algorithm, key);
+        FieldElement lengthBlock = lengthBlock(ad, ciphertext);
+        FieldElement ghash = ghash(ciphertext, ad, authKey, lengthBlock);
+        FieldElement authTag = authTagMask.xor(ghash);
 
         return ResponseBuilder.multiResponse(Arrays.asList(
-                new Tuple<>("ciphertext", ciphertext),
-                new Tuple<>("tag", base64AuthTag),
-                new Tuple<>("L", base64L),
-                new Tuple<>("H", base64H)));
+           new Tuple<>("ciphertext", Base64.getEncoder().encodeToString(ciphertext)), 
+           new Tuple<>("tag", authTag.toBase64XEX()), 
+           new Tuple<>("L", lengthBlock.toBase64XEX()), 
+           new Tuple<>("H", authKey.toBase64XEX())
+        ));
     }
 
-    public static FieldElement calculateAuthKey(String algorithm, FieldElement key) {
-        return switch (algorithm) {
-            case "aes128" -> new FieldElement(AES.encrypt(new byte[16], key.toByteArrayGCM()));
-            case "sea128" -> new FieldElement(SEA128Action.encryptSEA128(new byte[16], key.toByteArrayGCM()));
-            default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
-        };
-    }
+    public static byte[] crypt(String algorithm, byte[] nonce, byte[] key, byte[] plaintext) {
+        byte[] ciphertext = new byte[plaintext.length];
 
-    public static byte[] generateFullText(String algorithm, String nonce, FieldElement key, byte[] text) {
+        int plaintextBlockCount = (plaintext.length / BLOCK_SIZE) + (plaintext.length % BLOCK_SIZE == 0 ? 0 : 1);
 
-        List<FieldElement> ciphertextBlocksList = new ArrayList<>();
-        int blockCount = (text.length / 16) + (text.length % 16 == 0 ? 0 : 1);
-
-        for (int i = 0; i < blockCount; i++) {
-            // Copy each 16 byte block into a FieldElement (this will auto-pad the last one
-            // if
-            // needed)
-            FieldElement textBlock = new FieldElement(Arrays.copyOfRange(text, i * 16, (i + 1) * 16));
-            FieldElement ciphertextBlock = generateSingleTextBlock(i, algorithm, nonce, key, textBlock);
-            ciphertextBlocksList.add(ciphertextBlock);
+        for (int i = 0; i < plaintextBlockCount; i++) {
+            byte[] plaintextSlice = Arrays.copyOfRange(plaintext, i * BLOCK_SIZE,
+                    Math.min((i + 1) * BLOCK_SIZE, plaintext.length));
+            byte[] mask = mask(algorithm, key, nonce, i + 2);
+            for (int j = 0; j < plaintextSlice.length; j++)
+                ciphertext[j + i * BLOCK_SIZE] = (byte) (mask[j] ^ plaintextSlice[j]);
         }
 
-        byte[] concatedCiphertext = Util.concatFieldElementsXEX(ciphertextBlocksList);
-        // undo the part that resulted from padding the last ciphertext block
-        byte[] result = Arrays.copyOfRange(concatedCiphertext, 0, text.length);
+        return ciphertext;
+    }
+
+    // GHASH
+
+    public static FieldElement ghash(byte[] ciphertext, byte[] ad, FieldElement authKey, FieldElement lengthBlock) {
+        FieldElement lastBlock = FieldElement.Zero();
+        int adBlockCount = (ad.length / BLOCK_SIZE) + (ad.length % BLOCK_SIZE == 0 ? 0 : 1);
+
+        for (int i = 0; i < adBlockCount; i++) {
+            byte[] adSlice = Arrays.copyOfRange(ad, i * BLOCK_SIZE, Math.min((i + 1) * BLOCK_SIZE, ad.length));
+            FieldElement adBlock = new FieldElement(adSlice);
+            FieldElement xor = lastBlock.xor(adBlock);
+            lastBlock = GFMulAction.mulAndReduce(xor, authKey);
+        }
+
+        int ciphertextBlockCount = (ciphertext.length / BLOCK_SIZE) + (ciphertext.length % BLOCK_SIZE == 0 ? 0 : 1);
+
+        for (int i = 0; i < ciphertextBlockCount; i++) {
+            byte[] ciphertextSlice = Arrays.copyOfRange(ciphertext, i * BLOCK_SIZE,
+                    Math.min((i + 1) * BLOCK_SIZE, ciphertext.length));
+            FieldElement ciphertextBlock = new FieldElement(ciphertextSlice);
+            FieldElement xor = lastBlock.xor(ciphertextBlock);
+            lastBlock = GFMulAction.mulAndReduce(xor, authKey);
+        }
+
+        FieldElement result = lastBlock.xor(lengthBlock);
+        result = GFMulAction.mulAndReduce(result, authKey);
 
         return result;
     }
 
-    // also used for creating the Auth Tag
-    public static FieldElement generateSingleTextBlock(long index, String algorithm, String nonce, FieldElement key,
-            FieldElement plaintextPart) {
+    public static FieldElement lengthBlock(byte[] ad, byte[] ciphertext) {
+        long adLengthBits = ad.length * 8L;
+        long ciphertextLengthBits = ciphertext.length * 8L;
 
-        FieldElement nonceConcatCounter = concatNonceAndCounter(nonce, index + 2); // the 0th ciphertext block has Ctr 2
+        byte[] result = new byte[16];
+        for (int i = 0; i < 8; i++) {
+            result[i] = (byte) ((adLengthBits >>> (56 - i * 8)) & 0xFF);
+            result[i + 8] = (byte) ((ciphertextLengthBits >>> (56 - i * 8)) & 0xFF);
+        }
+
+        return new FieldElement(result);
+    }
+
+    public static FieldElement singleGashBlock(byte[] inputA, byte[] inputB, FieldElement authKey) {
+        byte[] result = new byte[BLOCK_SIZE];
+        for (int i = 0; i < result.length; i++)
+            result[i] = (byte) (inputA[i] ^ inputB[i]);
+        return GFMulAction.mulAndReduce(new FieldElement(result), authKey);
+    }
+
+    public static FieldElement authKey(String algorithm, byte[] key) {
+        byte[] authKey = switch (algorithm) {
+            case "aes128" -> AES.encrypt(new byte[BLOCK_SIZE], key);
+            case "sea128" -> SEA128Action.encryptSEA128(new byte[BLOCK_SIZE], key);
+            default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
+        };
+
+        return new FieldElement(authKey);
+    }
+
+    // Auth Tag
+
+    public static byte[] mask(String algorithm, byte[] key, byte[] nonce, long counter) {
+        byte[] input = concatNonceCounter(nonce, counter);
 
         return switch (algorithm) {
-            case "aes128" ->
-                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
-                        .xor(plaintextPart);
-            case "sea128" ->
-                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
-                        .xor(plaintextPart);
+            case "aes128" -> AES.encrypt(input, key);
+            case "sea128" -> SEA128Action.encryptSEA128(input, key);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
     }
 
-    public static FieldElement concatNonceAndCounter(String base64Nonce, long counter) {
+    public static byte[] concatNonceCounter(byte[] nonce, long counter) {
         byte[] ctr = new byte[4]; // counter is assumed to have non-gcm bit order
         ctr[0] = (byte) ((counter >> 24) & 0xFF);
-        ctr[1] = (byte) ((counter >> 16) & 0xFF); // TODO error could lie here
+        ctr[1] = (byte) ((counter >> 16) & 0xFF);
         ctr[2] = (byte) ((counter >> 8) & 0xFF);
         ctr[3] = (byte) (counter & 0xFF);
 
-        // 12 byte nonce, rest will be filed with 0s
-        FieldElement nonce = FieldElement.fromBase64GCM(base64Nonce);
-        byte[] result = nonce.toByteArrayGCM();
-
-        // copy counter into remaining 4 bytes
+        byte[] result = Arrays.copyOf(nonce, BLOCK_SIZE);
+        // concat
         System.arraycopy(ctr, 0, result, 12, 4);
 
-        return new FieldElement(result);
-    }
-
-    public static FieldElement ghash(FieldElement authKey, byte[] ad, byte[] ciphertext, FieldElement concatedLength) {
-        FieldElement lastBlock = FieldElement.Zero(); // begin with all 0s
-        int adBlockCount = (ad.length / 16) + (ad.length % 16 == 0 ? 0 : 1);
-
-        for (int i = 0; i < adBlockCount; i++) {
-            int currentMax = (i + 1) * 16 > ad.length ? ad.length : (i + 1) * 16;
-            FieldElement currentADBlock = new FieldElement(Arrays.copyOfRange(ad, i * 16, currentMax));
-            lastBlock = singleGashBlock(lastBlock, currentADBlock, authKey);
-        }
-
-        int ciphertextBlockCount = (ciphertext.length / 16) + (ciphertext.length % 16 == 0 ? 0 : 1);
-
-        for (int i = 0; i < ciphertextBlockCount; i++) {
-            int currentMax = (i + 1) * 16 > ciphertext.length ? ciphertext.length : (i + 1) * 16;
-            FieldElement currentCiphertextBlock = new FieldElement(Arrays.copyOfRange(ciphertext, i * 16, currentMax));
-            lastBlock = singleGashBlock(lastBlock, currentCiphertextBlock, authKey);
-        }
-        FieldElement result = singleGashBlock(lastBlock, concatedLength, authKey);
-
         return result;
-    }
-
-    public static FieldElement singleGashBlock(FieldElement inputA, FieldElement inputB, FieldElement authKey) {
-        FieldElement xor = inputA.xor(inputB);
-        return GFMulAction.mulAndReduce(xor.swapInnerGCMState(), authKey.swapInnerGCMState()).swapInnerGCMState();
-    }
-
-    public static FieldElement calculateLengthOfADAndCiphertexts(byte[] ad, byte[] ciphertext) {
-        // Amount of bits
-        long adLengthInt = ad.length * 8;
-        long ciphertextLengthInt = ciphertext.length * 8;
-
-        byte[] adLength = new byte[8];
-        byte[] ciphertextLength = new byte[8];
-
-        // Convert the length from long to byte array representation
-        for (int i = 0; i < 8; i++) {
-            adLength[i] = (byte) ((adLengthInt >> i * 8) & 0xFF);
-            ciphertextLength[i] = (byte) ((ciphertextLengthInt >> i * 8) & 0xFF);
-        }
-
-        // Go big-endian
-        adLength = Util.swapByteOrder(adLength);
-        ciphertextLength = Util.swapByteOrder(ciphertextLength);
-
-        byte[] result = new byte[16];
-
-        // Concat into single 16 byte array
-        for (int i = 0; i < 8; i++) {
-            result[i] = adLength[i];
-            result[i + 8] = ciphertextLength[i];
-        }
-
-        return new FieldElement(result);
     }
 
 }

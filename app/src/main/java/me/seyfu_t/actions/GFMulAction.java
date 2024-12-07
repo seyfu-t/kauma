@@ -20,16 +20,16 @@ public class GFMulAction implements Action {
         FieldElement a;
         FieldElement b;
         String response;
-        
+
         if (gcm) {
             a = FieldElement.fromBase64GCM(base64A);
             b = FieldElement.fromBase64GCM(base64B);
-            
+
             response = mulAndReduce(a, b).toBase64GCM();
         } else {
             a = FieldElement.fromBase64XEX(base64A);
             b = FieldElement.fromBase64XEX(base64B);
-            
+
             response = mulAndReduce(a, b).toBase64XEX();
         }
 
@@ -62,6 +62,10 @@ public class GFMulAction implements Action {
         }
 
         return result;
+    }
+
+    public static FieldElement mulAndReduceGHASH(FieldElement a, FieldElement b) {
+        return mulAndReduce(a.swapInnerGCMState(), b.swapInnerGCMState()).swapInnerGCMState();
     }
 
     public static UBigInt16 mulAndReduce(UBigInt16 a, UBigInt16 b) {
