@@ -32,7 +32,7 @@ public class GCMEncryptAction implements Action {
     public static JsonObject gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
             String base64Plaintext, String base64AD) {
 
-        FieldElement key = FieldElement.fromBase64XEX(base64Key);
+        FieldElement key = FieldElement.fromBase64GCM(base64Key);
         byte[] plaintextBytes = Base64.getDecoder().decode(base64Plaintext);
         byte[] ciphertextBytes = generateFullText(algorithm, base64Nonce, key, plaintextBytes);
         byte[] adBytes = Base64.getDecoder().decode(base64AD);
@@ -57,8 +57,8 @@ public class GCMEncryptAction implements Action {
 
     public static FieldElement calculateAuthKey(String algorithm, FieldElement key) {
         return switch (algorithm) {
-            case "aes128" -> new FieldElement(AES.encrypt(new byte[16], key.toByteArrayXEX()));
-            case "sea128" -> new FieldElement(SEA128Action.encryptSEA128(new byte[16], key.toByteArrayXEX()));
+            case "aes128" -> new FieldElement(AES.encrypt(new byte[16], key.toByteArrayGCM()));
+            case "sea128" -> new FieldElement(SEA128Action.encryptSEA128(new byte[16], key.toByteArrayGCM()));
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
     }
@@ -92,10 +92,10 @@ public class GCMEncryptAction implements Action {
 
         return switch (algorithm) {
             case "aes128" ->
-                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayXEX()))
+                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             case "sea128" ->
-                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayXEX()))
+                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
@@ -109,8 +109,8 @@ public class GCMEncryptAction implements Action {
         ctr[3] = (byte) (counter & 0xFF);
 
         // 12 byte nonce, rest will be filed with 0s
-        FieldElement nonce = FieldElement.fromBase64XEX(base64Nonce);
-        byte[] result = nonce.toByteArrayXEX();
+        FieldElement nonce = FieldElement.fromBase64GCM(base64Nonce);
+        byte[] result = nonce.toByteArrayGCM();
 
         // copy counter into remaining 4 bytes
         System.arraycopy(ctr, 0, result, 12, 4);
