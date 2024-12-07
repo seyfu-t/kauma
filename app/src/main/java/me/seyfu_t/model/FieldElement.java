@@ -183,7 +183,7 @@ public class FieldElement {
     }
 
     // Converter
-    private byte[] toByteArray() {
+    public byte[] toByteArray() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {
             bytes[15 - i] = (byte) ((low >>> (i * 8)) & 0xFF);
