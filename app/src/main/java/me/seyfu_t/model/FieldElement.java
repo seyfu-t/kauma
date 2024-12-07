@@ -136,6 +136,13 @@ public class FieldElement {
         }
     }
 
+    public FieldElement divBy2() {
+        // Optimized path for a single bit shift right
+        long newLow = (low >>> 1) | ((high & 1) << 63);
+        long newHigh = high >>> 1;
+        return new FieldElement(newHigh, newLow);
+    }
+
     // Compare operators
     public boolean equals(FieldElement other) {
         return this.high == other.high && this.low == other.low;
@@ -225,7 +232,6 @@ public class FieldElement {
         BigInteger bigInt = new BigInteger(1, bytes);
         return bigInt.toString(10);
     }
-
 
     // private long swapBitOrderInLong(long value) {
     // long result = 0;
