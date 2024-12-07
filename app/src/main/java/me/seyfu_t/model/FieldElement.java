@@ -12,6 +12,7 @@ public class FieldElement {
 
     // Constants
     public static final FieldElement REDUCTION_POLY = FieldElement.Zero().setBit(7).setBit(2).setBit(1).setBit(0);
+    public static final FieldElement ALPHA = FieldElement.Zero().setBit(1);
     public static final long REDUCTION_POLY_LONG = 0x87; // when reducing, the big at index 128 will fall off anyway
     public static final long ALPHA_LONG = 0x02;
 
