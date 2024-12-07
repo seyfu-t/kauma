@@ -30,11 +30,10 @@ public class FieldElement {
     }
 
     public FieldElement(byte[] bytes) {
-        if (bytes == null || bytes.length == 0) {
-            this.high = 0;
-            this.low = 0;
+        this.high = 0;
+        this.low = 0;
+        if (bytes == null || bytes.length == 0)
             return;
-        }
 
         // Ensure we take exactly 16 bytes, zero-padding if shorter
         byte[] fullBytes = new byte[16];
@@ -43,10 +42,10 @@ public class FieldElement {
 
         System.arraycopy(bytes, sourceOffset, fullBytes, 16 - copyLength, copyLength);
 
-        // Convert to two longs, treating as big-endian
+        // Convert to two longs, treating as little-endian
         for (int i = 0; i < 8; i++) {
-            this.high = (this.high << 8) | (fullBytes[i] & 0xFF);
-            this.low = (this.low << 8) | (fullBytes[i + 8] & 0xFF);
+            this.low |= ((long)(fullBytes[i] & 0xFF) << (i * 8));
+            this.high |= ((long)(fullBytes[i + 8] & 0xFF) << (i * 8));
         }
     }
 
@@ -66,14 +65,14 @@ public class FieldElement {
     public static FieldElement fromBase64(String base64) {
         if (base64 == null)
             return null;
-        byte[] swappedToGCM = Util.swapByteAndBitOrder(Base64.getDecoder().decode(base64));
+        byte[] swappedToGCM = Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64));
         return new FieldElement(swappedToGCM);
     }
 
     public static FieldElement fromBase64XEX(String base64) {
         if (base64 == null)
             return null;
-        byte[] swappedToGCM = Util.swapByteOrder(Base64.getDecoder().decode(base64));
+        byte[] swappedToGCM = Base64.getDecoder().decode(base64);
         return new FieldElement(swappedToGCM);
     }
 
@@ -187,18 +186,18 @@ public class FieldElement {
     public byte[] toByteArray() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {
-            bytes[15 - i] = (byte) ((low >>> (i * 8)) & 0xFF);
-            bytes[7 - i] = (byte) ((high >>> (i * 8)) & 0xFF);
+            bytes[i] = (byte) ((low >>> (i * 8)) & 0xFF);
+            bytes[i + 8] = (byte) ((high >>> (i * 8)) & 0xFF);
         }
         return bytes;
     }
 
     public String toBase64() {
-        return Base64.getEncoder().encodeToString(Util.swapByteAndBitOrder(this.toByteArray()));
+        return Base64.getEncoder().encodeToString(Util.swapBitOrderInAllBytes(this.toByteArray()));
     }
 
     public String toBase64XEX() {
-        return Base64.getEncoder().encodeToString(Util.swapByteOrder(this.toByteArray()));
+        return Base64.getEncoder().encodeToString(this.toByteArray());
     }
 
     @Override
