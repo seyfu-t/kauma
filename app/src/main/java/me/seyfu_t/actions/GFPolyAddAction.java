@@ -3,7 +3,6 @@ package me.seyfu_t.actions;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.UBigInt16;
@@ -36,7 +35,7 @@ public class GFPolyAddAction implements Action {
             result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i) : b.getCoefficient(i));
 
         if (result.isZero())
-            result.setCoefficient(0, FieldElement.Zero());
+            return GFPoly.ZERO_POLY;
 
         return result.popLeadingZeros();
     }
