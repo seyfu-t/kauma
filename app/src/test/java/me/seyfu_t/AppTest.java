@@ -1,5 +1,7 @@
 package me.seyfu_t;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,8 +10,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.util.Util;
 
 class AppTest {
 
@@ -72,6 +76,30 @@ class AppTest {
 
     private static final String ALL_INPUT = "input/AllInput.json";
     private static final String ALL_OUTPUT = "output/AllOutput.json";
+
+    @Test
+    void testConcatMultiples(){
+        UBigInt16 a1 = new UBigInt16().setBit(0).setBit(5);
+        UBigInt16 b1 = new UBigInt16().setBit(3).setBit(8);
+
+        List<UBigInt16> list1 = new ArrayList<>();
+        list1.add(a1);
+        list1.add(b1);
+
+        byte[] concatted1 = Util.concatUBigInt16s(list1);
+
+
+        FieldElement a2 = new FieldElement().setBit(0).setBit(5);
+        FieldElement b2 = new FieldElement().setBit(3).setBit(8);
+
+        List<FieldElement> list2 = new ArrayList<>();
+        list2.add(a2);
+        list2.add(b2);
+
+        byte[] concatted2 = Util.concatFieldElements(list2);
+
+        Assertions.assertArrayEquals(concatted1, concatted2);
+    }
 
     @Test
     void testByteArrayBitShift() {
