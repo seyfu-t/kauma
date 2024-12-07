@@ -32,7 +32,7 @@ public class GCMEncryptAction implements Action {
     public static JsonObject gcmEncrypt(String algorithm, String base64Nonce, String base64Key,
             String base64Plaintext, String base64AD) {
 
-        FieldElement key = FieldElement.fromBase64XEX(base64Key);
+        FieldElement key = FieldElement.fromBase64GCM(base64Key);
         byte[] plaintextBytes = Base64.getDecoder().decode(base64Plaintext);
         byte[] ciphertextBytes = generateFullText(algorithm, base64Nonce, key, plaintextBytes);
         byte[] adBytes = Base64.getDecoder().decode(base64AD);
