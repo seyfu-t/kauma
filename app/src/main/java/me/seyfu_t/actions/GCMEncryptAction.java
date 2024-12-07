@@ -100,7 +100,7 @@ public class GCMEncryptAction implements Action {
         };
     }
 
-    private static FieldElement concatNonceAndCounter(String base64Nonce, long counter) {
+    public static FieldElement concatNonceAndCounter(String base64Nonce, long counter) {
         byte[] ctr = new byte[4]; // counter is assumed to have non-gcm bit order
         ctr[0] = (byte) ((counter >> 24) & 0xFF);
         ctr[1] = (byte) ((counter >> 16) & 0xFF); //TODO error could lie here
@@ -141,7 +141,7 @@ public class GCMEncryptAction implements Action {
         return result;
     }
 
-    private static FieldElement singleGashBlock(FieldElement inputA, FieldElement inputB, FieldElement authKey) {
+    public static FieldElement singleGashBlock(FieldElement inputA, FieldElement inputB, FieldElement authKey) {
         FieldElement xor = inputA.xor(inputB);
         return GFMulAction.mulAndReduce(xor, authKey);
     }
