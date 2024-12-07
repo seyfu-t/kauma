@@ -183,7 +183,7 @@ public class FieldElement {
     }
 
     // Converter
-    public byte[] toByteArray() {
+    public byte[] toByteArrayXEX() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {
             bytes[i] = (byte) ((low >>> (i * 8)) & 0xFF);
@@ -192,12 +192,16 @@ public class FieldElement {
         return bytes;
     }
 
+    public byte[] toByteArrayGCM() {
+        return Util.swapBitOrderInAllBytes(this.toByteArrayXEX());
+    }
+
     public String toBase64GCM() {
-        return Base64.getEncoder().encodeToString(Util.swapBitOrderInAllBytes(this.toByteArray()));
+        return Base64.getEncoder().encodeToString(this.toByteArrayGCM());
     }
 
     public String toBase64XEX() {
-        return Base64.getEncoder().encodeToString(this.toByteArray());
+        return Base64.getEncoder().encodeToString(this.toByteArrayXEX());
     }
 
     @Override
@@ -236,7 +240,7 @@ public class FieldElement {
 
     private String formatDecimal() {
         // Convert to byte array first
-        byte[] bytes = this.toByteArray();
+        byte[] bytes = this.toByteArrayXEX();
         // Use BigInteger with unsigned interpretation
         BigInteger bigInt = new BigInteger(1, bytes);
         return bigInt.toString(10);

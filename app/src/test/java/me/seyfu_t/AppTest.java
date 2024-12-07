@@ -97,7 +97,7 @@ class AppTest {
         list2.add(a2);
         list2.add(b2);
 
-        byte[] concatted2 = Util.concatFieldElements(list2);
+        byte[] concatted2 = Util.concatFieldElementsXEX(list2);
 
         System.err.println(Arrays.toString(concatted1));
         System.err.println(Arrays.toString(concatted2));
