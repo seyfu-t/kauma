@@ -14,10 +14,10 @@ public class GFDivAction implements Action {
         String base64A = arguments.get("a").getAsString();
         String base64B = arguments.get("b").getAsString();
 
-        FieldElement a = FieldElement.fromBase64(base64A);
-        FieldElement b = FieldElement.fromBase64(base64B);
+        FieldElement a = FieldElement.fromBase64GCM(base64A);
+        FieldElement b = FieldElement.fromBase64GCM(base64B);
     
-        return ResponseBuilder.singleResponse("q", div(a, b).toBase64());
+        return ResponseBuilder.singleResponse("q", div(a, b).toBase64GCM());
     }
 
     public static FieldElement div(FieldElement a, FieldElement b) {

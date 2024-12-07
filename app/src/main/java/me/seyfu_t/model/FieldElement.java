@@ -62,7 +62,7 @@ public class FieldElement {
         return new FieldElement(-1L, -1L); // two's complement
     }
 
-    public static FieldElement fromBase64(String base64) {
+    public static FieldElement fromBase64GCM(String base64) {
         if (base64 == null)
             return null;
         byte[] swappedToGCM = Util.swapBitOrderInAllBytes(Base64.getDecoder().decode(base64));
@@ -192,7 +192,7 @@ public class FieldElement {
         return bytes;
     }
 
-    public String toBase64() {
+    public String toBase64GCM() {
         return Base64.getEncoder().encodeToString(Util.swapBitOrderInAllBytes(this.toByteArray()));
     }
 

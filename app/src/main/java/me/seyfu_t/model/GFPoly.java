@@ -31,7 +31,7 @@ public class GFPoly implements Comparable<GFPoly> {
 
     public GFPoly(String[] base64Array) {
         for (String base64Coefficient : base64Array)
-            this.coefficients.add(FieldElement.fromBase64(base64Coefficient));
+            this.coefficients.add(FieldElement.fromBase64GCM(base64Coefficient));
     }
 
     public GFPoly copy() {
@@ -128,7 +128,7 @@ public class GFPoly implements Comparable<GFPoly> {
         String[] array = new String[this.coefficients.size()];
 
         for (int i = 0; i < this.coefficients.size(); i++)
-            array[i] = this.coefficients.get(i).toBase64();
+            array[i] = this.coefficients.get(i).toBase64GCM();
 
         return array;
     }
@@ -143,7 +143,7 @@ public class GFPoly implements Comparable<GFPoly> {
                 continue; // Skip zero coefficients
 
             // Convert the field element to its polynomial representation
-            int[] elementPoly = Block2PolyAction.block2Poly(coefficient.toBase64(), gcm);
+            int[] elementPoly = Block2PolyAction.block2Poly(coefficient.toBase64GCM(), gcm);
 
             // Build the coefficient representation
             StringBuilder coefStr = new StringBuilder();
