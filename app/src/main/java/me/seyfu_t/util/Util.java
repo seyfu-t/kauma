@@ -67,7 +67,7 @@ public class Util {
 
         // piece-wise copy byte arrays into result array
         for (int listItem = 0; listItem < list.size(); listItem++) {
-            byte[] currentBytes = Util.swapByteOrder(list.get(listItem).toByteArray());
+            byte[] currentBytes = list.get(listItem).toByteArray();
             System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
         }
         return result;
