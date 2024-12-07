@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.google.gson.JsonArray;
 
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.UBigInt16;
 
 public class Util {
@@ -26,12 +27,16 @@ public class Util {
     }
 
     public static byte[] swapByteAndBitOrder(byte[] byteArray) {
-        byte[] copy = Arrays.copyOf(byteArray, byteArray.length);
+        if (byteArray == null)
+            return null; // Handle null input
 
-        for (int i = 0; i < copy.length; i++)
-            copy[copy.length-i] = Util.swapBitOrder(byteArray[i]);
+        int length = byteArray.length;
+        byte[] swappedArray = new byte[length];
 
-        return copy;
+        for (int i = 0; i < length; i++)
+            swappedArray[i] = Util.swapBitOrder(byteArray[length - i - 1]);
+
+        return swappedArray;
     }
 
     public static byte[] swapBitOrderInAllBytes(byte[] byteArray) {
@@ -54,6 +59,18 @@ public class Util {
         x = ((x & 0x33) << 2) | ((x & 0xCC) >>> 2);
         x = ((x & 0x0F) << 4) | ((x & 0xF0) >>> 4);
         return (byte) x;
+    }
+
+    public static byte[] concatFieldElements(List<FieldElement> list) {
+        // Calculate size for resulting byte array
+        byte[] result = new byte[list.size() * 16];
+
+        // piece-wise copy byte arrays into result array
+        for (int listItem = 0; listItem < list.size(); listItem++) {
+            byte[] currentBytes = Util.swapByteOrder(list.get(listItem).toByteArray());
+            System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
+        }
+        return result;
     }
 
     public static byte[] concatUBigInt16s(List<UBigInt16> list) {
