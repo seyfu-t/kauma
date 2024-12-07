@@ -3,6 +3,7 @@ package me.seyfu_t.actions;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.UBigInt16;
@@ -48,6 +49,35 @@ public class GFPolyPowAction implements Action {
         }
 
         return result.popLeadingZeros();
+    }
+
+    // Square and multiply algorithm
+    public static GFPoly pow(GFPoly poly, FieldElement exp) {
+        if (exp.isZero())
+            return GFPoly.DEGREE_ZERO_POLY_ONE;
+
+        if (exp.equals(FieldElement.One()))
+            return poly;
+
+        // Initialize result as 1 (identity element for multiplication)
+        GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
+
+        GFPoly base = poly.copy();
+
+        // Binary exponentiation algorithm
+        while (!exp.isZero()) {
+            // If odd, multiply
+            if (exp.testBit(0))
+                result = GFPolyMulAction.mul(result, base);
+
+            // Square
+            base = GFPolyMulAction.square(base);
+
+            // Divide exponent by 2
+            exp = exp.divBy2();
+        }
+
+        return result;
     }
 
     // Square and multiply algorithm
