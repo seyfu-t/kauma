@@ -217,6 +217,10 @@ public class FieldElement {
         };
     }
 
+    public FieldElement swapInnerGCMState() {
+        return new FieldElement(this.toByteArrayGCM());
+    }
+
     private String formatBinary() {
         StringBuilder binaryString = new StringBuilder();
 
