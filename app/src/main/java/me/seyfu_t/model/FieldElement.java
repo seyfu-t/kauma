@@ -15,6 +15,8 @@ public class FieldElement {
     public static final long REDUCTION_POLY_LONG = 0x87; // when reducing, the big at index 128 will fall off anyway
     public static final long ALPHA_LONG = 0x02;
 
+    public static final int BYTE_COUNT = 16;
+
     // Constructors
     public FieldElement() {
         this.high = 0;
