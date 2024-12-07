@@ -19,17 +19,21 @@ public class GFMulAction implements Action {
 
         FieldElement a;
         FieldElement b;
+        String response;
+        
         if (gcm) {
             a = FieldElement.fromBase64(base64A);
             b = FieldElement.fromBase64(base64B);
-
-            return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64());
+            
+            response = mulAndReduce(a, b).toBase64();
         } else {
             a = FieldElement.fromBase64XEX(base64A);
             b = FieldElement.fromBase64XEX(base64B);
             
-            return ResponseBuilder.singleResponse("product", mulAndReduce(a, b).toBase64XEX());
+            response = mulAndReduce(a, b).toBase64XEX();
         }
+
+        return ResponseBuilder.singleResponse("product", response);
 
     }
 
