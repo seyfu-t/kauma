@@ -246,24 +246,4 @@ public class FieldElement {
         return bigInt.toString(10);
     }
 
-    // private long swapBitOrderInLong(long value) {
-    // long result = 0;
-    // for (int byteIndex = 0; byteIndex < 8; byteIndex++) {
-    // // Extract the byte
-    // long byte_slice = (value >> (byteIndex * 8)) & 0xFF;
-
-    // // Swap bits within this byte
-    // long swapped_byte = 0;
-    // for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
-    // if (((byte_slice >> bitIndex) & 1) == 1) {
-    // swapped_byte |= 1L << (7 - bitIndex);
-    // }
-    // }
-
-    // // Place the swapped byte back into the result
-    // result |= swapped_byte << (byteIndex * 8);
-    // }
-    // return result;
-    // }
-
 }
