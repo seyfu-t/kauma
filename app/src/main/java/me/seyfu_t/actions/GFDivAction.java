@@ -36,7 +36,7 @@ public class GFDivAction implements Action {
 
             base = GFMulAction.mulAndReduce(base, base);
 
-            pow = pow.shiftRight(1); // div by 2
+            pow = pow.divBy2(); // div by 2
         }
 
         return result;

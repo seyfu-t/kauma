@@ -50,12 +50,12 @@ public class GFMulAction implements Action {
                 result = result.xor(a);
 
             boolean overflow = a.testBit(127);
-            a = a.shiftLeft(1);
+            a = a.mulBy2();
 
             if (overflow)
                 a = a.xor(FieldElement.REDUCTION_POLY);
 
-            b = b.shiftRight(1);
+            b = b.divBy2();
             // Early termination if b becomes zero
             if (b.isZero())
                 break;
