@@ -8,9 +8,9 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.CipherData;
-import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.Tuple;
-import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
@@ -29,47 +29,47 @@ public class GCMCrackAction implements Action {
     }
 
     private JsonObject gcmCrack(CipherData m1, CipherData m2, CipherData m3, CipherData forgery) {
-        UBigInt16[] authKeyCandidates = getHCandidates(m1, m2);
+        FieldElement[] authKeyCandidates = getHCandidates(m1, m2);
 
-        Tuple<UBigInt16, UBigInt16> maskAndAuthKey = getMaskAndAuthKey(authKeyCandidates, m1, m3);
+        Tuple<FieldElement, FieldElement> maskAndAuthKey = getMaskAndAuthKey(authKeyCandidates, m1, m3);
 
-        UBigInt16 mask = maskAndAuthKey.getFirst();
-        UBigInt16 authKey = maskAndAuthKey.getSecond();
+        FieldElement mask = maskAndAuthKey.getFirst();
+        FieldElement authKey = maskAndAuthKey.getSecond();
 
-        UBigInt16 forgedTag = getForgedTag(authKey, mask, forgery);
+        FieldElement forgedTag = getForgedTag(authKey, mask, forgery);
 
         return ResponseBuilder.multiResponse(Arrays.asList(
-                new Tuple<String, Object>("tag", forgedTag.toBase64()),
-                new Tuple<String, Object>("H", authKey.toBase64()),
-                new Tuple<String, Object>("mask", mask.toBase64())));
+                new Tuple<String, Object>("tag", forgedTag.toBase64GCM()),
+                new Tuple<String, Object>("H", authKey.toBase64GCM()),
+                new Tuple<String, Object>("mask", mask.toBase64GCM())));
     }
 
-    private static UBigInt16[] getHCandidates(CipherData m1, CipherData m2) {
-        GF128Poly combinedPoly = getEquation(m1, m2);
+    private static FieldElement[] getHCandidates(CipherData m1, CipherData m2) {
+        GFPoly combinedPoly = getEquation(m1, m2);
 
-        List<Tuple<GF128Poly, Integer>> sffList = GFPolyFactorSFFAction
+        List<Tuple<GFPoly, Integer>> sffList = GFPolyFactorSFFAction
                 .sff(GFPolyMakeMonicAction.makeMonic(combinedPoly));
 
-        List<GF128Poly> sffPolyList = new ArrayList<>();
-        for (Tuple<GF128Poly, Integer> tuple : sffList)
+        List<GFPoly> sffPolyList = new ArrayList<>();
+        for (Tuple<GFPoly, Integer> tuple : sffList)
             sffPolyList.add(tuple.getFirst());
 
-        List<GF128Poly> ddfPolyList = new ArrayList<>();
-        for (GF128Poly sffPoly : sffPolyList) {
-            List<Tuple<GF128Poly, Integer>> ddfTuples = GFPolyFactorDDFAction.ddf(sffPoly);
+        List<GFPoly> ddfPolyList = new ArrayList<>();
+        for (GFPoly sffPoly : sffPolyList) {
+            List<Tuple<GFPoly, Integer>> ddfTuples = GFPolyFactorDDFAction.ddf(sffPoly);
 
-            for (Tuple<GF128Poly, Integer> tuple : ddfTuples)
+            for (Tuple<GFPoly, Integer> tuple : ddfTuples)
                 if (tuple.getSecond() == RELEVANT_DEGREE)
                     ddfPolyList.add(tuple.getFirst());
         }
 
-        List<GF128Poly> edfPolyList = new ArrayList<>();
-        for (GF128Poly ddfPoly : ddfPolyList) {
-            List<GF128Poly> edfPolys = GFPolyFactorEDFAction.edf(ddfPoly, RELEVANT_DEGREE);
+        List<GFPoly> edfPolyList = new ArrayList<>();
+        for (GFPoly ddfPoly : ddfPolyList) {
+            List<GFPoly> edfPolys = GFPolyFactorEDFAction.edf(ddfPoly, RELEVANT_DEGREE);
             edfPolyList.addAll(edfPolys);
         }
 
-        UBigInt16[] candidates = new UBigInt16[edfPolyList.size()];
+        FieldElement[] candidates = new FieldElement[edfPolyList.size()];
 
         for (int i = 0; i < edfPolyList.size(); i++)
             candidates[i] = edfPolyList.get(i).getCoefficient(0);
@@ -77,11 +77,11 @@ public class GCMCrackAction implements Action {
         return candidates;
     }
 
-    private static GF128Poly getEquation(CipherData m1, CipherData m2) {
+    private static GFPoly getEquation(CipherData m1, CipherData m2) {
 
-        GF128Poly poly1 = constructPolyForEquation(m1);
-        GF128Poly poly2 = constructPolyForEquation(m2);
-        GF128Poly combinedPoly = new GF128Poly();
+        GFPoly poly1 = constructPolyForEquation(m1);
+        GFPoly poly2 = constructPolyForEquation(m2);
+        GFPoly combinedPoly = new GFPoly();
 
         int maxIndex = Math.max(poly1.degree(), poly2.degree());
         for (int i = 0; i <= maxIndex; i++)
@@ -90,45 +90,45 @@ public class GCMCrackAction implements Action {
         return combinedPoly;
     }
 
-    private static GF128Poly constructPolyForEquation(CipherData data) {
-        GF128Poly poly = new GF128Poly();
+    private static GFPoly constructPolyForEquation(CipherData data) {
+        GFPoly poly = new GFPoly();
 
-        UBigInt16 lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(data.ad, data.ciphertext);
+        FieldElement lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(data.ad, data.ciphertext);
 
         poly.setCoefficient(0, data.tag);
         poly.setCoefficient(1, lengthBlock);
 
-        List<byte[]> ciphertextChunkList = Util.splitIntoChunks(data.ciphertext, UBigInt16.BYTE_COUNT);
-        List<byte[]> adChunkList = Util.splitIntoChunks(data.ad, UBigInt16.BYTE_COUNT);
+        List<byte[]> ciphertextChunkList = Util.splitIntoChunks(data.ciphertext, FieldElement.BYTE_COUNT);
+        List<byte[]> adChunkList = Util.splitIntoChunks(data.ad, FieldElement.BYTE_COUNT);
 
         int ciphertextMaxIndex = ciphertextChunkList.size() - 1;
         for (int i = 0; i <= ciphertextMaxIndex; i++)
-            poly.setCoefficient(i + 2, new UBigInt16(ciphertextChunkList.get(ciphertextMaxIndex - i), true));
+            poly.setCoefficient(i + 2, new FieldElement(ciphertextChunkList.get(ciphertextMaxIndex - i)));
 
         int adMaxIndex = adChunkList.size() - 1;
         for (int i = 0; i <= adMaxIndex; i++)
-            poly.setCoefficient(i + 3 + ciphertextMaxIndex, new UBigInt16(adChunkList.get(adMaxIndex - i), true));
+            poly.setCoefficient(i + 3 + ciphertextMaxIndex, new FieldElement(adChunkList.get(adMaxIndex - i)));
 
         return poly;
     }
 
-    private static Tuple<UBigInt16, UBigInt16> getMaskAndAuthKey(UBigInt16[] candidates, CipherData m1, CipherData m3) {
+    private static Tuple<FieldElement, FieldElement> getMaskAndAuthKey(FieldElement[] candidates, CipherData m1, CipherData m3) {
 
-        Tuple<UBigInt16, UBigInt16> maskAndAuthKey = null;
+        Tuple<FieldElement, FieldElement> maskAndAuthKey = null;
 
-        for (UBigInt16 candidate : candidates) {
-            UBigInt16 lengthBlock1 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m1.ad, m1.ciphertext);
-            UBigInt16 ghash1 = GCMEncryptAction.ghash(candidate, m1.ad, m1.ciphertext, lengthBlock1);
+        for (FieldElement candidate : candidates) {
+            FieldElement lengthBlock1 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m1.ad, m1.ciphertext);
+            FieldElement ghash1 = GCMEncryptAction.ghash(candidate, m1.ad, m1.ciphertext, lengthBlock1);
 
-            UBigInt16 potentialMask = ghash1.xor(m1.tag);
+            FieldElement potentialMask = ghash1.xor(m1.tag);
 
-            UBigInt16 lengthBlock3 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m3.ad, m3.ciphertext);
-            UBigInt16 ghash3 = GCMEncryptAction.ghash(candidate, m3.ad, m3.ciphertext, lengthBlock3);
+            FieldElement lengthBlock3 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m3.ad, m3.ciphertext);
+            FieldElement ghash3 = GCMEncryptAction.ghash(candidate, m3.ad, m3.ciphertext, lengthBlock3);
 
-            UBigInt16 calculatedTag = ghash3.xor(potentialMask);
+            FieldElement calculatedTag = ghash3.xor(potentialMask);
 
-            if (calculatedTag.sameAs(m3.tag)) {
-                maskAndAuthKey = new Tuple<UBigInt16, UBigInt16>(potentialMask, candidate);
+            if (calculatedTag.equals(m3.tag)) {
+                maskAndAuthKey = new Tuple<FieldElement, FieldElement>(potentialMask, candidate);
                 break;
             }
         }
@@ -136,11 +136,11 @@ public class GCMCrackAction implements Action {
         return maskAndAuthKey;
     }
 
-    private static UBigInt16 getForgedTag(UBigInt16 authKey, UBigInt16 mask, CipherData forgery) {
-        UBigInt16 lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(forgery.ad,
+    private static FieldElement getForgedTag(FieldElement authKey, FieldElement mask, CipherData forgery) {
+        FieldElement lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(forgery.ad,
                 forgery.ciphertext);
 
-        UBigInt16 ghashResult = GCMEncryptAction.ghash(authKey, forgery.ad, forgery.ciphertext, lengthBlock);
+        FieldElement ghashResult = GCMEncryptAction.ghash(authKey, forgery.ad, forgery.ciphertext, lengthBlock);
 
         return mask.xor(ghashResult);
     }
