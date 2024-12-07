@@ -91,10 +91,10 @@ public class GCMEncryptAction implements Action {
 
         return switch (algorithm) {
             case "aes128" ->
-                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayGCM(), key.toByteArrayGCM()))
+                new FieldElement(AES.encrypt(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             case "sea128" ->
-                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayGCM(), key.toByteArrayGCM()))
+                new FieldElement(SEA128Action.encryptSEA128(nonceConcatCounter.toByteArrayXEX(), key.toByteArrayGCM()))
                         .xor(plaintextPart);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
