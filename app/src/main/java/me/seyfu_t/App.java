@@ -25,6 +25,7 @@ import me.seyfu_t.util.ResponseBuilder;
 public class App {
 
     private static final Logger log = Logger.getLogger(App.class.getName());
+    private static final boolean PROFILE_MODE;
 
     public static final Level LOG_LEVEL;
     static {
@@ -36,6 +37,10 @@ public class App {
             case "SEVERE" -> Level.SEVERE;
             default -> Level.SEVERE;
         };
+
+        // Profile mode makes this program single threaded
+        String profileMode = System.getenv("KAUMA_PROFILE_MODE");
+        PROFILE_MODE = profileMode != null && profileMode.equalsIgnoreCase("true");
     }
 
     public static void main(String[] args) {
@@ -55,6 +60,12 @@ public class App {
     public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
         JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
+
+        System.out.println(PROFILE_MODE);
+        if (PROFILE_MODE) {
+            iterateOverAllCasesSingleThreaded(responseBuilder, testcasesJson);
+            return responseBuilder.build();
+        }
 
         // Separate padding_oracle cases from other cases
         List<Entry<String, JsonElement>> paddingOracleCases = new ArrayList<>();
@@ -108,6 +119,27 @@ public class App {
         }
 
         return responseBuilder.build();
+    }
+
+    private static void iterateOverAllCasesSingleThreaded(ResponseBuilder builder, JsonObject testcasesJson) {
+        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+
+            // the 3 relevant parts of each case
+            String uniqueHash = singleCase.getKey();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+            Action action = getActionClass(actionName); // get the appropriate instance
+
+            if (action == null)
+                continue;
+
+            // execute
+            JsonObject resulJsonObject = action.execute(arguments);
+
+            builder.addResponse(uniqueHash, resulJsonObject);
+        }
     }
 
     private static ProcessedTestCase processTestCase(Entry<String, JsonElement> singleCase) {
