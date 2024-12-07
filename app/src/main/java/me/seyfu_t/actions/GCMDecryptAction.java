@@ -27,8 +27,8 @@ public class GCMDecryptAction implements Action {
     private static JsonObject gcmDecrypt(String algorithm, String base64Nonce, String base64Key,
             String base64Ciphertext, String base64AD, String base64ExpectedAuthTag) {
 
-        FieldElement key = FieldElement.fromBase64GCM(base64Key);
-        FieldElement expectedAuthTag = FieldElement.fromBase64GCM(base64ExpectedAuthTag);
+        FieldElement key = FieldElement.fromBase64XEX(base64Key);
+        FieldElement expectedAuthTag = FieldElement.fromBase64XEX(base64ExpectedAuthTag);
 
         byte[] ciphertextBytes = Base64.getDecoder().decode(base64Ciphertext);
         byte[] plaintextBytes = GCMEncryptAction.generateFullText(algorithm, base64Nonce, key, ciphertextBytes);
