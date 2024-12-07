@@ -1,6 +1,7 @@
 package me.seyfu_t;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -97,6 +98,9 @@ class AppTest {
         list2.add(b2);
 
         byte[] concatted2 = Util.concatFieldElements(list2);
+
+        System.err.println(Arrays.toString(concatted1));
+        System.err.println(Arrays.toString(concatted2));
 
         Assertions.assertArrayEquals(concatted1, concatted2);
     }
