@@ -11,6 +11,7 @@ public class GFPoly implements Comparable<GFPoly> {
 
     public static final GFPoly DEGREE_ZERO_POLY_ONE = new GFPoly().setCoefficient(0, FieldElement.One());
     public static final GFPoly DEGREE_ONE_POLY_ONE = new GFPoly().setCoefficient(1, FieldElement.One());
+    public static final GFPoly ZERO_POLY = new GFPoly().setCoefficient(0, FieldElement.Zero());
 
     private final List<FieldElement> coefficients = new ArrayList<>();
     private final boolean gcm = true;
