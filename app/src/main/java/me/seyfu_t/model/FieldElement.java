@@ -38,9 +38,8 @@ public class FieldElement {
         // Ensure we take exactly 16 bytes, zero-padding if shorter
         byte[] fullBytes = new byte[16];
         int copyLength = Math.min(bytes.length, 16);
-        int sourceOffset = Math.max(0, bytes.length - 16);
 
-        System.arraycopy(bytes, sourceOffset, fullBytes, 16 - copyLength, copyLength);
+        System.arraycopy(bytes, 0, fullBytes, 0, copyLength);
 
         // Convert to two longs, treating as little-endian
         for (int i = 0; i < 8; i++) {
