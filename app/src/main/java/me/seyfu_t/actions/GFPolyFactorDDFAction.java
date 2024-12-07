@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.GF128Poly;
+import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.model.UBigInt512;
 import me.seyfu_t.util.ResponseBuilder;
@@ -23,16 +24,48 @@ public class GFPolyFactorDDFAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] base64ArrayPoly = Util.convertJsonArrayToStringArray(arguments.get("F").getAsJsonArray());
 
-        GF128Poly poly = new GF128Poly(base64ArrayPoly);
+        GFPoly poly = new GFPoly(base64ArrayPoly);
 
-        List<Tuple<GF128Poly, Integer>> tupleList = ddf(poly);
+        List<Tuple<GFPoly, Integer>> tupleList = ddf(poly);
 
         JsonArray array = new JsonArray();
 
-        for (Tuple<GF128Poly, Integer> tuple : tupleList)
+        for (Tuple<GFPoly, Integer> tuple : tupleList)
             array.add(tuple.toJSON("factor", "degree"));
 
         return ResponseBuilder.singleResponse("factors", array);
+    }
+
+    public static List<Tuple<GFPoly, Integer>> ddf(GFPoly f) {
+        List<Tuple<GFPoly, Integer>> tupleList = new ArrayList<>();
+        int d = 1;
+        GFPoly fStar = f.copy();
+
+        while (fStar.degree() >= 2 * d) {
+            BigInteger bigExponent = Q.pow(d);
+            // X^(q^d) mod f*
+            GFPoly h = GFPolyPowModAction.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
+            // - X
+            h = GFPolyAddAction.add(h, GFPoly.DEGREE_ONE_POLY_ONE);
+
+            GFPoly g = GFPolyGCDAction.gcd(h, fStar);
+
+            if (!g.equals(GFPoly.DEGREE_ZERO_POLY_ONE)) {
+                tupleList.add(new Tuple<>(g, d));
+                fStar = GFPolyDivModAction.divModQuotient(fStar, g);
+            }
+            d++;
+        }
+
+        if (!fStar.equals(GFPoly.DEGREE_ZERO_POLY_ONE))
+            tupleList.add(new Tuple<>(fStar, fStar.degree()));
+        else if (tupleList.isEmpty())
+            tupleList.add(new Tuple<>(f, 1));
+
+        // Sort by polynomials
+        tupleList.sort(Comparator.comparing(Tuple::getFirst));
+
+        return tupleList;
     }
 
     public static List<Tuple<GF128Poly, Integer>> ddf(GF128Poly f) {
