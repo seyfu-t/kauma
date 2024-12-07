@@ -119,17 +119,13 @@ public class GCMEncryptAction implements Action {
     }
 
     public static FieldElement ghash(FieldElement authKey, byte[] ad, byte[] ciphertext, FieldElement concatedLength) {
-        System.out.println("========GHASH BEGIN");
         FieldElement lastBlock = FieldElement.Zero(); // begin with all 0s
-        System.err.println("LASTBLOCK: " + lastBlock);
         int adBlockCount = (ad.length / 16) + (ad.length % 16 == 0 ? 0 : 1);
 
         for (int i = 0; i < adBlockCount; i++) {
             int currentMax = (i + 1) * 16 > ad.length ? ad.length : (i + 1) * 16;
             FieldElement currentADBlock = new FieldElement(Arrays.copyOfRange(ad, i * 16, currentMax));
             lastBlock = singleGashBlock(lastBlock, currentADBlock, authKey);
-            System.err.println("CURRENT AD: " + currentADBlock);
-            System.err.println("LASTBLOCK: " + lastBlock);
         }
 
         int ciphertextBlockCount = (ciphertext.length / 16) + (ciphertext.length % 16 == 0 ? 0 : 1);
@@ -138,25 +134,14 @@ public class GCMEncryptAction implements Action {
             int currentMax = (i + 1) * 16 > ciphertext.length ? ciphertext.length : (i + 1) * 16;
             FieldElement currentCiphertextBlock = new FieldElement(Arrays.copyOfRange(ciphertext, i * 16, currentMax));
             lastBlock = singleGashBlock(lastBlock, currentCiphertextBlock, authKey);
-            System.err.println("CURRENT CIPHER: " + currentCiphertextBlock);
-            System.err.println("LASTBLOCK: " + lastBlock);
         }
-        System.out.println("PRE RESULT");
-        System.err.println("LASTBLOCK: " + lastBlock);
-        System.out.println("L:" + concatedLength);
-        System.out.println("AUTHKEY: " + authKey);
         FieldElement result = singleGashBlock(lastBlock, concatedLength, authKey);
 
-        System.out.println("========GHASH END");
         return result;
     }
 
     public static FieldElement singleGashBlock(FieldElement inputA, FieldElement inputB, FieldElement authKey) {
         FieldElement xor = inputA.xor(inputB);
-        System.err.println("A: "+inputA);
-        System.err.println("B: "+inputB);
-        System.err.println("XOR: "+xor);
-        System.err.println("AuthKey: "+authKey);
         return GFMulAction.mulAndReduce(xor.swapInnerGCMState(), authKey.swapInnerGCMState()).swapInnerGCMState();
     }
 
