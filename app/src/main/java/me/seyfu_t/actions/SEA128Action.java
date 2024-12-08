@@ -5,14 +5,14 @@ import java.util.Base64;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.UBigInt16;
+import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.AES;
 import me.seyfu_t.util.ResponseBuilder;
 
 public class SEA128Action implements Action {
 
     // c0ffeec0ffeec0ffeec0ffeec0ffee11
-    private static final UBigInt16 XOR = new UBigInt16(new byte[] {
+    private static final FieldElement XOR = new FieldElement(new byte[] {
             (byte) 0xc0, (byte) 0xff, (byte) 0xee, (byte) 0xc0,
             (byte) 0xff, (byte) 0xee, (byte) 0xc0, (byte) 0xff,
             (byte) 0xee, (byte) 0xc0, (byte) 0xff, (byte) 0xee,
@@ -50,12 +50,12 @@ public class SEA128Action implements Action {
             throw new RuntimeException("AES encryption failed");
 
         // Then XOR with constant and return
-        return new UBigInt16(aes).xor(XOR).toByteArray();
+        return new FieldElement(aes).xor(XOR).toByteArrayXEX();
     }
 
     public static byte[] decryptSEA128(byte[] msg, byte[] key) {
         // First XOR with constant
-        byte[] xored = new UBigInt16(msg).xor(XOR).toByteArray();
+        byte[] xored = new FieldElement(msg).xor(XOR).toByteArrayXEX();
         // Then AES decrypt
         byte[] decrypted = AES.decrypt(xored, key);
 

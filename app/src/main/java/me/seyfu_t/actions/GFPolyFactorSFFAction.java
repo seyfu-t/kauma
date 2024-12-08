@@ -8,7 +8,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.ResponseBuilder;
@@ -55,39 +54,6 @@ public class GFPolyFactorSFFAction implements Action {
 
         if (!c.equals(GFPoly.DEGREE_ZERO_POLY_ONE)) {
             for (Tuple<GFPoly, Integer> tuple : sff(GFPolySqrtAction.sqrt(c))) {
-                tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
-            }
-        }
-
-        // Sort by polynomials
-        tupleList.sort(Comparator.comparing(Tuple::getFirst));
-
-        return tupleList;
-    }
-
-    public static List<Tuple<GF128Poly, Integer>> sff(GF128Poly f) {
-        GF128Poly c = GFPolyGCDAction.gcd(f, GFPolyDiffAction.diff(f));
-
-        f = GFPolyDivModAction.divModQuotient(f, c);
-
-        List<Tuple<GF128Poly, Integer>> tupleList = new ArrayList<>();
-
-        int exponent = 1;
-
-        while (!f.equals(GF128Poly.DEGREE_ZERO_POLY_ONE)) {
-            GF128Poly y = GFPolyGCDAction.gcd(f, c);
-
-            if (!f.equals(y))
-                tupleList.add(new Tuple<>(GFPolyDivModAction.divModQuotient(f, y), exponent));
-
-            f = y.copy();
-            c = GFPolyDivModAction.divModQuotient(c, y);
-
-            exponent++;
-        }
-
-        if (!c.equals(GF128Poly.DEGREE_ZERO_POLY_ONE)) {
-            for (Tuple<GF128Poly, Integer> tuple : sff(GFPolySqrtAction.sqrt(c))) {
                 tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
             }
         }

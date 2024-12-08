@@ -6,10 +6,7 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
-import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.GFPoly;
-import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.model.UBigInt512;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
@@ -92,100 +89,5 @@ public class GFPolyPowModAction implements Action {
         return result.popLeadingZeros();
     }
 
-    public static GF128Poly powMod(GF128Poly base, BigInteger pow, GF128Poly mod) {
-        if (pow.equals(BigInteger.ZERO))
-            return GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        // Check if power is 1
-        if (pow.equals(BigInteger.ONE))
-            return GFPolyDivModAction.divModRest(base, mod);
-
-        // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        UBigInt16 p = UBigInt16.fromBigInt(pow, false);
-        // Square and multiply
-        while (!p.isZero()) {
-            // If odd, multiply
-            if (p.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
-            }
-
-            // Square
-            base = GFPolyMulAction.square(base);
-            // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
-
-            // Divide power by 2
-            p = p.shiftRight(1);
-        }
-
-        return result.popLeadingZeros();
-    }
-
-    // Square and multiply algorithm
-    public static GF128Poly powMod(GF128Poly base, UBigInt16 pow, GF128Poly mod) {
-        if (pow.isZero())
-            return GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        // Check if power is 1
-        if (pow.sameAs(UBigInt16.One()))
-            return GFPolyDivModAction.divModRest(base, mod);
-
-        // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        UBigInt16 p = pow.copy();
-        // Square and multiply
-        while (!p.isZero()) {
-            // If odd, multiply
-            if (p.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
-            }
-
-            // Square
-            base = GFPolyMulAction.square(base);
-            // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
-
-            // Divide power by 2
-            p = p.shiftRight(1);
-        }
-
-        return result.popLeadingZeros();
-    }
-
-    public static GF128Poly powMod(GF128Poly base, UBigInt512 pow, GF128Poly mod) {
-        if (pow.isZero())
-            return GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        // Check if power is 1
-        if (pow.sameAs(UBigInt512.One(true)))
-            return GFPolyDivModAction.divModRest(base, mod);
-
-        // Initialize result as 1 (identity element for multiplication)
-        GF128Poly result = GF128Poly.DEGREE_ZERO_POLY_ONE;
-
-        UBigInt512 p = pow.copy();
-        // Square and multiply
-        while (!p.isZero()) {
-            // If odd, multiply
-            if (p.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
-            }
-
-            // Square
-            base = GFPolyMulAction.square(base);
-            // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
-
-            // Divide power by 2
-            p = p.shiftRight(1);
-        }
-
-        return result.popLeadingZeros();
-    }
+   
 }

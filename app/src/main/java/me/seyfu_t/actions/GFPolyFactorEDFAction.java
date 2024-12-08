@@ -12,10 +12,7 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
-import me.seyfu_t.model.GF128Poly;
 import me.seyfu_t.model.GFPoly;
-import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.model.UBigInt512;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
@@ -84,60 +81,6 @@ public class GFPolyFactorEDFAction implements Action {
 
         for (int i = 0; i < newDegree; i++)
             randomPoly.setCoefficient(i, new FieldElement(random.nextLong(), random.nextLong()));
-
-        return randomPoly;
-    }
-
-    public static List<GF128Poly> edf(GF128Poly f, int d) {
-        int n = f.degree() / d;
-
-        List<GF128Poly> polyList = new ArrayList<>();
-        polyList.add(f);
-
-        UBigInt512 bigExponent = UBigInt512.fromBigInt(Q.pow(d).subtract(BigInteger.ONE).divide(BigInteger.valueOf(3)));
-
-        while (polyList.size() < n) {
-            GF128Poly h = generateRandomPoly(f.degree());
-
-            GF128Poly g = GFPolyPowModAction.powMod(h, bigExponent, f);
-            g = GFPolyAddAction.add(g, GF128Poly.DEGREE_ZERO_POLY_ONE);
-
-            List<GF128Poly> newPolys = new ArrayList<>();
-            Iterator<GF128Poly> iterator = polyList.iterator();
-
-            while (iterator.hasNext()) {
-                GF128Poly u = iterator.next();
-                if (u.degree() > d) {
-                    GF128Poly j = GFPolyGCDAction.gcd(u, g);
-                    if (!j.equals(GF128Poly.DEGREE_ZERO_POLY_ONE) && !j.equals(u)) {
-                        iterator.remove();
-                        newPolys.add(j);
-                        newPolys.add(GFPolyDivModAction.divModQuotient(u, j));
-                    }
-                }
-            }
-            polyList.addAll(newPolys);
-        }
-
-        polyList.sort(null);
-
-        return polyList;
-    }
-
-    private static GF128Poly generateRandomPoly(int smallerThan) {
-        GF128Poly randomPoly = new GF128Poly();
-
-        int newDegree = random.nextInt(1, smallerThan + 1);
-
-        for (int i = 0; i < newDegree; i++) {
-            byte[] randomBytes = new byte[16];
-
-            for (int j = 0; j < randomBytes.length; j++)
-                randomBytes[j] = (byte) random.nextInt(UBigInt16.BIT_COUNT);
-
-            UBigInt16 randomCoefficient = new UBigInt16(randomBytes, true);
-            randomPoly.setCoefficient(i, randomCoefficient);
-        }
 
         return randomPoly;
     }
