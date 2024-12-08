@@ -9,7 +9,6 @@ import java.util.List;
 import com.google.gson.JsonArray;
 
 import me.seyfu_t.model.FieldElement;
-import me.seyfu_t.model.UBigInt16;
 
 public class Util {
 
@@ -80,18 +79,6 @@ public class Util {
         // piece-wise copy byte arrays into result array
         for (int listItem = 0; listItem < list.size(); listItem++) {
             byte[] currentBytes = list.get(listItem).toByteArrayGCM();
-            System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
-        }
-        return result;
-    }
-
-    public static byte[] concatUBigInt16s(List<UBigInt16> list) {
-        // Calculate size for resulting byte array
-        byte[] result = new byte[list.size() * 16];
-
-        // piece-wise copy byte arrays into result array
-        for (int listItem = 0; listItem < list.size(); listItem++) {
-            byte[] currentBytes = list.get(listItem).toByteArray();
             System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
         }
         return result;
