@@ -38,12 +38,13 @@ public class GCMEncryptAction implements Action {
         FieldElement authTag = authTagMask.xor(ghash);
 
         return ResponseBuilder.multiResponse(Arrays.asList(
-           new Tuple<>("ciphertext", Base64.getEncoder().encodeToString(ciphertext)), 
-           new Tuple<>("tag", authTag.toBase64XEX()), 
-           new Tuple<>("L", lengthBlock.toBase64XEX()), 
-           new Tuple<>("H", authKey.toBase64XEX())
-        ));
+                new Tuple<>("ciphertext", Base64.getEncoder().encodeToString(ciphertext)),
+                new Tuple<>("tag", authTag.toBase64XEX()),
+                new Tuple<>("L", lengthBlock.toBase64XEX()),
+                new Tuple<>("H", authKey.toBase64XEX())));
     }
+
+    // En-/Decryption
 
     public static byte[] crypt(String algorithm, byte[] nonce, byte[] key, byte[] plaintext) {
         byte[] ciphertext = new byte[plaintext.length];
@@ -70,8 +71,7 @@ public class GCMEncryptAction implements Action {
         for (int i = 0; i < adBlockCount; i++) {
             byte[] adSlice = Arrays.copyOfRange(ad, i * BLOCK_SIZE, Math.min((i + 1) * BLOCK_SIZE, ad.length));
             FieldElement adBlock = new FieldElement(adSlice);
-            FieldElement xor = lastBlock.xor(adBlock);
-            lastBlock = GFMulAction.mulAndReduce(xor, authKey);
+            lastBlock = singleGashBlock(lastBlock, adBlock, authKey);
         }
 
         int ciphertextBlockCount = (ciphertext.length / BLOCK_SIZE) + (ciphertext.length % BLOCK_SIZE == 0 ? 0 : 1);
@@ -80,12 +80,10 @@ public class GCMEncryptAction implements Action {
             byte[] ciphertextSlice = Arrays.copyOfRange(ciphertext, i * BLOCK_SIZE,
                     Math.min((i + 1) * BLOCK_SIZE, ciphertext.length));
             FieldElement ciphertextBlock = new FieldElement(ciphertextSlice);
-            FieldElement xor = lastBlock.xor(ciphertextBlock);
-            lastBlock = GFMulAction.mulAndReduce(xor, authKey);
+            lastBlock = singleGashBlock(lastBlock, ciphertextBlock, authKey);
         }
 
-        FieldElement result = lastBlock.xor(lengthBlock);
-        result = GFMulAction.mulAndReduce(result, authKey);
+        FieldElement result = singleGashBlock(lastBlock, lengthBlock, authKey);
 
         return result;
     }
@@ -103,11 +101,8 @@ public class GCMEncryptAction implements Action {
         return new FieldElement(result);
     }
 
-    public static FieldElement singleGashBlock(byte[] inputA, byte[] inputB, FieldElement authKey) {
-        byte[] result = new byte[BLOCK_SIZE];
-        for (int i = 0; i < result.length; i++)
-            result[i] = (byte) (inputA[i] ^ inputB[i]);
-        return GFMulAction.mulAndReduce(new FieldElement(result), authKey);
+    public static FieldElement singleGashBlock(FieldElement lastBlock, FieldElement block, FieldElement authKey) {
+        return GFMulAction.mulAndReduceGHASH(lastBlock.xor(block), authKey);
     }
 
     public static FieldElement authKey(String algorithm, byte[] key) {

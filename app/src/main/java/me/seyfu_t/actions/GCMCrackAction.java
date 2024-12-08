@@ -29,26 +29,24 @@ public class GCMCrackAction implements Action {
     }
 
     private JsonObject gcmCrack(CipherData m1, CipherData m2, CipherData m3, CipherData forgery) {
-        FieldElement[] authKeyCandidates = getHCandidates(m1, m2);
+        FieldElement[] authKeyCandidates = candidatesForH(m1, m2);
 
         Tuple<FieldElement, FieldElement> maskAndAuthKey = getMaskAndAuthKey(authKeyCandidates, m1, m3);
 
         FieldElement mask = maskAndAuthKey.getFirst();
         FieldElement authKey = maskAndAuthKey.getSecond();
 
-        FieldElement forgedTag = getForgedTag(authKey, mask, forgery);
+        FieldElement forgedTag = forgeTag(authKey, mask, forgery);
 
         return ResponseBuilder.multiResponse(Arrays.asList(
-                new Tuple<String, Object>("tag", forgedTag.toBase64GCM()),
-                new Tuple<String, Object>("H", authKey.toBase64GCM()),
-                new Tuple<String, Object>("mask", mask.toBase64GCM())));
+                new Tuple<String, Object>("tag", forgedTag.toBase64XEX()),
+                new Tuple<String, Object>("H", authKey.toBase64XEX()),
+                new Tuple<String, Object>("mask", mask.toBase64XEX())));
     }
 
-    private static FieldElement[] getHCandidates(CipherData m1, CipherData m2) {
+    private static FieldElement[] candidatesForH(CipherData m1, CipherData m2) {
         GFPoly combinedPoly = getEquation(m1, m2);
-
-        List<Tuple<GFPoly, Integer>> sffList = GFPolyFactorSFFAction
-                .sff(GFPolyMakeMonicAction.makeMonic(combinedPoly));
+        List<Tuple<GFPoly, Integer>> sffList = GFPolyFactorSFFAction.sff(GFPolyMakeMonicAction.makeMonic(combinedPoly));
 
         List<GFPoly> sffPolyList = new ArrayList<>();
         for (Tuple<GFPoly, Integer> tuple : sffList)
@@ -72,7 +70,7 @@ public class GCMCrackAction implements Action {
         FieldElement[] candidates = new FieldElement[edfPolyList.size()];
 
         for (int i = 0; i < edfPolyList.size(); i++)
-            candidates[i] = edfPolyList.get(i).getCoefficient(0);
+            candidates[i] = edfPolyList.get(i).getCoefficient(0).swapInnerGCMState();
 
         return candidates;
     }
@@ -85,7 +83,7 @@ public class GCMCrackAction implements Action {
 
         int maxIndex = Math.max(poly1.degree(), poly2.degree());
         for (int i = 0; i <= maxIndex; i++)
-            combinedPoly.setCoefficient(i, poly1.getCoefficient(i).xor(poly2.getCoefficient(i)));
+            combinedPoly.setCoefficient(i, poly1.getCoefficient(i).xor(poly2.getCoefficient(i)).swapInnerGCMState());
 
         return combinedPoly;
     }
@@ -93,7 +91,7 @@ public class GCMCrackAction implements Action {
     private static GFPoly constructPolyForEquation(CipherData data) {
         GFPoly poly = new GFPoly();
 
-        FieldElement lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(data.ad, data.ciphertext);
+        FieldElement lengthBlock = GCMEncryptAction.lengthBlock(data.ad, data.ciphertext);
 
         poly.setCoefficient(0, data.tag);
         poly.setCoefficient(1, lengthBlock);
@@ -112,18 +110,19 @@ public class GCMCrackAction implements Action {
         return poly;
     }
 
-    private static Tuple<FieldElement, FieldElement> getMaskAndAuthKey(FieldElement[] candidates, CipherData m1, CipherData m3) {
+    private static Tuple<FieldElement, FieldElement> getMaskAndAuthKey(FieldElement[] candidates, CipherData m1,
+            CipherData m3) {
 
         Tuple<FieldElement, FieldElement> maskAndAuthKey = null;
 
         for (FieldElement candidate : candidates) {
-            FieldElement lengthBlock1 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m1.ad, m1.ciphertext);
-            FieldElement ghash1 = GCMEncryptAction.ghash(candidate, m1.ad, m1.ciphertext, lengthBlock1);
+            FieldElement lengthBlock1 = GCMEncryptAction.lengthBlock(m1.ad, m1.ciphertext);
+            FieldElement ghash1 = GCMEncryptAction.ghash(m1.ciphertext, m1.ad, candidate, lengthBlock1);
 
             FieldElement potentialMask = ghash1.xor(m1.tag);
 
-            FieldElement lengthBlock3 = GCMEncryptAction.calculateLengthOfADAndCiphertexts(m3.ad, m3.ciphertext);
-            FieldElement ghash3 = GCMEncryptAction.ghash(candidate, m3.ad, m3.ciphertext, lengthBlock3);
+            FieldElement lengthBlock3 = GCMEncryptAction.lengthBlock(m3.ad, m3.ciphertext);
+            FieldElement ghash3 = GCMEncryptAction.ghash(m3.ciphertext, m3.ad, candidate, lengthBlock3);
 
             FieldElement calculatedTag = ghash3.xor(potentialMask);
 
@@ -136,11 +135,10 @@ public class GCMCrackAction implements Action {
         return maskAndAuthKey;
     }
 
-    private static FieldElement getForgedTag(FieldElement authKey, FieldElement mask, CipherData forgery) {
-        FieldElement lengthBlock = GCMEncryptAction.calculateLengthOfADAndCiphertexts(forgery.ad,
-                forgery.ciphertext);
+    private static FieldElement forgeTag(FieldElement authKey, FieldElement mask, CipherData forgery) {
+        FieldElement lengthBlock = GCMEncryptAction.lengthBlock(forgery.ad, forgery.ciphertext);
 
-        FieldElement ghashResult = GCMEncryptAction.ghash(authKey, forgery.ad, forgery.ciphertext, lengthBlock);
+        FieldElement ghashResult = GCMEncryptAction.ghash(forgery.ciphertext, forgery.ad, authKey, lengthBlock);
 
         return mask.xor(ghashResult);
     }
