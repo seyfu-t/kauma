@@ -15,36 +15,32 @@ public class GCMDecryptAction implements Action {
     @Override
     public JsonObject execute(JsonObject arguments) {
         String algorithm = arguments.get("algorithm").getAsString();
-        String nonce = arguments.get("nonce").getAsString();
-        String key = arguments.get("key").getAsString();
-        String ciphertext = arguments.get("ciphertext").getAsString();
-        String ad = arguments.get("ad").getAsString();
-        String authTag = arguments.get("tag").getAsString();
 
-        return gcmDecrypt(algorithm, nonce, key, ciphertext, ad, authTag);
+        byte[] nonce = Base64.getDecoder().decode(arguments.get("nonce").getAsString());
+        byte[] key = Base64.getDecoder().decode(arguments.get("key").getAsString());
+        byte[] ciphertext = Base64.getDecoder().decode(arguments.get("ciphertext").getAsString());
+        byte[] ad = Base64.getDecoder().decode(arguments.get("ad").getAsString());
+        byte[] expectedAuthTag = Base64.getDecoder().decode(arguments.get("tag").getAsString());
+
+        return gcmDecrypt(algorithm, nonce, key, ciphertext, ad, expectedAuthTag);
     }
 
-    private static JsonObject gcmDecrypt(String algorithm, String base64Nonce, String base64Key,
-            String base64Ciphertext, String base64AD, String base64ExpectedAuthTag) {
+    public static JsonObject gcmDecrypt(String algorithm, byte[] nonce, byte[] key, byte[] ciphertext, byte[] ad,
+            byte[] expectedAuthTag) {
+        byte[] plaintextBytes = GCMEncryptAction.crypt(algorithm, nonce, key, ciphertext);
 
-        FieldElement key = FieldElement.fromBase64GCM(base64Key);
-        FieldElement expectedAuthTag = FieldElement.fromBase64GCM(base64ExpectedAuthTag);
+        FieldElement lengthBlock = GCMEncryptAction.lengthBlock(ad, ciphertext);
+        FieldElement authKey = GCMEncryptAction.authKey(algorithm, key);
 
-        byte[] ciphertextBytes = Base64.getDecoder().decode(base64Ciphertext);
-        byte[] plaintextBytes = GCMEncryptAction.generateFullText(algorithm, base64Nonce, key, ciphertextBytes);
-        byte[] adBytes = Base64.getDecoder().decode(base64AD);
+        FieldElement ghash = GCMEncryptAction.ghash(ciphertext, ad, authKey, lengthBlock);
 
-        FieldElement H = GCMEncryptAction.calculateAuthKey(algorithm, key);
-        FieldElement L = GCMEncryptAction.calculateLengthOfADAndCiphertexts(adBytes, ciphertextBytes);
-        FieldElement ghash = GCMEncryptAction.ghash(H, adBytes, ciphertextBytes, L);
-        // index -1 because 0 is the first ciphertext and this is one before that
-        FieldElement actualAuthTag = GCMEncryptAction.generateSingleTextBlock(-1, algorithm, base64Nonce, key, ghash);
-
-        String base64Plaintext = Base64.getEncoder().encodeToString(plaintextBytes);
+        FieldElement actualAuthTagMask = new FieldElement(
+                GCMEncryptAction.mask(algorithm, key, nonce, GCMEncryptAction.AUTH_TAG_COUNTER));
+        FieldElement actualAuthTag = actualAuthTagMask.xor(ghash);
 
         return ResponseBuilder.multiResponse(Arrays.asList(
-                new Tuple<>("authentic", actualAuthTag.swapInnerGCMState().equals(expectedAuthTag)),
-                new Tuple<>("plaintext", base64Plaintext)));
+                new Tuple<>("authentic", new FieldElement(expectedAuthTag).equals(actualAuthTag)),
+                new Tuple<>("plaintext", Base64.getEncoder().encodeToString(plaintextBytes))));
     }
 
 }
