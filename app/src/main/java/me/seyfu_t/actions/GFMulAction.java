@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
-import me.seyfu_t.model.UBigInt16;
 import me.seyfu_t.util.ResponseBuilder;
 
 public class GFMulAction implements Action {
@@ -45,7 +44,7 @@ public class GFMulAction implements Action {
         FieldElement result = FieldElement.Zero();
 
         // doing more than 128 rounds isn't possible
-        for (int i = 0; i < UBigInt16.BYTE_COUNT * Byte.SIZE; i++) {
+        for (int i = 0; i < FieldElement.BYTE_COUNT * Byte.SIZE; i++) {
             if (b.testBit(0))
                 result = result.xor(a);
 
@@ -66,34 +65,6 @@ public class GFMulAction implements Action {
 
     public static FieldElement mulAndReduceGHASH(FieldElement a, FieldElement b) {
         return mulAndReduce(a.swapInnerGCMState(), b.swapInnerGCMState()).swapInnerGCMState();
-    }
-
-    public static UBigInt16 mulAndReduce(UBigInt16 a, UBigInt16 b) {
-        // Early zero checks
-        if (a.isZero() || b.isZero())
-            return UBigInt16.Zero(a.isGCM());
-
-        UBigInt16 result = new UBigInt16(a.isGCM());
-
-        // doing more than 128 rounds isn't possible
-        for (int i = 0; i < UBigInt16.BYTE_COUNT * Byte.SIZE; i++) {
-            if (b.testBit(0))
-                result = result.xor(a);
-
-            boolean overflow = a.testBit(127);
-            a = a.shiftLeft(1);
-
-            if (overflow)
-                a = a.xor(UBigInt16.REDUCTION_POLY);
-
-            b = b.shiftRight(1);
-
-            // Early termination if b becomes zero
-            if (b.isZero())
-                break;
-        }
-
-        return result;
     }
 
 }
