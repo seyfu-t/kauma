@@ -203,4 +203,22 @@ public class BigLong {
         return this.longList.get(0) == 0L;
     }
 
+    @Override
+    public String toString() {
+        if (isZero())
+            return "0";
+
+        StringBuilder hex = new StringBuilder();
+        for (int i = this.longList.size() - 1; i >= 0; i--) {
+            hex.append(String.format("%016x", this.longList.get(i)));
+        }
+
+        // Remove leading zeros
+        while (hex.length() > 0 && hex.charAt(0) == '0') {
+            hex.deleteCharAt(0);
+        }
+
+        return hex.toString().isEmpty() ? "0" : hex.toString();
+    }
+
 }
