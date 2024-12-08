@@ -151,6 +151,56 @@ public class FieldElement {
         return new FieldElement(newHigh, newLow);
     }
 
+    // extended Euclidean algorithm
+    public FieldElement inverse() {
+        FieldElement a = new FieldElement(this.toByteArrayXEX());
+        FieldElement reduction = REDUCTION_POLY;
+        FieldElement x = Zero();
+        FieldElement lastX = One();
+        FieldElement y = One();
+        FieldElement lastY = Zero();
+        
+        // polynomial long division
+        while (!a.isZero()) {
+            int aDegree = a.getHighestSetBit();
+            int reductionDegree = reduction.getHighestSetBit();
+            
+            // Compute degree of quotient
+            if (aDegree < reductionDegree) {
+                // Swap a and reduction
+                FieldElement temp = a;
+                a = reduction;
+                reduction = temp;
+                
+                // Swap x and lastX
+                temp = x;
+                x = lastX;
+                lastX = temp;
+                
+                // Swap y and lastY
+                temp = y;
+                y = lastY;
+                lastY = temp;
+                
+                continue;
+            }
+            
+            // XOR the polynomials
+            int shift = aDegree - reductionDegree;
+            FieldElement quotientTerm = reduction.shiftLeft(shift);
+            a = a.xor(quotientTerm);
+            
+            // Update x and y through polynomial arithmetic
+            FieldElement quotientX = lastX.shiftLeft(shift);
+            x = x.xor(quotientX);
+            
+            FieldElement quotientY = lastY.shiftLeft(shift);
+            y = y.xor(quotientY);
+        }
+        
+        return lastX;
+    }
+
     // Compare operators
     public boolean equals(FieldElement other) {
         return this.high == other.high && this.low == other.low;
@@ -179,6 +229,15 @@ public class FieldElement {
 
     public long high() {
         return this.high;
+    }
+
+    private int getHighestSetBit() {
+        for (int i = 127; i >= 0; i--) {
+            if (this.testBit(i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // Converter
