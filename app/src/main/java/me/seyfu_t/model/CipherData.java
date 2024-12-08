@@ -12,7 +12,8 @@ public class CipherData {
     public CipherData(JsonObject message) {
         this.ciphertext = Base64.getDecoder().decode(getJsonPart(message, "ciphertext"));
         this.ad = Base64.getDecoder().decode(getJsonPart(message, "associated_data"));
-        this.tag = FieldElement.fromBase64GCM(getJsonPart(message, "tag"));
+        String base64Tag = getJsonPart(message, "tag");
+        this.tag = (base64Tag == null ? null : new FieldElement(Base64.getDecoder().decode(base64Tag)));
     }
 
     public byte[] getCiphertext() {
