@@ -38,16 +38,6 @@ public class Tuple<T, U> {
     public JsonObject toJSON(String nameFirst, String nameSecond) {
         JsonObject jsonObj = new JsonObject();
 
-        if (this.getFirst() instanceof GF128Poly gf128Poly)
-            jsonObj.add(nameFirst, gson.toJsonTree(gf128Poly.toBase64Array()));
-        else
-            jsonObj.add(nameFirst, gson.toJsonTree(this.getFirst()));
-
-        if (this.getSecond() instanceof GF128Poly gf128Poly)
-            jsonObj.add(nameSecond, gson.toJsonTree(gf128Poly.toBase64Array()));
-        else
-            jsonObj.add(nameSecond, gson.toJsonTree(this.getSecond()));
-
         if (this.getFirst() instanceof GFPoly gfPoly)
             jsonObj.add(nameFirst, gson.toJsonTree(gfPoly.toBase64Array()));
         else
