@@ -26,29 +26,23 @@ public class Block2PolyAction implements Action {
 
     public static int[] block2Poly(String base64Block, boolean gcm) {
         byte[] blockByteArray = Base64.getDecoder().decode(base64Block);
-
         int[] coefficients = new int[blockByteArray.length * 8];
-        int slot = 0;// to know the current index of the coefficients array
+        int slot = 0;
 
-        // check each bit and add coefficient if bit is set
         for (int byteIndex = 0; byteIndex < blockByteArray.length; byteIndex++) {
-            for (int bitIndex = 0; bitIndex < 8; bitIndex++) {
+            int currentByte = blockByteArray[byteIndex] & 0xFF;
 
-                boolean condition;
+            if (gcm)
+                currentByte = Integer.reverse(currentByte) >>> 24;
 
-                if (gcm) // gcm condition
-                    condition = (blockByteArray[byteIndex] & (1 << (7 - bitIndex))) != 0;
-                else // non-gcm condition
-                    condition = (blockByteArray[byteIndex] & (1 << bitIndex)) != 0;
-
-                if (condition)
-                    coefficients[slot++] = (byteIndex * 8) + bitIndex;
+            while (currentByte != 0) {
+                int bitPosition = Integer.numberOfTrailingZeros(currentByte);
+                coefficients[slot++] = (byteIndex * 8) + (gcm ? (7 - bitPosition) : bitPosition);
+                currentByte &= currentByte - 1;
             }
         }
 
-        coefficients = Arrays.copyOfRange(coefficients, 0, slot);
-        Arrays.sort(coefficients);
-        return coefficients;
+        return Arrays.copyOfRange(coefficients, 0, slot);
     }
 
 }
