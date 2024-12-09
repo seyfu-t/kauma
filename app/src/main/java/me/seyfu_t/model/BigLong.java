@@ -97,7 +97,7 @@ public class BigLong {
         int longIndex = index / 64;
         int bitIndex = index % 64;
 
-        return (this.longList.get(longIndex) >> bitIndex) == 1;
+        return (this.longList.get(longIndex) & (1L << bitIndex)) != 0;
     }
 
     /*
@@ -429,20 +429,19 @@ public class BigLong {
     public String toDecimal() {
         if (this.isZero())
             return "0";
-    
+
         BigInteger decimalValue = BigInteger.ZERO;
         BigInteger base = BigInteger.ONE;
         BigInteger longBase = BigInteger.valueOf(1L).shiftLeft(64); // 2^64
-    
+
         for (long part : this.longList) {
             // Treat `long` as unsigned by masking out the sign bit
             BigInteger unsignedPart = BigInteger.valueOf(part).and(BigInteger.valueOf(0xFFFFFFFFFFFFFFFFL));
             decimalValue = decimalValue.add(unsignedPart.multiply(base));
             base = base.multiply(longBase);
         }
-    
+
         return decimalValue.toString();
     }
-    
 
 }
