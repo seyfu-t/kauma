@@ -12,9 +12,6 @@ public class BigLong {
      * of longs
      */
 
-    public static final BigLong ZERO = new BigLong(0L);
-    public static final BigLong ONE = new BigLong(1L);
-    
     private List<Long> longList;
 
     /*
@@ -48,6 +45,14 @@ public class BigLong {
     /*
      * Static factory methods
      */
+
+    public static BigLong Zero() {
+        return new BigLong(0L);
+    }
+
+    public static BigLong One() {
+        return new BigLong(1L);
+    }
 
     /*
      * Mutate
@@ -159,7 +164,7 @@ public class BigLong {
 
         // If shifting more than or equal to total bits, return zero
         if (longShifts >= this.longList.size())
-            return ZERO;
+            return Zero();
         // Remove full longs from the beginning
         this.longList = this.longList.subList(longShifts, this.longList.size());
 
@@ -211,12 +216,12 @@ public class BigLong {
     // Square and multiply
     public BigLong pow(long exp) {
         if (exp == 0L)
-            return ONE;
+            return One();
 
         if (exp == 1L)
             return this;
 
-        BigLong result = ONE;
+        BigLong result = One();
         BigLong base = this.copy();
 
         while (exp > 0) {
@@ -232,79 +237,78 @@ public class BigLong {
     }
 
     public BigLong mul(BigLong other) {
-        BigLong result = ZERO;
+        BigLong result = Zero();
         BigLong currentMultiplier = this.copy();
-    
+
         for (int i = 0; i < other.longList.size(); i++) {
             long currentFactor = other.longList.get(i);
-            
+
             // Multiply by each 64-bit chunk of the other number
             for (int bit = 0; bit < 64; bit++) {
-                if ((currentFactor & (1L << bit)) != 0) {
+                if ((currentFactor & (1L << bit)) != 0)
                     result.add(currentMultiplier);
-                }
                 currentMultiplier.shiftLeft(1);
             }
         }
-    
+
         this.longList = result.longList;
         return this;
     }
-    
+
     public BigLong divBy3() {
-        BigLong remainder = ZERO;
-        BigLong quotient = ZERO;
-        
+        BigLong remainder = Zero();
+        BigLong quotient = Zero();
+
         // Process from most significant long to least significant
         for (int i = this.longList.size() - 1; i >= 0; i--) {
             long currentLong = this.longList.get(i);
-            
+
             // Process each long in 32-bit chunks for more precise division
             for (int shift = 2; shift >= 0; shift--) {
                 // Extract 64-bit dividend combining remainder and current chunk
                 long shiftAmount = shift * 21;
                 long chunk = (currentLong >>> shiftAmount) & 0x1FFFFFL; // 21-bit chunk
-                
+
                 long combinedDividend = (remainder.longList.get(0) * (1L << 21)) | chunk;
                 long localQuotient = combinedDividend / 3;
                 long localRemainder = combinedDividend % 3;
-                
+
                 // Update quotient
                 quotient.shiftLeft(21);
                 quotient = quotient.add(new BigLong(localQuotient));
-                
+
                 // Prepare remainder for next iteration
                 remainder = new BigLong(localRemainder);
             }
         }
-        
+
         this.longList = quotient.longList;
         return this.popLeadingZeros();
     }
-    
+
     // Helper method to add another BigLong
     public BigLong add(BigLong other) {
         int maxSize = Math.max(this.longList.size(), other.longList.size());
         long carry = 0;
-        
+
         for (int i = 0; i < maxSize; i++) {
             long a = i < this.longList.size() ? this.longList.get(i) : 0L;
             long b = i < other.longList.size() ? other.longList.get(i) : 0L;
-            
+
             long sum = a + b + carry;
-            carry = (Long.compareUnsigned(sum, a) < 0 || (carry > 0 && sum == a)) ? 1L : 0L;
-            
+            carry = (Long.compareUnsigned(sum, a) < 0 || Long.compareUnsigned(sum, b) < 0) ? 1L : 0L;
+
             if (i < this.longList.size()) {
                 this.longList.set(i, sum);
             } else {
                 this.longList.add(sum);
             }
         }
-        
+
         if (carry > 0) {
             this.longList.add(carry);
         }
-        
+
         return this;
     }
 
@@ -362,7 +366,7 @@ public class BigLong {
      * Getters
      */
 
-    public boolean isZero(){
+    public boolean isZero() {
         for (int i = this.longList.size() - 1; i >= 0; i--)
             if (this.longList.get(i) != 0L)
                 return false;
@@ -429,21 +433,20 @@ public class BigLong {
     public String toDecimal() {
         if (this.isZero())
             return "0";
-    
+
         BigInteger decimalValue = BigInteger.ZERO;
         BigInteger base = BigInteger.ONE;
         BigInteger longBase = BigInteger.ONE.shiftLeft(64);
-    
+
         for (long part : this.longList) {
             // Correctly handle unsigned conversion for each long
-            BigInteger unsignedPart = part >= 0 ? 
-                BigInteger.valueOf(part) : 
-                BigInteger.valueOf(part & 0x7FFFFFFFFFFFFFFFL).setBit(63);
-            
+            BigInteger unsignedPart = part >= 0 ? BigInteger.valueOf(part)
+                    : BigInteger.valueOf(part & 0x7FFFFFFFFFFFFFFFL).setBit(63);
+
             decimalValue = decimalValue.add(unsignedPart.multiply(base));
             base = base.multiply(longBase);
         }
-    
+
         return decimalValue.toString();
     }
 
