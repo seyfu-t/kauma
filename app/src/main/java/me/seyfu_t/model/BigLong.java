@@ -13,7 +13,10 @@ public class BigLong {
 
     private List<Long> longList;
 
-    // Constructors
+    /*
+     * Constructors
+     */
+
     public BigLong() {
         this.longList = new ArrayList<>();
         this.longList.add(0L);
@@ -27,7 +30,7 @@ public class BigLong {
     public BigLong(List<Long> list) {
         if (!list.isEmpty()) {
             this.longList = new ArrayList<>(list);
-            this.shrink();
+            this.popLeadingZeros();
         } else {
             this.longList = new ArrayList<>();
             this.longList.add(0L);
@@ -38,7 +41,10 @@ public class BigLong {
         return new BigLong(this.longList);
     }
 
-    // Static factory methods
+    /*
+     * Static factory methods
+     */
+
     public static BigLong Zero() {
         return new BigLong();
     }
@@ -47,16 +53,32 @@ public class BigLong {
         return new BigLong(1L);
     }
 
-    // Bit manipulation methods
+    /*
+     * Mutate
+     */
+
+    public BigLong popLeadingZeros() {
+        while (this.longList.getLast() == 0 && this.longList.size() != 1)
+            this.longList.removeLast();
+        return this;
+    }
+
+    /*
+     * Bit manipulation
+     */
+
     public BigLong setBit(int index) {
         int longIndex = index / 64;
         int bitIndex = index % 64;
+
+        while (longIndex + 1 > this.longList.size())
+            this.longList.add(0L);
 
         long item = this.longList.get(longIndex);
         item |= 1L << bitIndex;
         this.longList.set(longIndex, item);
 
-        return this.shrink();
+        return this.popLeadingZeros();
     }
 
     public BigLong unsetBit(int index) {
@@ -67,7 +89,7 @@ public class BigLong {
         item &= ~(1L << bitIndex);
         this.longList.set(longIndex, item);
 
-        return this.shrink();
+        return this.popLeadingZeros();
     }
 
     public boolean testBit(int index) {
@@ -77,13 +99,16 @@ public class BigLong {
         return (this.longList.get(longIndex) >> bitIndex) == 1;
     }
 
-    // Bitwise operations
+    /*
+     * Bit-wise operations
+     */
+
     private BigLong applyOperation(BigLong other, BiFunction<Long, Long, Long> operation) {
         int itemCount = Math.min(this.longList.size(), other.longList.size());
         for (int i = 0; i < itemCount; i++) {
             this.longList.set(i, operation.apply(this.longList.get(i), other.longList.get(i)));
         }
-        return this.shrink();
+        return this.popLeadingZeros();
     }
 
     public BigLong xor(BigLong other) {
@@ -98,7 +123,10 @@ public class BigLong {
         return applyOperation(other, (a, b) -> a | b);
     }
 
-    // Shift operations
+    /*
+     * Shifting
+     */
+
     public BigLong shiftLeft(int bits) {
         if (bits == 0)
             return this;
@@ -123,7 +151,7 @@ public class BigLong {
             newList.add(carry);
 
         this.longList = newList;
-        return this.shrink();
+        return this.popLeadingZeros();
     }
 
     public BigLong shiftRight(int bits) {
@@ -152,16 +180,150 @@ public class BigLong {
             this.longList.set(i, current);
         }
 
-        return this.shrink();
+        return this.popLeadingZeros();
     }
 
-    public BigLong shrink() {
-        while (this.longList.getLast() == 0 && this.longList.size() != 1)
-            this.longList.removeLast();
-        return this;
+    /*
+     * Calculations
+     */
+
+    public BigLong mulBy2() {
+        long carry = 0;
+        for (int i = 0; i < this.longList.size(); i++) {
+            long value = this.longList.get(i);
+            this.longList.set(i, (value << 1) | carry);
+            carry = (value >>> 63);
+        }
+
+        if (carry != 0)
+            this.longList.add(carry);
+
+        return this.popLeadingZeros();
     }
 
-    // Compare operators
+    public BigLong divBy2() {
+        long carry = 0;
+        for (int i = this.longList.size() - 1; i >= 0; i--) {
+            long value = this.longList.get(i);
+            this.longList.set(i, (value >>> 1) | (carry << 63));
+            carry = value & 1;
+        }
+
+        return this.popLeadingZeros();
+    }
+
+    // Square and multiply
+    public BigLong pow(long exp) {
+        if (exp == 0L)
+            return One();
+
+        if (exp == 1L)
+            return this;
+
+        BigLong result = One();
+        BigLong base = this.copy();
+
+        while (exp > 0) {
+            if ((exp & 1) == 1)
+                result.mul(base);
+
+            base.square();
+
+            exp >>= 1;
+        }
+
+        return result.popLeadingZeros();
+    }
+
+    public BigLong mul(BigLong other) {
+        if (this.isZero() || other.isZero())
+            return Zero();
+
+        // Create a result list with enough space
+        List<Long> result = new ArrayList<>(this.longList.size() + other.longList.size());
+        for (int i = 0; i < this.longList.size() + other.longList.size(); i++)
+            result.add(0L);
+
+        // Perform multiplication
+        for (int i = 0; i < this.longList.size(); i++) {
+            long carry = 0;
+            for (int j = 0; j < other.longList.size(); j++) {
+                // Multiply current digits and add to result
+                long product = Long.compareUnsigned(Long.MAX_VALUE - result.get(i + j),
+                        this.longList.get(i) * other.longList.get(j)) >= 0
+                                ? result.get(i + j) + this.longList.get(i) * other.longList.get(j)
+                                : Long.MAX_VALUE;
+
+                long newValue = product + carry;
+                result.set(i + j, newValue);
+
+                // Compute carry
+                carry = (Long.compareUnsigned(newValue, product) < 0) ? 1 : 0;
+            }
+
+            // Add remaining carry if any
+            if (carry > 0)
+                result.set(i + other.longList.size(), carry);
+
+        }
+
+        // Replace current object with result
+        this.longList = result;
+        return this.popLeadingZeros();
+    }
+
+    public BigLong square() {
+        if (this.isZero())
+            return Zero();
+
+        // Create a result list with enough space
+        List<Long> result = new ArrayList<>(2 * this.longList.size());
+        for (int i = 0; i < 2 * this.longList.size(); i++)
+            result.add(0L);
+
+        // Squaring
+        for (int i = 0; i < this.longList.size(); i++) {
+            long carry = 0;
+            for (int j = 0; j < this.longList.size(); j++) {
+                // Multiply current digits and add to result
+                long product = Long.compareUnsigned(Long.MAX_VALUE - result.get(i + j),
+                        this.longList.get(i) * this.longList.get(j)) >= 0
+                                ? result.get(i + j) + this.longList.get(i) * this.longList.get(j)
+                                : Long.MAX_VALUE;
+
+                long newValue = product + carry;
+                result.set(i + j, newValue);
+
+                // Compute carry
+                carry = (Long.compareUnsigned(newValue, product) < 0) ? 1 : 0;
+            }
+
+            // Add remaining carry if any
+            if (carry > 0)
+                result.set(i + this.longList.size(), carry);
+        }
+
+        this.longList = result;
+        return this.popLeadingZeros();
+    }
+
+    public BigLong subByOne() {
+        for (int i = 0; i < this.longList.size(); i++) {
+            if (Long.compareUnsigned(this.longList.get(i), 0L) > 0) {
+                this.longList.set(i, this.longList.get(i) - 1L);
+                break;
+            } else
+                // set to all 1s when current value is 0
+                this.longList.set(i, Long.MAX_VALUE);
+        }
+
+        return this.popLeadingZeros();
+    }
+
+    /*
+     * Compare operators
+     */
+
     public boolean equals(BigLong other) {
         if (this.longList.size() != other.longList.size())
             return false;
@@ -195,7 +357,10 @@ public class BigLong {
         return false;
     }
 
-    // Getters
+    /*
+     * Getters
+     */
+
     public boolean isZero() {
         for (int i = this.longList.size() - 1; i >= 0; i--)
             if (this.longList.get(i) != 0L)
@@ -206,6 +371,10 @@ public class BigLong {
     public long getLongAt(int index) {
         return this.longList.get(index);
     }
+
+    /*
+     * String converters
+     */
 
     @Override
     public String toString() {
