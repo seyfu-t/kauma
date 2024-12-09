@@ -30,14 +30,12 @@ public class Poly2BlockAction implements Action {
         byte[] blockByteArray = new byte[16];
 
         for (int coefficient : coefficients) {
-            byte byteIndex = (byte) Math.floor(coefficient / 8);
+            byte byteIndex = (byte) (coefficient / 8);
             byte bitIndex = (byte) (gcm ? (7 - (coefficient % 8)) : (coefficient % 8));
             blockByteArray[byteIndex] = (byte) (blockByteArray[byteIndex] | (1 << bitIndex));
         }
 
-        // Convert to base64 and return
-        String base64 = Base64.getEncoder().encodeToString(blockByteArray);
-        return base64;
+        return Base64.getEncoder().encodeToString(blockByteArray);
     }
 
     private static int[] convertJsonArrayToIntArray(JsonArray array) {
