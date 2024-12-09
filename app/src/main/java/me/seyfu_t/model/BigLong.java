@@ -166,20 +166,22 @@ public class BigLong {
         if (longShifts >= this.longList.size())
             return Zero();
         // Remove full longs from the beginning
-        this.longList = this.longList.subList(longShifts, this.longList.size());
+        List<Long> truncatedList = new ArrayList<>(this.longList.subList(longShifts, this.longList.size()));
 
         // Perform bit-level shift
-        for (int i = 0; i < this.longList.size(); i++) {
-            long current = this.longList.get(i) >>> bitShift;
+        for (int i = 0; i < truncatedList.size(); i++) {
+            long current = truncatedList.get(i) >>> bitShift;
 
             // If not the last long, incorporate bits from the next long
-            if (i < this.longList.size() - 1) {
-                long nextLong = this.longList.get(i + 1);
+            if (i < truncatedList.size() - 1) {
+                long nextLong = truncatedList.get(i + 1);
                 current |= (nextLong & ((1L << bitShift) - 1)) << (64 - bitShift);
             }
 
-            this.longList.set(i, current);
+            truncatedList.set(i, current);
         }
+
+        this.longList = truncatedList;
 
         return this.popLeadingZeros();
     }
