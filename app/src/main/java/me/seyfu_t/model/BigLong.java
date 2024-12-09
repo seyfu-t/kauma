@@ -1,5 +1,6 @@
 package me.seyfu_t.model;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -384,7 +385,7 @@ public class BigLong {
     public String toString(int radix) {
         return switch (radix) {
             case 2 -> this.toBinary();
-            // case 10 -> ;
+            case 10 -> this.toDecimal();
             case 16 -> this.toHex();
             default -> this.toString(16);
         };
@@ -424,5 +425,24 @@ public class BigLong {
 
         return bin.toString();
     }
+
+    public String toDecimal() {
+        if (this.isZero())
+            return "0";
+    
+        BigInteger decimalValue = BigInteger.ZERO;
+        BigInteger base = BigInteger.ONE;
+        BigInteger longBase = BigInteger.valueOf(1L).shiftLeft(64); // 2^64
+    
+        for (long part : this.longList) {
+            // Treat `long` as unsigned by masking out the sign bit
+            BigInteger unsignedPart = BigInteger.valueOf(part).and(BigInteger.valueOf(0xFFFFFFFFFFFFFFFFL));
+            decimalValue = decimalValue.add(unsignedPart.multiply(base));
+            base = base.multiply(longBase);
+        }
+    
+        return decimalValue.toString();
+    }
+    
 
 }
