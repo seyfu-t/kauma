@@ -91,18 +91,18 @@ public class GFPolyPowModAction implements Action {
     }
 
     public static GFPoly powMod(GFPoly base, BigLong pow, GFPoly mod) {
-        if (pow.equals(BigLong.Zero()))
+        if (pow.equals(BigLong.ZERO))
             return GFPoly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.equals(BigLong.One()))
+        if (pow.equals(BigLong.ONE))
             return GFPolyDivModAction.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
 
         // Square and multiply
-        while (!pow.equals(BigLong.Zero())) {
+        while (!pow.equals(BigLong.ZERO)) {
             // If odd, multiply
             if (pow.testBit(0)) {
                 result = GFPolyMulAction.mul(result, base);

@@ -12,6 +12,9 @@ public class BigLong {
      * of longs
      */
 
+    public static final BigLong ZERO = new BigLong(0L);
+    public static final BigLong ONE = new BigLong(1L);
+    
     private List<Long> longList;
 
     /*
@@ -45,14 +48,6 @@ public class BigLong {
     /*
      * Static factory methods
      */
-
-    public static BigLong Zero() {
-        return new BigLong();
-    }
-
-    public static BigLong One() {
-        return new BigLong(1L);
-    }
 
     /*
      * Mutate
@@ -164,7 +159,7 @@ public class BigLong {
 
         // If shifting more than or equal to total bits, return zero
         if (longShifts >= this.longList.size())
-            return Zero();
+            return ZERO;
         // Remove full longs from the beginning
         this.longList = this.longList.subList(longShifts, this.longList.size());
 
@@ -216,12 +211,12 @@ public class BigLong {
     // Square and multiply
     public BigLong pow(long exp) {
         if (exp == 0L)
-            return One();
+            return ONE;
 
         if (exp == 1L)
             return this;
 
-        BigLong result = One();
+        BigLong result = ONE;
         BigLong base = this.copy();
 
         while (exp > 0) {
@@ -237,7 +232,7 @@ public class BigLong {
     }
 
     public BigLong mul(BigLong other) {
-        BigLong result = Zero();
+        BigLong result = ZERO;
         BigLong currentMultiplier = this.copy();
     
         for (int i = 0; i < other.longList.size(); i++) {
@@ -257,8 +252,8 @@ public class BigLong {
     }
     
     public BigLong divBy3() {
-        BigLong remainder = Zero();
-        BigLong quotient = Zero();
+        BigLong remainder = ZERO;
+        BigLong quotient = ZERO;
         
         // Process from most significant long to least significant
         for (int i = this.longList.size() - 1; i >= 0; i--) {
@@ -367,7 +362,7 @@ public class BigLong {
      * Getters
      */
 
-    public boolean isZero() {
+    public boolean isZero(){
         for (int i = this.longList.size() - 1; i >= 0; i--)
             if (this.longList.get(i) != 0L)
                 return false;
