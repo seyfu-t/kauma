@@ -17,7 +17,8 @@ public class GFPolyPowModAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         String[] poly = Util.convertJsonArrayToStringArray(arguments.get("A").getAsJsonArray());
         String[] modPoly = Util.convertJsonArrayToStringArray(arguments.get("M").getAsJsonArray());
-        // FieldElement k = FieldElement.fromBigInt(arguments.get("k").getAsBigInteger());
+        // FieldElement k =
+        // FieldElement.fromBigInt(arguments.get("k").getAsBigInteger());
         BigInteger k = arguments.get("k").getAsBigInteger();
 
         GFPoly a = new GFPoly(poly);
@@ -91,18 +92,18 @@ public class GFPolyPowModAction implements Action {
     }
 
     public static GFPoly powMod(GFPoly base, BigLong pow, GFPoly mod) {
-        if (pow.equals(BigLong.ZERO))
+        if (pow.equals(BigLong.Zero()))
             return GFPoly.DEGREE_ZERO_POLY_ONE;
 
         // Check if power is 1
-        if (pow.equals(BigLong.ONE))
+        if (pow.equals(BigLong.One()))
             return GFPolyDivModAction.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
 
         // Square and multiply
-        while (!pow.equals(BigLong.ZERO)) {
+        while (!pow.equals(BigLong.Zero())) {
             // If odd, multiply
             if (pow.testBit(0)) {
                 result = GFPolyMulAction.mul(result, base);
@@ -121,5 +122,4 @@ public class GFPolyPowModAction implements Action {
         return result.popLeadingZeros();
     }
 
-   
 }

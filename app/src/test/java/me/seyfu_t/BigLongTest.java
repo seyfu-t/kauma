@@ -31,8 +31,8 @@ class BigLongTest {
 
     @Test
     void testStaticFactoryMethods() {
-        assertEquals("0", BigLong.ZERO.toHex());
-        assertEquals("1", BigLong.ONE.toHex());
+        assertEquals("0", BigLong.Zero().toHex());
+        assertEquals("1", BigLong.One().toHex());
     }
 
     @Test
