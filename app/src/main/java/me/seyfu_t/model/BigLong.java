@@ -39,7 +39,7 @@ public class BigLong {
     }
 
     public BigLong copy() {
-        return new BigLong(this.longList);
+        return new BigLong(new ArrayList<>(this.longList));
     }
 
     /*
@@ -59,8 +59,20 @@ public class BigLong {
      */
 
     public BigLong popLeadingZeros() {
-        while (this.longList.getLast() == 0 && this.longList.size() != 1)
-            this.longList.removeLast();
+        if (this.longList.isEmpty()) {
+            this.longList.add(0L);
+            return this;
+        }
+
+        if (this.longList.size() == 1)
+            return this;
+
+        while (this.longList.size() > 1)
+            if (this.longList.get(this.longList.size() - 1) == 0)
+                this.longList.remove(this.longList.size() - 1);
+            else
+                break;
+
         return this;
     }
 
@@ -235,7 +247,8 @@ public class BigLong {
             exp >>= 1;
         }
 
-        return result.popLeadingZeros();
+        this.longList = result.longList;
+        return this.popLeadingZeros();
     }
 
     public BigLong mul(BigLong other) {
