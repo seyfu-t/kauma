@@ -40,7 +40,7 @@ public class GFPolyFactorDDFAction implements Action {
         GFPoly fStar = f.copy();
 
         while (fStar.degree() >= 2 * d) {
-            BigLong bigExponent = Q.pow(d);
+            BigLong bigExponent = Q.copy().pow(d);
             // X^(q^d) mod f*
             GFPoly h = GFPolyPowModAction.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
