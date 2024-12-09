@@ -2,6 +2,7 @@ package me.seyfu_t.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 public class BigLong {
 
@@ -19,9 +20,10 @@ public class BigLong {
     }
 
     public BigLong(List<Long> list) {
-        if (!list.isEmpty())
+        if (!list.isEmpty()) {
             this.longList = new ArrayList<>(list);
-        else {
+            this.shrink();
+        } else {
             this.longList = new ArrayList<>();
             this.longList.add(0L);
         }
@@ -71,32 +73,28 @@ public class BigLong {
     }
 
     // Bitwise operations
-    public BigLong xor(BigLong other) {
+    private BigLong applyOperation(BigLong other, BiFunction<Long, Long, Long> operation) {
         int itemCount = Math.min(this.longList.size(), other.longList.size());
-        for (int i = 0; i < itemCount; i++)
-            this.longList.set(i, this.longList.get(i) ^ other.longList.get(i));
+        for (int i = 0; i < itemCount; i++) {
+            this.longList.set(i, operation.apply(this.longList.get(i), other.longList.get(i)));
+        }
         return this.shrink();
+    }
+
+    public BigLong xor(BigLong other) {
+        return applyOperation(other, (a, b) -> a ^ b);
     }
 
     public BigLong and(BigLong other) {
-        int itemCount = Math.min(this.longList.size(), other.longList.size());
-        for (int i = 0; i < itemCount; i++)
-            this.longList.set(i, this.longList.get(i) & other.longList.get(i));
-        return this.shrink();
+        return applyOperation(other, (a, b) -> a & b);
     }
 
     public BigLong or(BigLong other) {
-        int itemCount = Math.min(this.longList.size(), other.longList.size());
-        for (int i = 0; i < itemCount; i++)
-            this.longList.set(i, this.longList.get(i) | other.longList.get(i));
-        return this.shrink();
+        return applyOperation(other, (a, b) -> a | b);
     }
 
     // Shift operations
     public BigLong shiftLeft(int bits) {
-        if (bits < 0)
-            throw new IllegalArgumentException("Shift amount must be non-negative");
-
         // Calculate how many full longs we need to add
         int longShifts = bits / 64;
         int bitShift = bits % 64;
@@ -127,19 +125,13 @@ public class BigLong {
     }
 
     public BigLong shiftRight(int bits) {
-        if (bits < 0)
-            throw new IllegalArgumentException("Shift amount must be non-negative");
-
         // Calculate full long shifts and remaining bit shifts
         int longShifts = bits / 64;
         int bitShift = bits % 64;
 
         // If shifting more than or equal to total bits, return zero
-        if (longShifts >= this.longList.size()) {
-            this.longList = new ArrayList<>();
-            this.longList.add(0L);
-            return this;
-        }
+        if (longShifts >= this.longList.size())
+            return Zero();
 
         // Remove full longs from the beginning
         this.longList = this.longList.subList(longShifts, this.longList.size());
@@ -200,25 +192,45 @@ public class BigLong {
 
     // Getters
     public boolean isZero() {
-        return this.longList.get(0) == 0L;
+        for (int i = this.longList.size() - 1; i >= 0; i--)
+            if (this.longList.get(i) != 0L)
+                return false;
+        return true;
+    }
+
+    public long getLongAt(int index) {
+        return this.longList.get(index);
     }
 
     @Override
     public String toString() {
-        if (isZero())
+        return this.toString(16);
+    }
+
+    public String toString(int radix) {
+        return switch (radix) {
+            // case 2 -> ;
+            // case 10 -> ;
+            case 16 -> toHex();
+            default -> this.toString(16);
+        };
+    }
+
+    public String toHex() {
+        if (this.isZero())
             return "0";
 
         StringBuilder hex = new StringBuilder();
-        for (int i = this.longList.size() - 1; i >= 0; i--) {
-            hex.append(String.format("%016x", this.longList.get(i)));
-        }
+        // Convert each long to a 16-character hex string, padding with zeros
+        for (int i = this.longList.size() - 1; i >= 0; i--)
+            hex.append(String.format("%016x ", this.longList.get(i)));
 
-        // Remove leading zeros
-        while (hex.length() > 0 && hex.charAt(0) == '0') {
+        while (hex.charAt(0) == '0' && hex.length() > 1)
             hex.deleteCharAt(0);
-        }
 
-        return hex.toString().isEmpty() ? "0" : hex.toString();
+        hex.deleteCharAt(hex.length() - 1); // remove final space
+
+        return hex.toString().toUpperCase();
     }
 
 }
