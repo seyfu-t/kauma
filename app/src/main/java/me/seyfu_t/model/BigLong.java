@@ -228,7 +228,7 @@ public class BigLong {
             if ((exp & 1) == 1)
                 result.mul(base);
 
-            base.square();
+            base.mul(base.copy());
 
             exp >>= 1;
         }
@@ -237,75 +237,80 @@ public class BigLong {
     }
 
     public BigLong mul(BigLong other) {
-        if (this.isZero() || other.isZero())
-            return Zero();
-
-        // Create a result list with enough space
-        List<Long> result = new ArrayList<>(this.longList.size() + other.longList.size());
-        for (int i = 0; i < this.longList.size() + other.longList.size(); i++)
-            result.add(0L);
-
-        // Perform multiplication
-        for (int i = 0; i < this.longList.size(); i++) {
-            long carry = 0;
-            for (int j = 0; j < other.longList.size(); j++) {
-                // Multiply current digits and add to result
-                long product = Long.compareUnsigned(Long.MAX_VALUE - result.get(i + j),
-                        this.longList.get(i) * other.longList.get(j)) >= 0
-                                ? result.get(i + j) + this.longList.get(i) * other.longList.get(j)
-                                : Long.MAX_VALUE;
-
-                long newValue = product + carry;
-                result.set(i + j, newValue);
-
-                // Compute carry
-                carry = (Long.compareUnsigned(newValue, product) < 0) ? 1 : 0;
+        BigLong result = Zero();
+        BigLong currentMultiplier = this.copy();
+    
+        for (int i = 0; i < other.longList.size(); i++) {
+            long currentFactor = other.longList.get(i);
+            
+            // Multiply by each 64-bit chunk of the other number
+            for (int bit = 0; bit < 64; bit++) {
+                if ((currentFactor & (1L << bit)) != 0) {
+                    result.add(currentMultiplier);
+                }
+                currentMultiplier.shiftLeft(1);
             }
-
-            // Add remaining carry if any
-            if (carry > 0)
-                result.set(i + other.longList.size(), carry);
-
         }
-
-        // Replace current object with result
-        this.longList = result;
+    
+        this.longList = result.longList;
+        return this;
+    }
+    
+    public BigLong divBy3() {
+        BigLong remainder = Zero();
+        BigLong quotient = Zero();
+        
+        // Process from most significant long to least significant
+        for (int i = this.longList.size() - 1; i >= 0; i--) {
+            long currentLong = this.longList.get(i);
+            
+            // Process each long in 32-bit chunks for more precise division
+            for (int shift = 2; shift >= 0; shift--) {
+                // Extract 64-bit dividend combining remainder and current chunk
+                long shiftAmount = shift * 21;
+                long chunk = (currentLong >>> shiftAmount) & 0x1FFFFFL; // 21-bit chunk
+                
+                long combinedDividend = (remainder.longList.get(0) * (1L << 21)) | chunk;
+                long localQuotient = combinedDividend / 3;
+                long localRemainder = combinedDividend % 3;
+                
+                // Update quotient
+                quotient.shiftLeft(21);
+                quotient = quotient.add(new BigLong(localQuotient));
+                
+                // Prepare remainder for next iteration
+                remainder = new BigLong(localRemainder);
+            }
+        }
+        
+        this.longList = quotient.longList;
         return this.popLeadingZeros();
     }
-
-    public BigLong square() {
-        if (this.isZero())
-            return Zero();
-
-        // Create a result list with enough space
-        List<Long> result = new ArrayList<>(2 * this.longList.size());
-        for (int i = 0; i < 2 * this.longList.size(); i++)
-            result.add(0L);
-
-        // Squaring
-        for (int i = 0; i < this.longList.size(); i++) {
-            long carry = 0;
-            for (int j = 0; j < this.longList.size(); j++) {
-                // Multiply current digits and add to result
-                long product = Long.compareUnsigned(Long.MAX_VALUE - result.get(i + j),
-                        this.longList.get(i) * this.longList.get(j)) >= 0
-                                ? result.get(i + j) + this.longList.get(i) * this.longList.get(j)
-                                : Long.MAX_VALUE;
-
-                long newValue = product + carry;
-                result.set(i + j, newValue);
-
-                // Compute carry
-                carry = (Long.compareUnsigned(newValue, product) < 0) ? 1 : 0;
+    
+    // Helper method to add another BigLong
+    public BigLong add(BigLong other) {
+        int maxSize = Math.max(this.longList.size(), other.longList.size());
+        long carry = 0;
+        
+        for (int i = 0; i < maxSize; i++) {
+            long a = i < this.longList.size() ? this.longList.get(i) : 0L;
+            long b = i < other.longList.size() ? other.longList.get(i) : 0L;
+            
+            long sum = a + b + carry;
+            carry = (Long.compareUnsigned(sum, a) < 0 || (carry > 0 && sum == a)) ? 1L : 0L;
+            
+            if (i < this.longList.size()) {
+                this.longList.set(i, sum);
+            } else {
+                this.longList.add(sum);
             }
-
-            // Add remaining carry if any
-            if (carry > 0)
-                result.set(i + this.longList.size(), carry);
         }
-
-        this.longList = result;
-        return this.popLeadingZeros();
+        
+        if (carry > 0) {
+            this.longList.add(carry);
+        }
+        
+        return this;
     }
 
     public BigLong subByOne() {
@@ -429,18 +434,21 @@ public class BigLong {
     public String toDecimal() {
         if (this.isZero())
             return "0";
-
+    
         BigInteger decimalValue = BigInteger.ZERO;
         BigInteger base = BigInteger.ONE;
-        BigInteger longBase = BigInteger.valueOf(1L).shiftLeft(64); // 2^64
-
+        BigInteger longBase = BigInteger.ONE.shiftLeft(64);
+    
         for (long part : this.longList) {
-            // Treat `long` as unsigned by masking out the sign bit
-            BigInteger unsignedPart = BigInteger.valueOf(part).and(BigInteger.valueOf(0xFFFFFFFFFFFFFFFFL));
+            // Correctly handle unsigned conversion for each long
+            BigInteger unsignedPart = part >= 0 ? 
+                BigInteger.valueOf(part) : 
+                BigInteger.valueOf(part & 0x7FFFFFFFFFFFFFFFL).setBit(63);
+            
             decimalValue = decimalValue.add(unsignedPart.multiply(base));
             base = base.multiply(longBase);
         }
-
+    
         return decimalValue.toString();
     }
 
