@@ -1,5 +1,6 @@
 package me.seyfu_t.actions;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -8,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.BigLong;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.ResponseBuilder;
@@ -16,8 +16,7 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
 
-    // private static final BigInteger Q = BigInteger.ZERO.setBit(128);
-    private static final BigLong Q = BigLong.Zero().setBit(128);
+    private static final BigInteger Q = BigInteger.ZERO.setBit(128);
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -41,7 +40,7 @@ public class GFPolyFactorDDFAction implements Action {
         GFPoly fStar = f.copy();
 
         while (fStar.degree() >= 2 * d) {
-            BigLong bigExponent = Q.pow(d);
+            BigInteger bigExponent = Q.pow(d);
             // X^(q^d) mod f*
             GFPoly h = GFPolyPowModAction.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
