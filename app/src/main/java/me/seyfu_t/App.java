@@ -114,6 +114,7 @@ public class App {
 
         } catch (InterruptedException | ExecutionException e) {
             log.severe("Error processing test cases: " + e.getMessage());
+            e.printStackTrace();
             Thread.currentThread().interrupt();
         }
 
@@ -156,6 +157,7 @@ public class App {
             return new ProcessedTestCase(uniqueHash, resultEntry);
         } catch (Exception e) {
             log.warning("Error processing testcase: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -199,9 +201,11 @@ public class App {
             return new Gson().fromJson(reader, JsonObject.class);
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
+            e.printStackTrace();
             System.exit(1);
         } catch (JsonParseException e) {
             log.severe("File is not valid json!");
+            e.printStackTrace();
             System.exit(1);
         }
         throw new RuntimeException("This line of code should've never been reached");
