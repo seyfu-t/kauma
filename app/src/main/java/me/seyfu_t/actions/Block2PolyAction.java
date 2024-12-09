@@ -32,17 +32,15 @@ public class Block2PolyAction implements Action {
         for (int byteIndex = 0; byteIndex < blockByteArray.length; byteIndex++) {
             int currentByte = blockByteArray[byteIndex] & 0xFF;
 
-            if (gcm)
-                currentByte = Integer.reverse(currentByte) >>> 24;
-
             while (currentByte != 0) {
                 int bitPosition = Integer.numberOfTrailingZeros(currentByte);
                 coefficients[slot++] = (byteIndex * 8) + (gcm ? (7 - bitPosition) : bitPosition);
                 currentByte &= currentByte - 1;
             }
         }
-
-        return Arrays.copyOfRange(coefficients, 0, slot);
+        int[] result = Arrays.copyOfRange(coefficients, 0, slot);
+        Arrays.sort(result);
+        return result;
     }
 
 }
