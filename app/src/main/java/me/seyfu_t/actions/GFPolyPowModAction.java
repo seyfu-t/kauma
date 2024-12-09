@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.BigLong;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
@@ -71,6 +72,37 @@ public class GFPolyPowModAction implements Action {
 
         // Square and multiply
         while (!pow.equals(BigInteger.ZERO)) {
+            // If odd, multiply
+            if (pow.testBit(0)) {
+                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyDivModAction.divModRest(result, mod);
+            }
+
+            // Square
+            base = GFPolyMulAction.square(base);
+            // Reduce
+            base = GFPolyDivModAction.divModRest(base, mod);
+
+            // Divide power by 2
+            pow = pow.shiftRight(1);
+        }
+
+        return result.popLeadingZeros();
+    }
+
+    public static GFPoly powMod(GFPoly base, BigLong pow, GFPoly mod) {
+        if (pow.equals(BigLong.Zero()))
+            return GFPoly.DEGREE_ZERO_POLY_ONE;
+
+        // Check if power is 1
+        if (pow.equals(BigLong.One()))
+            return GFPolyDivModAction.divModRest(base, mod);
+
+        // Initialize result as 1 (identity element for multiplication)
+        GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
+
+        // Square and multiply
+        while (!pow.equals(BigLong.Zero())) {
             // If odd, multiply
             if (pow.testBit(0)) {
                 result = GFPolyMulAction.mul(result, base);
