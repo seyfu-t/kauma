@@ -20,7 +20,7 @@ public class GFDivAction implements Action {
     }
 
     public static FieldElement div(FieldElement a, FieldElement b) {
-        return GFMulAction.mulAndReduce(a, b.inverse());
+        return GFMulAction.mulAndReduce(a, inverse(b));
     }
 
     public static FieldElement inverse(FieldElement a) {
