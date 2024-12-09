@@ -6,6 +6,11 @@ import java.util.function.BiFunction;
 
 public class BigLong {
 
+    /*
+     * This is an unsigned mutable arbitrary precision number represented by a list
+     * of longs
+     */
+
     private List<Long> longList;
 
     // Constructors
@@ -95,44 +100,42 @@ public class BigLong {
 
     // Shift operations
     public BigLong shiftLeft(int bits) {
-        // Calculate how many full longs we need to add
+        if (bits == 0)
+            return this;
+
         int longShifts = bits / 64;
         int bitShift = bits % 64;
 
-        // Prepare a new list with space for additional longs
         List<Long> newList = new ArrayList<>(this.longList.size() + longShifts + 1);
 
         // Add zeros for full long shifts
-        for (int i = 0; i < longShifts; i++) {
+        for (int i = 0; i < longShifts; i++)
             newList.add(0L);
-        }
 
-        // Perform bit-level shift
         long carry = 0;
         for (long value : this.longList) {
             long newValue = (value << bitShift) | carry;
             newList.add(newValue);
-            carry = value >>> (64 - bitShift);
+            carry = bitShift == 0 ? 0 : (value >>> (64 - bitShift));
         }
 
-        // Add final carry if non-zero
-        if (carry != 0) {
+        if (carry != 0)
             newList.add(carry);
-        }
 
         this.longList = newList;
         return this.shrink();
     }
 
     public BigLong shiftRight(int bits) {
-        // Calculate full long shifts and remaining bit shifts
+        if (bits == 0)
+            return this;
+
         int longShifts = bits / 64;
         int bitShift = bits % 64;
 
         // If shifting more than or equal to total bits, return zero
         if (longShifts >= this.longList.size())
             return Zero();
-
         // Remove full longs from the beginning
         this.longList = this.longList.subList(longShifts, this.longList.size());
 
@@ -141,8 +144,10 @@ public class BigLong {
             long current = this.longList.get(i) >>> bitShift;
 
             // If not the last long, incorporate bits from the next long
-            if (i < this.longList.size() - 1)
-                current |= this.longList.get(i + 1) << (64 - bitShift);
+            if (i < this.longList.size() - 1) {
+                long nextLong = this.longList.get(i + 1);
+                current |= (nextLong & ((1L << bitShift) - 1)) << (64 - bitShift);
+            }
 
             this.longList.set(i, current);
         }
@@ -209,9 +214,9 @@ public class BigLong {
 
     public String toString(int radix) {
         return switch (radix) {
-            // case 2 -> ;
+            case 2 -> this.toBinary();
             // case 10 -> ;
-            case 16 -> toHex();
+            case 16 -> this.toHex();
             default -> this.toString(16);
         };
     }
@@ -221,7 +226,6 @@ public class BigLong {
             return "0";
 
         StringBuilder hex = new StringBuilder();
-        // Convert each long to a 16-character hex string, padding with zeros
         for (int i = this.longList.size() - 1; i >= 0; i--)
             hex.append(String.format("%016x ", this.longList.get(i)));
 
@@ -231,6 +235,25 @@ public class BigLong {
         hex.deleteCharAt(hex.length() - 1); // remove final space
 
         return hex.toString().toUpperCase();
+    }
+
+    public String toBinary() {
+        if (this.isZero())
+            return "0";
+
+        StringBuilder bin = new StringBuilder();
+
+        for (int i = this.longList.size() - 1; i >= 0; i--) {
+            String binaryString = Long.toBinaryString(this.longList.get(i));
+            bin.append(String.format("%64s", binaryString).replace(' ', '0')).append(" ");
+        }
+
+        while (bin.charAt(0) == '0' && bin.length() > 1)
+            bin.deleteCharAt(0);
+
+        bin.deleteCharAt(bin.length() - 1); // remove final space
+
+        return bin.toString();
     }
 
 }
