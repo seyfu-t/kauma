@@ -16,7 +16,7 @@ public class SHA {
         }
     }
 
-    public static byte[] hmacSha256(byte[] key, byte[] data) {
+    public static byte[] hmacSha256(byte[] data, byte[] key) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, "HmacSHA256");
