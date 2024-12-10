@@ -8,7 +8,8 @@ import java.util.function.BiFunction;
 public class BigLong {
 
     /*
-     * This is an unsigned immutable arbitrary precision number represented by a list
+     * This is an unsigned immutable arbitrary precision number represented by a
+     * list
      * of longs
      */
 
@@ -21,6 +22,12 @@ public class BigLong {
     public BigLong() {
         this.longList = new ArrayList<>();
         this.longList.add(0L);
+    }
+
+    public BigLong(FieldElement element) {
+        this.longList = new ArrayList<>();
+        this.longList.add(element.low());
+        this.longList.add(element.high());
     }
 
     public BigLong(long value) {
@@ -76,7 +83,7 @@ public class BigLong {
         return copy;
     }
 
-    private static List<Long> popLeadingZeros(List<Long> original){
+    private static List<Long> popLeadingZeros(List<Long> original) {
         List<Long> list = new ArrayList<>(original);
         if (list.isEmpty()) {
             list.add(0L);
@@ -269,6 +276,18 @@ public class BigLong {
 
     public long getLongAt(int index) {
         return this.longList.get(index);
+    }
+
+    public long getMostSignificantBitIndex() {
+        for (int i = Long.SIZE - 1; i >= 0; i--)
+            if (((this.longList.get((int) this.size() - 1) >>> i) & 1) == 1)
+                return i;
+
+        throw new RuntimeException("This BigLong wasn't cleaned up");
+    }
+
+    public long size() {
+        return this.longList.size();
     }
 
     /*
