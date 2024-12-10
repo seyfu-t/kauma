@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.seyfu_t.actions.Block2PolyAction;
+import me.seyfu_t.actions.basic.Block2PolyAction;
 
 // implementing Comparable allows Java's sort() to be used in the context of Lists
 public class GFPoly implements Comparable<GFPoly> {

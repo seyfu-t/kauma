@@ -1,7 +1,8 @@
-package me.seyfu_t.actions;
+package me.seyfu_t.actions.gfpoly;
 
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.actions.gf.GFDivAction;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GFPoly;

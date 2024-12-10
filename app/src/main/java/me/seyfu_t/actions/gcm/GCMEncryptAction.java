@@ -1,10 +1,12 @@
-package me.seyfu_t.actions;
+package me.seyfu_t.actions.gcm;
 
 import java.util.Arrays;
 import java.util.Base64;
 
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.actions.basic.SEA128Action;
+import me.seyfu_t.actions.gf.GFMulAction;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.Tuple;
