@@ -86,10 +86,8 @@ public class GFPolyFactorEDFAction implements Action {
 
     private static BigLong getExponent(int d) {
         long pattern = 0x5555555555555555L;
-        List<Long> list = new ArrayList<>(Arrays.asList(pattern, pattern, pattern, pattern));
+        List<Long> list = new ArrayList<>(Arrays.asList(pattern, pattern));
         for (int i = 1; i < d; i++){
-            list.add(pattern);
-            list.add(pattern);
             list.add(pattern);
             list.add(pattern);
         }
