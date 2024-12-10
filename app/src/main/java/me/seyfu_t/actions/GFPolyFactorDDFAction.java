@@ -1,6 +1,7 @@
 package me.seyfu_t.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,8 +16,6 @@ import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyFactorDDFAction implements Action {
-
-    private static final BigLong Q = BigLong.Zero().setBit(128);
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -40,7 +39,7 @@ public class GFPolyFactorDDFAction implements Action {
         GFPoly fStar = f.copy();
 
         while (fStar.degree() >= 2 * d) {
-            BigLong bigExponent = Q.copy().pow(d);
+            BigLong bigExponent = getExponent(d);
             // X^(q^d) mod f*
             GFPoly h = GFPolyPowModAction.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
@@ -64,6 +63,17 @@ public class GFPolyFactorDDFAction implements Action {
         tupleList.sort(Comparator.comparing(Tuple::getFirst));
 
         return tupleList;
+    }
+
+    private static BigLong getExponent(int d) {
+        List<Long> list = new ArrayList<>(Arrays.asList(0L, 0L));
+        for (int i = 1; i < d; i++) {
+            list.add(0L);
+            list.add(0L);
+        }
+        list.add(1L);
+
+        return new BigLong(list);
     }
 
 }
