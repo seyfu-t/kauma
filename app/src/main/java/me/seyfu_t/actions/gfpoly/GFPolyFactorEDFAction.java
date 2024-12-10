@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SplittableRandom;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -14,13 +13,14 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.model.BigLong;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GFPoly;
+import me.seyfu_t.util.MT19937Random;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDFAction implements Action {
 
     private static final Gson gson = new Gson();
-    private static final SplittableRandom random = new SplittableRandom();
+    private static final MT19937Random random = new MT19937Random(System.currentTimeMillis());
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -76,7 +76,7 @@ public class GFPolyFactorEDFAction implements Action {
     private static GFPoly generateRandomPolynomial(int smallerThan) {
         GFPoly randomPoly = new GFPoly();
 
-        int newDegree = random.nextInt(1, smallerThan + 1);
+        int newDegree = random.nextInt(smallerThan + 1);
 
         for (int i = 0; i < newDegree; i++)
             randomPoly.setCoefficient(i, new FieldElement(random.nextLong(), random.nextLong()));
