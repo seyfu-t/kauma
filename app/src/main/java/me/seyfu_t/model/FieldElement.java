@@ -181,7 +181,7 @@ public class FieldElement {
         return this.high;
     }
 
-    public int getHighestSetBit() {
+    public int getHighestSetBitIndex() {
         if (this.isZero())
             return -1;
 
