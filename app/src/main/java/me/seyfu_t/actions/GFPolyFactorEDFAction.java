@@ -1,7 +1,7 @@
 package me.seyfu_t.actions;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SplittableRandom;
@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
+import me.seyfu_t.model.BigLong;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
@@ -18,7 +19,6 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDFAction implements Action {
 
-    private static final BigInteger Q = BigInteger.ZERO.setBit(128);
     private static final Gson gson = new Gson();
     private static final SplittableRandom random = new SplittableRandom();
 
@@ -44,11 +44,10 @@ public class GFPolyFactorEDFAction implements Action {
         List<GFPoly> polyList = new ArrayList<>();
         polyList.add(f);
 
-        BigInteger bigExponent = Q.pow(d).subtract(BigInteger.ONE).divide(BigInteger.valueOf(3));
+        BigLong bigExponent = getExponent(d);
 
         while (polyList.size() < n) {
             GFPoly h = generateRandomPolynomial(f.degree());
-
             GFPoly g = GFPolyPowModAction.powMod(h, bigExponent, f);
             g = GFPolyAddAction.add(g, GFPoly.DEGREE_ZERO_POLY_ONE);
 
@@ -83,6 +82,19 @@ public class GFPolyFactorEDFAction implements Action {
             randomPoly.setCoefficient(i, new FieldElement(random.nextLong(), random.nextLong()));
 
         return randomPoly;
+    }
+
+    private static BigLong getExponent(int d) {
+        long pattern = 0x5555555555555555L;
+        List<Long> list = new ArrayList<>(Arrays.asList(pattern, pattern, pattern, pattern));
+        for (int i = 1; i < d; i++){
+            list.add(pattern);
+            list.add(pattern);
+            list.add(pattern);
+            list.add(pattern);
+        }
+
+        return new BigLong(list);
     }
 
 }
