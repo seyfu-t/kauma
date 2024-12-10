@@ -116,7 +116,22 @@ public class Util {
                 (byteArray[0 + offset] & 0xFF));
     }
 
-    public static byte[] longToBytes(long value) {
+    public static byte[] longToBytesBigEndian(long value) {
+        byte[] byteArray = new byte[Long.BYTES];
+
+        byteArray[0] = (byte) (value >>> 56);
+        byteArray[1] = (byte) (value >>> 48);
+        byteArray[2] = (byte) (value >>> 40);
+        byteArray[3] = (byte) (value >>> 32);
+        byteArray[4] = (byte) (value >>> 24);
+        byteArray[5] = (byte) (value >>> 16);
+        byteArray[6] = (byte) (value >>> 8);
+        byteArray[7] = (byte) (value);
+
+        return byteArray;
+    }
+
+    public static byte[] longToBytesLittleEndian(long value) {
         byte[] byteArray = new byte[Long.BYTES];
 
         byteArray[7] = (byte) (value >>> 56);
