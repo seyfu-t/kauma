@@ -19,29 +19,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import me.seyfu_t.actions.*;
-import me.seyfu_t.actions.basic.AddNumbersAction;
-import me.seyfu_t.actions.basic.Block2PolyAction;
-import me.seyfu_t.actions.basic.Poly2BlockAction;
-import me.seyfu_t.actions.basic.SEA128Action;
-import me.seyfu_t.actions.basic.SubtractNumbersAction;
-import me.seyfu_t.actions.gcm.GCMCrackAction;
-import me.seyfu_t.actions.gcm.GCMDecryptAction;
-import me.seyfu_t.actions.gcm.GCMEncryptAction;
-import me.seyfu_t.actions.gf.GFDivAction;
-import me.seyfu_t.actions.gf.GFMulAction;
-import me.seyfu_t.actions.gfpoly.GFPolyAddAction;
-import me.seyfu_t.actions.gfpoly.GFPolyDiffAction;
-import me.seyfu_t.actions.gfpoly.GFPolyDivModAction;
-import me.seyfu_t.actions.gfpoly.GFPolyFactorDDFAction;
-import me.seyfu_t.actions.gfpoly.GFPolyFactorEDFAction;
-import me.seyfu_t.actions.gfpoly.GFPolyFactorSFFAction;
-import me.seyfu_t.actions.gfpoly.GFPolyGCDAction;
-import me.seyfu_t.actions.gfpoly.GFPolyMakeMonicAction;
-import me.seyfu_t.actions.gfpoly.GFPolyMulAction;
-import me.seyfu_t.actions.gfpoly.GFPolyPowAction;
-import me.seyfu_t.actions.gfpoly.GFPolyPowModAction;
-import me.seyfu_t.actions.gfpoly.GFPolySortAction;
-import me.seyfu_t.actions.gfpoly.GFPolySqrtAction;
+import me.seyfu_t.actions.basic.*;
+import me.seyfu_t.actions.gcm.*;
+import me.seyfu_t.actions.gf.*;
+import me.seyfu_t.actions.gfpoly.*;
+// import me.seyfu_t.actions.glasskey.*;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
@@ -215,6 +197,11 @@ public class App {
             case "gfpoly_factor_ddf" -> new GFPolyFactorDDFAction();
             case "gfpoly_factor_edf" -> new GFPolyFactorEDFAction();
             case "gcm_crack" -> new GCMCrackAction();
+            // case "glasskey_prng" -> new GlasskeyPRNGAction();
+            // case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBitsAction();
+            // case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMaxAction();
+            // case "glasskey_genkey" -> new GlasskeyGenkeyAction();
+            // case "glasskey_break" -> new GlasskeyBreakAction();
             default -> null;
         };
     }
