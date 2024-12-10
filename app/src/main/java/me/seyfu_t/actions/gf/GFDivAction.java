@@ -41,4 +41,67 @@ public class GFDivAction implements Action {
         return result;
     }
 
+
+    // extended Euclidean algorithm
+    public static FieldElement inverseExtendedGCD1(FieldElement fe) {
+        FieldElement a = new FieldElement(fe.toByteArrayXEX());
+        FieldElement reduction = FieldElement.REDUCTION_POLY;
+        FieldElement x = FieldElement.Zero();
+        FieldElement lastX = FieldElement.One();
+        FieldElement y = FieldElement.One();
+        FieldElement lastY = FieldElement.Zero();
+        
+        // polynomial long division
+        while (!a.isZero()) {
+            int aDegree = a.getHighestSetBit();
+            int reductionDegree = reduction.getHighestSetBit();
+            
+            // Compute degree of quotient
+            if (aDegree < reductionDegree) {
+                // Swap a and reduction
+                FieldElement temp = a;
+                a = reduction;
+                reduction = temp;
+                
+                // Swap x and lastX
+                temp = x;
+                x = lastX;
+                lastX = temp;
+                
+                // Swap y and lastY
+                temp = y;
+                y = lastY;
+                lastY = temp;
+                
+                continue;
+            }
+            
+            // XOR the polynomials
+            int shift = aDegree - reductionDegree;
+            FieldElement quotientTerm = reduction.shiftLeft(shift);
+            a = a.xor(quotientTerm);
+            
+            // Update x and y through polynomial arithmetic
+            FieldElement quotientX = lastX.shiftLeft(shift);
+            x = x.xor(quotientX);
+            
+            FieldElement quotientY = lastY.shiftLeft(shift);
+            y = y.xor(quotientY);
+        }
+        
+        return lastX;
+    }
+
+    // extended Euclidean algorithm
+    public static FieldElement inverseExtendedGCD2(FieldElement fe) {
+        FieldElement u = new FieldElement(fe.toByteArrayXEX());
+        FieldElement reduction = FieldElement.REDUCTION_POLY;
+        FieldElement x = FieldElement.Zero();
+        FieldElement lastX = FieldElement.One();
+        FieldElement y = FieldElement.One();
+        FieldElement lastY = FieldElement.Zero();
+        
+        return lastX;
+    }
+
 }
