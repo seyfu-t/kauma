@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 public class BigLong {
 
     /*
-     * This is an unsigned mutable arbitrary precision number represented by a list
+     * This is an unsigned immutable arbitrary precision number represented by a list
      * of longs
      */
 
@@ -30,8 +30,7 @@ public class BigLong {
 
     public BigLong(List<Long> list) {
         if (!list.isEmpty()) {
-            this.longList = new ArrayList<>(list);
-            this.popLeadingZeros();
+            this.longList = popLeadingZeros(list);
         } else {
             this.longList = new ArrayList<>();
             this.longList.add(0L);
@@ -59,21 +58,41 @@ public class BigLong {
      */
 
     public BigLong popLeadingZeros() {
-        if (this.longList.isEmpty()) {
-            this.longList.add(0L);
-            return this;
+        BigLong copy = new BigLong(this.longList);
+        if (copy.longList.isEmpty()) {
+            copy.longList.add(0L);
+            return copy;
         }
 
-        if (this.longList.size() == 1)
-            return this;
+        if (copy.longList.size() == 1)
+            return copy;
 
-        while (this.longList.size() > 1)
-            if (this.longList.get(this.longList.size() - 1) == 0)
-                this.longList.remove(this.longList.size() - 1);
+        while (copy.longList.size() > 1)
+            if (copy.longList.get(copy.longList.size() - 1) == 0)
+                copy.longList.remove(copy.longList.size() - 1);
             else
                 break;
 
-        return this;
+        return copy;
+    }
+
+    private static List<Long> popLeadingZeros(List<Long> original){
+        List<Long> list = new ArrayList<>(original);
+        if (list.isEmpty()) {
+            list.add(0L);
+            return list;
+        }
+
+        if (list.size() == 1)
+            return list;
+
+        while (list.size() > 1)
+            if (list.get(list.size() - 1) == 0)
+                list.remove(list.size() - 1);
+            else
+                break;
+
+        return list;
     }
 
     /*
@@ -84,25 +103,29 @@ public class BigLong {
         int longIndex = index / 64;
         int bitIndex = index % 64;
 
-        while (longIndex + 1 > this.longList.size())
-            this.longList.add(0L);
+        BigLong copy = this.copy();
 
-        long item = this.longList.get(longIndex);
+        while (longIndex + 1 > copy.longList.size())
+            copy.longList.add(0L);
+
+        long item = copy.longList.get(longIndex);
         item |= 1L << bitIndex;
-        this.longList.set(longIndex, item);
+        copy.longList.set(longIndex, item);
 
-        return this.popLeadingZeros();
+        return copy.popLeadingZeros();
     }
 
     public BigLong unsetBit(int index) {
         int longIndex = index / 64;
         int bitIndex = index % 64;
 
-        long item = this.longList.get(longIndex);
-        item &= ~(1L << bitIndex);
-        this.longList.set(longIndex, item);
+        BigLong copy = this.copy();
 
-        return this.popLeadingZeros();
+        long item = copy.longList.get(longIndex);
+        item &= ~(1L << bitIndex);
+        copy.longList.set(longIndex, item);
+
+        return copy.popLeadingZeros();
     }
 
     public boolean testBit(int index) {
@@ -118,10 +141,11 @@ public class BigLong {
 
     private BigLong applyOperation(BigLong other, BiFunction<Long, Long, Long> operation) {
         int itemCount = Math.min(this.longList.size(), other.longList.size());
+        BigLong copy = this.copy();
         for (int i = 0; i < itemCount; i++) {
-            this.longList.set(i, operation.apply(this.longList.get(i), other.longList.get(i)));
+            copy.longList.set(i, operation.apply(copy.longList.get(i), other.longList.get(i)));
         }
-        return this.popLeadingZeros();
+        return copy.popLeadingZeros();
     }
 
     public BigLong xor(BigLong other) {
@@ -163,8 +187,7 @@ public class BigLong {
         if (carry != 0)
             newList.add(carry);
 
-        this.longList = newList;
-        return this.popLeadingZeros();
+        return new BigLong(newList).popLeadingZeros();
     }
 
     public BigLong shiftRight(int bits) {
@@ -193,9 +216,7 @@ public class BigLong {
             truncatedList.set(i, current);
         }
 
-        this.longList = truncatedList;
-
-        return this.popLeadingZeros();
+        return new BigLong(truncatedList).popLeadingZeros();
     }
 
     /*
