@@ -1,6 +1,5 @@
 package me.seyfu_t.util;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HexFormat;
@@ -72,18 +71,6 @@ public class Util {
         return result;
     }
 
-    public static byte[] concatFieldElementsGCM(List<FieldElement> list) {
-        // Calculate size for resulting byte array
-        byte[] result = new byte[list.size() * 16];
-
-        // piece-wise copy byte arrays into result array
-        for (int listItem = 0; listItem < list.size(); listItem++) {
-            byte[] currentBytes = list.get(listItem).toByteArrayGCM();
-            System.arraycopy(currentBytes, 0, result, listItem * 16, 16);
-        }
-        return result;
-    }
-
     public static List<byte[]> splitIntoChunks(byte[] array, int chunkSize) {
         List<byte[]> chunks = new ArrayList<>();
         Log.debug("Full byte array: " + HexFormat.of().formatHex(array));
@@ -109,20 +96,13 @@ public class Util {
         return stringArray;
     }
 
-    public static boolean hasSignByte(BigInteger bigInteger) {
-        byte[] byteArray = bigInteger.toByteArray();
+    public static long[] convertJsonArrayToLongArray(JsonArray array) {
+        long[] longArray = new long[array.size()];
 
-        // Check if the first byte is the sign byte
-        byte signByte = byteArray[0];
-        boolean isNegative = bigInteger.signum() < 0;
+        for (int i = 0; i < array.size(); i++)
+            longArray[i] = array.get(i).getAsLong();
 
-        // Non-negative numbers have a leading 0x00 as a sign byte
-        if (!isNegative && signByte == 0x00)
-            return true;
-
-        // Negative numbers have a leading 0xFF as a sign byte
-
-        return isNegative && signByte == (byte) 0xFF;
+        return longArray;
     }
 
     public static long bytesToLong(byte[] byteArray, int offset) {
@@ -150,4 +130,5 @@ public class Util {
 
         return byteArray;
     }
+
 }
