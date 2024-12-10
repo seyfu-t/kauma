@@ -1,4 +1,4 @@
-package me.seyfu_t.actions;
+package me.seyfu_t.actions.gcm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +6,10 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.actions.gfpoly.GFPolyFactorDDFAction;
+import me.seyfu_t.actions.gfpoly.GFPolyFactorEDFAction;
+import me.seyfu_t.actions.gfpoly.GFPolyFactorSFFAction;
+import me.seyfu_t.actions.gfpoly.GFPolyMakeMonicAction;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.CipherData;
 import me.seyfu_t.model.GFPoly;

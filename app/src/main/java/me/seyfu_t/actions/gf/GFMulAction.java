@@ -1,4 +1,4 @@
-package me.seyfu_t.actions;
+package me.seyfu_t.actions.gf;
 
 import com.google.gson.JsonObject;
 
