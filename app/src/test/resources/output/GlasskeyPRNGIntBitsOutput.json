@@ -1,0 +1,12 @@
+{
+    "responses": {
+        "glasskey_prng_int_bits1": {
+            "ints": [
+                22,
+                45,
+                118,
+                101
+            ]
+        }
+    }
+}
