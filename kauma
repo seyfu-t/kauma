@@ -1,3 +1,9 @@
 #!/usr/bin/env bash
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-java -XX:+UseG1GC -jar "$script_dir/app/build/libs/app.jar" "$@"
+java -XX:+UnlockExperimentalVMOptions \
+-XX:+UseContainerSupport \
+-XX:MaxRAMPercentage=80.0 \
+-XX:InitialRAMPercentage=50.0 \
+-XX:MinRAMPercentage=25.0 \
+-XX:ActiveProcessorCount=$(nproc)\
+ -jar "$script_dir/app/build/libs/app.jar" "$@"
