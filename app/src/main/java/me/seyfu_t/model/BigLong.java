@@ -8,8 +8,8 @@ import java.util.function.BiFunction;
 public class BigLong {
 
     /*
-     * This is an unsigned immutable arbitrary precision number represented by a list
-     * of longs
+     * This is an unsigned immutable arbitrary precision number represented
+     * by a list of longs
      */
 
     private List<Long> longList;
@@ -21,6 +21,13 @@ public class BigLong {
     public BigLong() {
         this.longList = new ArrayList<>();
         this.longList.add(0L);
+    }
+
+    public BigLong(FieldElement element) {
+        this.longList = new ArrayList<>();
+        this.longList.add(element.low());
+        if (element.high() != 0L)
+            this.longList.add(element.high());
     }
 
     public BigLong(long value) {
@@ -76,7 +83,7 @@ public class BigLong {
         return copy;
     }
 
-    private static List<Long> popLeadingZeros(List<Long> original){
+    private static List<Long> popLeadingZeros(List<Long> original) {
         List<Long> list = new ArrayList<>(original);
         if (list.isEmpty()) {
             list.add(0L);
@@ -140,12 +147,16 @@ public class BigLong {
      */
 
     private BigLong applyOperation(BigLong other, BiFunction<Long, Long, Long> operation) {
-        int itemCount = Math.min(this.longList.size(), other.longList.size());
-        BigLong copy = this.copy();
-        for (int i = 0; i < itemCount; i++) {
-            copy.longList.set(i, operation.apply(copy.longList.get(i), other.longList.get(i)));
-        }
-        return copy.popLeadingZeros();
+
+        BigLong min = this.greaterThan(other) ? other : this;
+        BigLong max = this.greaterThan(other) ? this : other;
+
+        List<Long> result = new ArrayList<>(max.longList);
+        for (int i = 0; i < min.size(); i++)
+            result.set(i, operation.apply(min.longList.get(i), max.longList.get(i)));
+        for (int i = (int) min.size(); i < (int) max.size(); i++)
+            result.set(i, operation.apply(max.getLongAt(i), 0L));
+        return new BigLong(result);
     }
 
     public BigLong xor(BigLong other) {
@@ -269,6 +280,10 @@ public class BigLong {
 
     public long getLongAt(int index) {
         return this.longList.get(index);
+    }
+
+    public long size() {
+        return this.longList.size();
     }
 
     /*

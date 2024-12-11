@@ -1,5 +1,7 @@
 package me.seyfu_t.actions.gf;
 
+import java.math.BigInteger;
+
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
@@ -15,12 +17,12 @@ public class GFDivAction implements Action {
 
         FieldElement a = FieldElement.fromBase64GCM(base64A);
         FieldElement b = FieldElement.fromBase64GCM(base64B);
-    
+
         return ResponseBuilder.singleResponse("q", div(a, b).toBase64GCM());
     }
 
     public static FieldElement div(FieldElement a, FieldElement b) {
-        return GFMulAction.mulAndReduce(a, inverse(b));
+        return GFMulAction.mulAndReduce(a, inverseExtendedGCD(b.toBigInteger()));
     }
 
     public static FieldElement inverse(FieldElement a) {
@@ -41,67 +43,48 @@ public class GFDivAction implements Action {
         return result;
     }
 
+    public static FieldElement inverseExtendedGCD(BigInteger a) {
+        if (a.equals(BigInteger.ZERO))
+            return null;
 
-    // extended Euclidean algorithm
-    public static FieldElement inverseExtendedGCD1(FieldElement fe) {
-        FieldElement a = new FieldElement(fe.toByteArrayXEX());
-        FieldElement reduction = FieldElement.REDUCTION_POLY;
-        FieldElement x = FieldElement.Zero();
-        FieldElement lastX = FieldElement.One();
-        FieldElement y = FieldElement.One();
-        FieldElement lastY = FieldElement.Zero();
-        
-        // polynomial long division
-        while (!a.isZero()) {
-            int aDegree = a.getHighestSetBit();
-            int reductionDegree = reduction.getHighestSetBit();
-            
-            // Compute degree of quotient
-            if (aDegree < reductionDegree) {
-                // Swap a and reduction
-                FieldElement temp = a;
-                a = reduction;
-                reduction = temp;
-                
-                // Swap x and lastX
-                temp = x;
-                x = lastX;
-                lastX = temp;
-                
-                // Swap y and lastY
-                temp = y;
-                y = lastY;
-                lastY = temp;
-                
-                continue;
+        BigInteger u = a;
+        BigInteger v = BigInteger.ZERO.setBit(128).setBit(7).setBit(2).setBit(1).setBit(0);
+        BigInteger g1 = BigInteger.ONE;
+        BigInteger g2 = BigInteger.ZERO;
+
+        while (!u.equals(BigInteger.ZERO)) {
+            int degreeU = u.bitLength() - 1;
+            int degreeV = v.bitLength() - 1;
+
+            // Ensure u always has the higher or equal degree
+            if (degreeU < degreeV) {
+                // Swap u <-> v and g1 <-> g2
+                BigInteger tempU = u;
+                u = v;
+                v = tempU;
+
+                BigInteger tempG = g1;
+                g1 = g2;
+                g2 = tempG;
+
+                // Recompute degrees after swap
+                degreeU = u.bitLength() - 1;
+                degreeV = v.bitLength() - 1;
+
             }
-            
-            // XOR the polynomials
-            int shift = aDegree - reductionDegree;
-            FieldElement quotientTerm = reduction.shiftLeft(shift);
-            a = a.xor(quotientTerm);
-            
-            // Update x and y through polynomial arithmetic
-            FieldElement quotientX = lastX.shiftLeft(shift);
-            x = x.xor(quotientX);
-            
-            FieldElement quotientY = lastY.shiftLeft(shift);
-            y = y.xor(quotientY);
-        }
-        
-        return lastX;
-    }
 
-    // extended Euclidean algorithm
-    public static FieldElement inverseExtendedGCD2(FieldElement fe) {
-        FieldElement u = new FieldElement(fe.toByteArrayXEX());
-        FieldElement reduction = FieldElement.REDUCTION_POLY;
-        FieldElement x = FieldElement.Zero();
-        FieldElement lastX = FieldElement.One();
-        FieldElement y = FieldElement.One();
-        FieldElement lastY = FieldElement.Zero();
-        
-        return lastX;
+            int shift = degreeU - degreeV;
+
+            u = u.xor(v.shiftLeft(shift));
+            g1 = g1.xor(g2.shiftLeft(shift));
+        }
+
+        // At this point, v holds the gcd. If gcd == 1, g2 is the inverse of a mod p.
+        if (v.equals(BigInteger.ONE))
+            return new FieldElement(g2);
+        else
+            return null;
+
     }
 
 }

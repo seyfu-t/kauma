@@ -48,6 +48,18 @@ public class FieldElement {
         }
     }
 
+    public FieldElement(BigInteger bigInt) {
+        this(Util.swapByteOrder(bigInt.toByteArray()));
+    }
+
+    public FieldElement(BigLong bigLong) {
+        this.low = bigLong.getLongAt(0);
+        if (bigLong.size() > 1)
+            this.high = bigLong.getLongAt(1);
+        else
+            this.high = 0L;
+    }
+
     // Static factory methods
     public static FieldElement Zero() {
         return new FieldElement();
@@ -181,7 +193,7 @@ public class FieldElement {
         return this.high;
     }
 
-    public int getHighestSetBit() {
+    public int getHighestSetBitIndex() {
         if (this.isZero())
             return -1;
 
@@ -193,6 +205,11 @@ public class FieldElement {
     }
 
     // Converter
+
+    public BigInteger toBigInteger() {
+        return new BigInteger(1, Util.swapByteOrder(this.toByteArrayXEX()));
+    }
+
     public byte[] toByteArrayXEX() {
         byte[] bytes = new byte[16];
         for (int i = 0; i < 8; i++) {

@@ -35,13 +35,13 @@ class BigLongTest {
     void testBitManipulation() {
         BigLong num = new BigLong(0L);
 
-        num.setBit(0);
+        num = num.setBit(0);
         assertEquals("1", num.toHex());
 
-        num.setBit(1);
+        num = num.setBit(1);
         assertEquals("3", num.toHex());
 
-        num.unsetBit(0);
+        num = num.unsetBit(0);
         assertEquals("2", num.toHex());
 
         assertTrue(num.testBit(1));
@@ -53,15 +53,15 @@ class BigLongTest {
         BigLong a = new BigLong(0b1010);
         BigLong b = new BigLong(0b1100);
 
-        a.xor(b);
+        a = a.xor(b);
         assertEquals("6", a.toHex());
 
         a = new BigLong(0b1010);
-        a.and(b);
+        a = a.and(b);
         assertEquals("8", a.toHex());
 
         a = new BigLong(0b1010);
-        a.or(b);
+        a = a.or(b);
         assertEquals("E", a.toHex());
     }
 
@@ -69,10 +69,10 @@ class BigLongTest {
     void testShiftOperations() {
         BigLong num = new BigLong(1L);
 
-        num.shiftLeft(4);
+        num = num.shiftLeft(4);
         assertEquals("10", num.toHex());
 
-        num.shiftRight(2);
+        num = num.shiftRight(2);
         assertEquals("4", num.toHex());
     }
 
@@ -101,19 +101,19 @@ class BigLongTest {
         BigLong large4 = large1.copy();
         BigLong large5 = large1.copy();
 
-        large1.shiftLeft(32);
+        large1 = large1.shiftLeft(32);
         assertEquals("300000000 0000000200000000 0000000100000000", large1.toHex());
 
-        large2.shiftRight(32);
+        large2 = large2.shiftRight(32);
         assertEquals("300000000 0000000200000000", large2.toHex());
 
-        large3.shiftRight(64);
+        large3 = large3.shiftRight(64);
         assertEquals("3 0000000000000002", large3.toHex());
 
-        large4.shiftRight(128);
+        large4 = large4.shiftRight(128);
         assertEquals("3", large4.toHex());
 
-        large5.shiftLeft(128);
+        large5 = large5.shiftLeft(128);
         assertEquals("3 0000000000000002 0000000000000001 0000000000000000 0000000000000000", large5.toHex());
     }
 
@@ -130,7 +130,7 @@ class BigLongTest {
     void visualizeShift() {
         BigLong num = new BigLong(7L);
         for (int i = 0; i < 64; i++) {
-            num.shiftLeft(1);
+            num = num.shiftLeft(1);
             System.out.println(num.toBinary());
         }
         assertEquals("111 0000000000000000000000000000000000000000000000000000000000000000", num.toBinary());
@@ -149,7 +149,7 @@ class BigLongTest {
         // Test bit manipulation on very large numbers
         BigLong bitTest = new BigLong(Arrays.asList(Long.MAX_VALUE, 0L, 1L));
 
-        bitTest.setBit(200)
+        bitTest = bitTest.setBit(200)
                 .shiftLeft(10)
                 .unsetBit(64);
 
