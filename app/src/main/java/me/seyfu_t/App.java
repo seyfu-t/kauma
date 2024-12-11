@@ -3,8 +3,13 @@ package me.seyfu_t;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,12 +19,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import me.seyfu_t.actions.*;
+import me.seyfu_t.actions.basic.*;
+import me.seyfu_t.actions.gcm.*;
+import me.seyfu_t.actions.gf.*;
+import me.seyfu_t.actions.gfpoly.*;
+// import me.seyfu_t.actions.glasskey.*;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
 public class App {
 
     private static final Logger log = Logger.getLogger(App.class.getName());
+    private static final boolean PROFILE_MODE;
 
     public static final Level LOG_LEVEL;
     static {
@@ -31,20 +42,19 @@ public class App {
             case "SEVERE" -> Level.SEVERE;
             default -> Level.SEVERE;
         };
+
+        // Profile mode makes this program single threaded
+        String profileMode = System.getenv("KAUMA_PROFILE_MODE");
+        PROFILE_MODE = profileMode != null && profileMode.equalsIgnoreCase("true");
     }
 
     public static void main(String[] args) {
-        // Checking if file exists
-        String filePath = args[0];
-        if (!new File(filePath).exists()) {
+        if (args.length == 0 || !new File(args[0]).exists()) {
             log.severe("Datei existiert nicht!");
             System.exit(1);
         }
 
-        // pipeline
-        JsonObject response = getResponseJsonFromInputPath(filePath);
-
-        // output result
+        JsonObject response = getResponseJsonFromInputPath(args[0]);
         System.out.println(response.toString());
     }
 
@@ -53,16 +63,111 @@ public class App {
     }
 
     public static JsonObject getResponseJsonFromInputJson(JsonObject fullJson) {
-        // extracting the relevant part
-        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject(); // get only the value of "responses"
-
-        // building
+        JsonObject testcasesJson = fullJson.get("testcases").getAsJsonObject();
         ResponseBuilder responseBuilder = new ResponseBuilder();
-        iterateOverAllCases(responseBuilder, testcasesJson);
 
-        // finalize and return
-        JsonObject finalResponse = responseBuilder.build();
-        return finalResponse;
+        if (PROFILE_MODE) {
+            iterateOverAllCasesSingleThreaded(responseBuilder, testcasesJson);
+            return responseBuilder.build();
+        }
+
+        // Separate padding_oracle cases from other cases
+        List<Entry<String, JsonElement>> paddingOracleCases = new ArrayList<>();
+        List<Entry<String, JsonElement>> concurrentCases = new ArrayList<>();
+
+        // Categorize test cases in concurrent and sequential
+        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            String actionName = remainderJsonObject.get("action").getAsString();
+
+            if ("padding_oracle".equals(actionName))
+                paddingOracleCases.add(singleCase);
+            else
+                concurrentCases.add(singleCase);
+
+        }
+
+        // Process padding_oracle cases sequentially
+        for (Entry<String, JsonElement> paddingOracleCase : paddingOracleCases) {
+            ProcessedTestCase result = processTestCase(paddingOracleCase);
+            if (result != null && result.result() != null)
+                responseBuilder.addResponse(result.hash(), result.result());
+
+        }
+
+        // Return early if there is only padding_oracle
+        if (concurrentCases.isEmpty())
+            return responseBuilder.build();
+
+        // Process other cases concurrently
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<Future<ProcessedTestCase>> futures = new ArrayList<>();
+
+            // Submit tasks to the virtual thread executor
+            for (Entry<String, JsonElement> singleCase : concurrentCases) {
+                Future<ProcessedTestCase> future = executor.submit(() -> processTestCase(singleCase));
+                futures.add(future);
+            }
+
+            // Collect results
+            for (Future<ProcessedTestCase> future : futures) {
+                ProcessedTestCase result = future.get(); // This will block until the task completes
+                if (result != null && result.result() != null)
+                    responseBuilder.addResponse(result.hash(), result.result());
+
+            }
+
+        } catch (InterruptedException | ExecutionException e) {
+            log.severe("Error processing test cases: " + e.getMessage());
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
+
+        return responseBuilder.build();
+    }
+
+    private static void iterateOverAllCasesSingleThreaded(ResponseBuilder builder, JsonObject testcasesJson) {
+        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+
+            // the 3 relevant parts of each case
+            String uniqueHash = singleCase.getKey();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+            Action action = getActionClass(actionName); // get the appropriate instance
+
+            if (action == null)
+                continue;
+
+            // execute
+            JsonObject resulJsonObject = action.execute(arguments);
+
+            builder.addResponse(uniqueHash, resulJsonObject);
+        }
+    }
+
+    private static ProcessedTestCase processTestCase(Entry<String, JsonElement> singleCase) {
+        try {
+            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
+            String uniqueHash = singleCase.getKey();
+            String actionName = remainderJsonObject.get("action").getAsString();
+            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
+
+            Action action = getActionClass(actionName);
+            if (action == null)
+                return null;
+
+            JsonObject resultEntry = action.execute(arguments);
+            return new ProcessedTestCase(uniqueHash, resultEntry);
+        } catch (Exception e) {
+            log.warning("Error processing testcase: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private record ProcessedTestCase(String hash, JsonObject result) {
     }
 
     public static Action getActionClass(String actionName) {
@@ -91,47 +196,28 @@ public class App {
             case "gfpoly_factor_sff" -> new GFPolyFactorSFFAction();
             case "gfpoly_factor_ddf" -> new GFPolyFactorDDFAction();
             case "gfpoly_factor_edf" -> new GFPolyFactorEDFAction();
+            case "gcm_crack" -> new GCMCrackAction();
+            // case "glasskey_prng" -> new GlasskeyPRNGAction();
+            // case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBitsAction();
+            // case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMaxAction();
+            // case "glasskey_genkey" -> new GlasskeyGenkeyAction();
+            // case "glasskey_break" -> new GlasskeyBreakAction();
             default -> null;
         };
     }
 
-    public static void iterateOverAllCases(ResponseBuilder builder, JsonObject testcasesJson) {
-        for (Entry<String, JsonElement> singleCase : testcasesJson.entrySet()) {
-            JsonObject remainderJsonObject = singleCase.getValue().getAsJsonObject();
-
-            // the 3 relevant parts of each case
-            String uniqueHash = singleCase.getKey();
-            String actionName = remainderJsonObject.get("action").getAsString();
-            JsonObject arguments = remainderJsonObject.get("arguments").getAsJsonObject();
-
-            Action action = getActionClass(actionName); // get the appropriate instance
-
-            if (action == null)
-                continue;
-
-            // execute
-            Map<String, Object> resultEntry = action.execute(arguments);
-
-            builder.addResponse(uniqueHash, resultEntry);
-        }
-    }
-
     public static JsonObject parseFilePathToJson(String filePath) {
-        // Reading could fail, needs try-catch
         try (FileReader reader = new FileReader(filePath)) {
-            // Try parsing the JSON file to a JsonObject
-            JsonObject jsonObj = new Gson().fromJson(reader, JsonObject.class);
-            return jsonObj;
-
-            // If there is any fail at this stage here, continuation isn't possible
+            return new Gson().fromJson(reader, JsonObject.class);
         } catch (IOException e) {
             log.severe("File could not be read. Missing permissions maybe?");
+            e.printStackTrace();
             System.exit(1);
         } catch (JsonParseException e) {
             log.severe("File is not valid json!");
+            e.printStackTrace();
             System.exit(1);
         }
-
         throw new RuntimeException("This line of code should've never been reached");
     }
 }

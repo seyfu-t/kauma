@@ -1,7 +1,7 @@
 {
     "responses": {
-        "padding_oracle2": {
-            "plaintext": "RGFzIGlzdCBlaW5lIGtvcnJla3QgZW50c2NobHVlc3NlbHRlIE5hY2hyaWNodAIC"
+        "padding_oracle1": {
+            "plaintext": "DfJUkptRcfc6itgpuW3QRG46EtNPcI5bAgOUNIfUqaQe50f76WwDhSgzGPdInfAK"
         }
     }
 }

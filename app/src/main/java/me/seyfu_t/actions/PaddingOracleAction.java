@@ -7,58 +7,50 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.JsonObject;
 
 import me.seyfu_t.model.Action;
-import me.seyfu_t.model.UBigInt16;
-import me.seyfu_t.util.Log;
+import me.seyfu_t.model.FieldElement;
+import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
 public class PaddingOracleAction implements Action {
 
+    private static final int Q_BLOCK_COUNT = 256;
+    private static final int LENGTH_BYTES_COUNT = 2;
+
     @Override
-    public Map<String, Object> execute(JsonObject arguments) {
+    public JsonObject execute(JsonObject arguments) {
         String hostname = arguments.get("hostname").getAsString();
         int port = arguments.get("port").getAsInt();
         String iv = arguments.get("iv").getAsString();
         String ciphertext = arguments.get("ciphertext").getAsString();
 
-        String plaintext = paddingOracle(hostname, port, iv, ciphertext);
-
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("plaintext", plaintext);
-
-        return resultMap;
+        return ResponseBuilder.singleResponse("plaintext", paddingOracle(hostname, port, iv, ciphertext));
     }
 
     private static String paddingOracle(String hostname, int port, String base64IV, String base64Ciphertext) {
-        UBigInt16 iv = UBigInt16.fromBase64(base64IV);
+        FieldElement iv = FieldElement.fromBase64XEX(base64IV);
         byte[] ciphertext = Base64.getDecoder().decode(base64Ciphertext);
 
-        Log.debug("IV:", iv);
-        Log.debug("Ciphertext:", HexFormat.of().formatHex(ciphertext));
-
-        List<UBigInt16> decryptedBlocksList = new ArrayList<>();
+        List<FieldElement> decryptedBlocksList = new ArrayList<>();
 
         List<byte[]> ciphertextByteBlocks = Util.splitIntoChunks(ciphertext, 16);
 
         for (int i = 0; i < ciphertextByteBlocks.size(); i++) {
-            UBigInt16 ciphertextBlock = new UBigInt16(ciphertextByteBlocks.get(i));
-            UBigInt16 qBlock = (i == 0) ? iv : new UBigInt16(ciphertextByteBlocks.get(i - 1));
+            FieldElement ciphertextBlock = new FieldElement(ciphertextByteBlocks.get(i));
+            FieldElement qBlock = (i == 0) ? iv : new FieldElement(ciphertextByteBlocks.get(i - 1));
 
-            UBigInt16 decryptedBlock = decryptSingleBlock(qBlock, ciphertextBlock, hostname, port);
+            FieldElement decryptedBlock = decryptSingleBlock(qBlock, ciphertextBlock, hostname, port);
             decryptedBlocksList.add(decryptedBlock);
         }
 
-        return Base64.getEncoder().encodeToString(Util.concatUBigInt16s(decryptedBlocksList));
+        return Base64.getEncoder().encodeToString(Util.concatFieldElementsXEX(decryptedBlocksList));
     }
 
-    private static UBigInt16 decryptSingleBlock(UBigInt16 qBlock, UBigInt16 ciphertextBlock, String hostname,
+    private static FieldElement decryptSingleBlock(FieldElement qBlock, FieldElement ciphertextBlock, String hostname,
             int port) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(hostname, port));
@@ -67,36 +59,25 @@ public class PaddingOracleAction implements Action {
             InputStream in = socket.getInputStream();
 
             // Handling the first Byte and its edge-case
-            out.write(ciphertextBlock.toByteArray());
+            out.write(ciphertextBlock.toByteArrayXEX());
             byte[] firstResponse = sendAllPossibilities(out, in, 15, null);
-            Log.info("response: " + HexFormat.of().formatHex(firstResponse));
 
             // (if two) Check which byte is not the result of having 0x01 at the end
-            byte validPaddingByte = findRelevantPaddingByte(out, in, firstResponse);
+            byte validPaddingByte = findRelevantPaddingByteInFirstResponse(out, in, firstResponse);
 
             byte[] baseBytes = new byte[16];
             baseBytes[15] = (byte) (validPaddingByte ^ 0x01);
-            Log.debug(String.format("Valid base byte: 0x%02X", baseBytes[15] & 0xFF));
 
             // Handling the remaining bytes
             for (int i = 14; i >= 0; i--) {
                 byte[] response = sendAllPossibilities(out, in, i, baseBytes);
-                Log.info("response: " + HexFormat.of().formatHex(response));
 
                 int index = getValidPaddingIndex(response);
-                Log.debug("Index:", String.format("0x%02X", index & 0xFF));
-                Log.debug("XOR:", String.format("0x%02X", (byte) (16 - i)));
 
                 baseBytes[i] = (byte) (index & 0xFF ^ (16 - i));
-                Log.debug(String.format("Valid base byte: 0x%02X", baseBytes[i] & 0xFF));
             }
-            UBigInt16 base = new UBigInt16(baseBytes); // D(C_n)
-            UBigInt16 result = base.xor(qBlock);
-
-            Log.debug("Ciphertext:          ", ciphertextBlock.toString());
-            Log.debug("Base:                ", base.toString());
-            Log.debug("Q-Block:             ", qBlock.toString());
-            Log.debug("Base XOR Q-Block:    ", result.toString());
+            FieldElement base = new FieldElement(baseBytes); // D(C_n)
+            FieldElement result = base.xor(qBlock);
 
             return result; // Plaintext = D(C_n) XOR C_(n-1)
         } catch (IOException e) {
@@ -104,92 +85,110 @@ public class PaddingOracleAction implements Action {
         }
     }
 
-    private static byte findRelevantPaddingByte(OutputStream out, InputStream in, byte[] response)
+    private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
+            throws IOException {
+        byte[] payload = new byte[LENGTH_BYTES_COUNT + Q_BLOCK_COUNT * FieldElement.BYTE_COUNT];
+
+        // length bytes
+        payload[0] = 0;
+        payload[1] = 1;
+
+        // q blocks
+        for (int i = 0; i < Q_BLOCK_COUNT; i++) {
+            FieldElement pad = toPaddedBlock(byteIndex, (byte) i);
+
+            // Fill in already known bytes
+            if (byteIndex < 15) {
+                byte[] array = pad.toByteArrayXEX();
+                for (int j = 15; j > byteIndex; j--)
+                    array[j] = (byte) (currentBaseBytes[j] ^ (16 - byteIndex));
+                System.arraycopy(
+                        array, 0,
+                        payload, LENGTH_BYTES_COUNT + i * FieldElement.BYTE_COUNT, FieldElement.BYTE_COUNT);
+            } else
+                System.arraycopy(
+                        pad.toByteArrayXEX(), 0,
+                        payload, LENGTH_BYTES_COUNT + i * FieldElement.BYTE_COUNT, FieldElement.BYTE_COUNT);
+        }
+
+        out.write(payload);
+
+        return readInResponse(in, Q_BLOCK_COUNT);
+    }
+
+    private static byte findRelevantPaddingByteInFirstResponse(OutputStream out, InputStream in, byte[] response)
             throws IOException {
         // Possibly two valid indexes
         List<Integer> validIndexes = getValidPaddingIndexes(response);
-        
-        Log.debug("Valid indexes size:",validIndexes.size());
 
-        if (validIndexes.size() == 1) {
+        if (validIndexes.size() == 1)
             return (byte) (validIndexes.get(0) & 0xFF);
-        }
 
-        for (int index : validIndexes) {
-            if (!is01Padding(out, in, (byte) (index & 0xFF))) {
-                Log.debug("correct index:",(index&0xFF));
+        for (int index : validIndexes)
+            if (!is01Padding(out, in, (byte) (index & 0xFF)))
                 return (byte) (index & 0xFF);
-            }
-        }
 
         throw new RuntimeException("Not a single valid padding found.");
     }
 
-    private static byte[] sendAllPossibilities(OutputStream out, InputStream in, int byteIndex, byte[] currentBaseBytes)
-            throws IOException {
-        byte[] lengthBytes = new byte[] { (byte) 0, (byte) 1 }; // 256
-        out.write(lengthBytes);
-
-        for (int i = 0; i < 256; i++) {// double loop required
-            UBigInt16 pad = genPaddedBlock(byteIndex, (byte) i);
-            if (byteIndex < 15) {
-                byte[] array = pad.toByteArray();
-                for (int j = 15; j > byteIndex; j--)
-                    array[j] = (byte) (currentBaseBytes[j] ^ (16 - byteIndex));
-                pad = new UBigInt16(array);
-            }
-            out.write(pad.toByteArray());
-            Log.info("Writing:", pad.toString());
-        }
-
-        byte[] response = new byte[256];
-        in.read(response);
-        return response;
-    }
-
     private static boolean is01Padding(OutputStream out, InputStream in, byte toTest) throws IOException {
-        byte[] length = new byte[2];
-        length[0] = 0x02;
-        out.write(length);
+        byte[] testerPayload = new byte[LENGTH_BYTES_COUNT + FieldElement.BYTE_COUNT * 2];
 
-        byte[] array = UBigInt16.Zero().toByteArray();
-        array[15] = toTest;
+        // length bytes
+        testerPayload[0] = 2;
+        testerPayload[1] = 0;
+
         // Test 2 diff. possibilities for other byte to not get it accidentally right
-        array[14] = 0x02;
-        out.write(array);
+        testerPayload[LENGTH_BYTES_COUNT + FieldElement.BYTE_COUNT - 1] = toTest;
+        testerPayload[LENGTH_BYTES_COUNT + FieldElement.BYTE_COUNT - 2] = 0x02; // some value
+        testerPayload[LENGTH_BYTES_COUNT + FieldElement.BYTE_COUNT * 2 - 1] = toTest;
+        testerPayload[LENGTH_BYTES_COUNT + FieldElement.BYTE_COUNT * 2 - 2] = 0x01; // some other value
 
-        array[14] = 0x01;
-        out.write(array);
+        out.write(testerPayload);
 
         byte[] response = new byte[2];
         in.read(response);
 
         boolean result = (response[0] == 0x01 && response[1] == 0x01);
-        Log.debug("is01Padding:",result);
         return !result;
     }
 
+    // This is for the first run, since there can be two correct answers
     private static List<Integer> getValidPaddingIndexes(byte[] response) {
         List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < response.length; i++) {
+        for (int i = 0; i < response.length; i++)
             if (response[i] == 0x01)
                 list.add(i);
-        }
+
         return list;
     }
 
+    // For every packet after the first one
     private static int getValidPaddingIndex(byte[] response) {
         for (int i = 0; i < response.length; i++) {
             if (response[i] == 0x01)
                 return i;
         }
+
         throw new RuntimeException("Got all 0s as response");
     }
 
-    private static UBigInt16 genPaddedBlock(int byteIndex, byte pad) {
-        byte[] array = UBigInt16.Zero().toByteArray();
+    private static FieldElement toPaddedBlock(int byteIndex, byte pad) {
+        byte[] array = FieldElement.Zero().toByteArrayXEX();
         array[byteIndex] = pad;
-        return new UBigInt16(array);
+        return new FieldElement(array);
+    }
+
+    private static byte[] readInResponse(InputStream in, int expectedLength) throws IOException {
+        byte[] buffer = new byte[expectedLength];
+        int bytesRead = 0;
+        while (bytesRead < expectedLength) {
+            int count = in.read(buffer, bytesRead, expectedLength - bytesRead);
+            if (count == -1)
+                throw new IOException("Padding oracle stream ended before reading required bytes");
+            bytesRead += count;
+        }
+        return buffer;
     }
 
 }
