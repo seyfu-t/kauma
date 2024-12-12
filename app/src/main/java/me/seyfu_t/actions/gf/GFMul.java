@@ -6,7 +6,7 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class GFMulAction implements Action {
+public class GFMul implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {

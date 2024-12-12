@@ -2,14 +2,14 @@ package me.seyfu_t.actions.gfpoly;
 
 import com.google.gson.JsonObject;
 
-import me.seyfu_t.actions.gf.GFMulAction;
+import me.seyfu_t.actions.gf.GFMul;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyMulAction implements Action {
+public class GFPolyMul implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -44,14 +44,14 @@ public class GFPolyMulAction implements Action {
                     continue;
 
                 // Multiply coefficients in GF(2^128)
-                FieldElement multipliedCoef = GFMulAction.mulAndReduce(coefA, coefB);
+                FieldElement multipliedCoef = GFMul.mulAndReduce(coefA, coefB);
 
                 // Create a polynomial with single term at degree i+j
                 GFPoly term = new GFPoly();
                 term.setCoefficient(i + j, multipliedCoef);
 
                 // Add this term to result
-                result = GFPolyAddAction.add(result, term);
+                result = GFPolyAdd.add(result, term);
             }
         }
 
@@ -69,7 +69,7 @@ public class GFPolyMulAction implements Action {
 
         for (int i = 0; i < a.size(); i++) {
             if (!a.getCoefficient(i).isZero()) {
-                FieldElement squared = GFMulAction.mulAndReduce(a.getCoefficient(i), a.getCoefficient(i));
+                FieldElement squared = GFMul.mulAndReduce(a.getCoefficient(i), a.getCoefficient(i));
                 result.setCoefficient(i * 2, squared);
             }
         }

@@ -8,7 +8,7 @@ import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolySqrtAction implements Action {
+public class GFPolySqrt implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -31,7 +31,7 @@ public class GFPolySqrtAction implements Action {
             GFPoly base = new GFPoly(new FieldElement[]{currentCoefficient});
 
             // square and multiply, the polynomial wont get bigger
-            base = GFPolyPowAction.pow(base, pow);
+            base = GFPolyPow.pow(base, pow);
 
             // take back the now processed coefficient and save
             result.setCoefficient(i/2, base.getCoefficient(0));

@@ -7,7 +7,7 @@ import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyGCDAction implements Action {
+public class GFPolyGCD implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -36,11 +36,11 @@ public class GFPolyGCDAction implements Action {
             // Update polynomials for next iteration
             GFPoly tempDividend = dividend.copy();
             dividend = divisor.copy();
-            divisor = GFPolyDivModAction.divModRest(tempDividend, divisor);
+            divisor = GFPolyDivMod.divModRest(tempDividend, divisor);
         }
 
         // Normalize the result - make the leading coefficient 1 if possible
-        return GFPolyMakeMonicAction.makeMonic(dividend);
+        return GFPolyMakeMonic.makeMonic(dividend);
     }
 
 }

@@ -8,7 +8,7 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class GFDivAction implements Action {
+public class GFDiv implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -22,7 +22,7 @@ public class GFDivAction implements Action {
     }
 
     public static FieldElement div(FieldElement a, FieldElement b) {
-        return GFMulAction.mulAndReduce(a, inverseExtendedGCD(b.toBigInteger()));
+        return GFMul.mulAndReduce(a, inverseExtendedGCD(b.toBigInteger()));
     }
 
     public static FieldElement inverse(FieldElement a) {
@@ -33,9 +33,9 @@ public class GFDivAction implements Action {
 
         while (!pow.isZero()) {
             if (pow.testBit(0)) // if odd
-                result = GFMulAction.mulAndReduce(result, base);
+                result = GFMul.mulAndReduce(result, base);
 
-            base = GFMulAction.mulAndReduce(base, base);
+            base = GFMul.mulAndReduce(base, base);
 
             pow = pow.divBy2(); // div by 2
         }

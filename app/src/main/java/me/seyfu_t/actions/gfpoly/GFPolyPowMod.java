@@ -11,7 +11,7 @@ import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyPowModAction implements Action {
+public class GFPolyPowMod implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -35,7 +35,7 @@ public class GFPolyPowModAction implements Action {
 
         // Check if power is 1
         if (pow.equals(FieldElement.One()))
-            return GFPolyDivModAction.divModRest(base, mod);
+            return GFPolyDivMod.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
@@ -44,14 +44,14 @@ public class GFPolyPowModAction implements Action {
         while (!pow.isZero()) {
             // If odd, multiply
             if (pow.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
+                result = GFPolyMul.mul(result, base);
+                result = GFPolyDivMod.divModRest(result, mod);
             }
 
             // Square
-            base = GFPolyMulAction.square(base);
+            base = GFPolyMul.square(base);
             // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
+            base = GFPolyDivMod.divModRest(base, mod);
 
             // Divide power by 2
             pow = pow.divBy2();
@@ -66,7 +66,7 @@ public class GFPolyPowModAction implements Action {
 
         // Check if power is 1
         if (pow.equals(BigInteger.ONE))
-            return GFPolyDivModAction.divModRest(base, mod);
+            return GFPolyDivMod.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
@@ -75,14 +75,14 @@ public class GFPolyPowModAction implements Action {
         while (!pow.equals(BigInteger.ZERO)) {
             // If odd, multiply
             if (pow.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
+                result = GFPolyMul.mul(result, base);
+                result = GFPolyDivMod.divModRest(result, mod);
             }
 
             // Square
-            base = GFPolyMulAction.square(base);
+            base = GFPolyMul.square(base);
             // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
+            base = GFPolyDivMod.divModRest(base, mod);
 
             // Divide power by 2
             pow = pow.shiftRight(1);
@@ -97,7 +97,7 @@ public class GFPolyPowModAction implements Action {
 
         // Check if power is 1
         if (pow.equals(BigLong.One()))
-            return GFPolyDivModAction.divModRest(base, mod);
+            return GFPolyDivMod.divModRest(base, mod);
 
         // Initialize result as 1 (identity element for multiplication)
         GFPoly result = GFPoly.DEGREE_ZERO_POLY_ONE;
@@ -106,14 +106,14 @@ public class GFPolyPowModAction implements Action {
         while (!pow.equals(BigLong.Zero())) {
             // If odd, multiply
             if (pow.testBit(0)) {
-                result = GFPolyMulAction.mul(result, base);
-                result = GFPolyDivModAction.divModRest(result, mod);
+                result = GFPolyMul.mul(result, base);
+                result = GFPolyDivMod.divModRest(result, mod);
             }
 
             // Square
-            base = GFPolyMulAction.square(base);
+            base = GFPolyMul.square(base);
             // Reduce
-            base = GFPolyDivModAction.divModRest(base, mod);
+            base = GFPolyDivMod.divModRest(base, mod);
 
             // Divide power by 2
             pow = pow.shiftRight(1);

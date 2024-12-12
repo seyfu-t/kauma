@@ -7,7 +7,7 @@ import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyAddAction implements Action {
+public class GFPolyAdd implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {

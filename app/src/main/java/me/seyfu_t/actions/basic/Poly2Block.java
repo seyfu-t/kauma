@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class Poly2BlockAction implements Action {
+public class Poly2Block implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {

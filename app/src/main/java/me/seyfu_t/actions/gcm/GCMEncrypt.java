@@ -5,15 +5,15 @@ import java.util.Base64;
 
 import com.google.gson.JsonObject;
 
-import me.seyfu_t.actions.basic.SEA128Action;
-import me.seyfu_t.actions.gf.GFMulAction;
+import me.seyfu_t.actions.basic.SEA128;
+import me.seyfu_t.actions.gf.GFMul;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.AES;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class GCMEncryptAction implements Action {
+public class GCMEncrypt implements Action {
 
     public static final int AUTH_TAG_COUNTER = 1;
     private static final int BLOCK_SIZE = 16;
@@ -104,13 +104,13 @@ public class GCMEncryptAction implements Action {
     }
 
     public static FieldElement singleGashBlock(FieldElement lastBlock, FieldElement block, FieldElement authKey) {
-        return GFMulAction.mulAndReduceGHASH(lastBlock.xor(block), authKey);
+        return GFMul.mulAndReduceGHASH(lastBlock.xor(block), authKey);
     }
 
     public static FieldElement authKey(String algorithm, byte[] key) {
         byte[] authKey = switch (algorithm) {
             case "aes128" -> AES.encrypt(new byte[BLOCK_SIZE], key);
-            case "sea128" -> SEA128Action.encryptSEA128(new byte[BLOCK_SIZE], key);
+            case "sea128" -> SEA128.encryptSEA128(new byte[BLOCK_SIZE], key);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
 
@@ -124,7 +124,7 @@ public class GCMEncryptAction implements Action {
 
         return switch (algorithm) {
             case "aes128" -> AES.encrypt(input, key);
-            case "sea128" -> SEA128Action.encryptSEA128(input, key);
+            case "sea128" -> SEA128.encryptSEA128(input, key);
             default -> throw new IllegalArgumentException("Algorithm " + algorithm + " not supported");
         };
     }

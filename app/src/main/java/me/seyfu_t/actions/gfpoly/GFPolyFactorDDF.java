@@ -15,7 +15,7 @@ import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyFactorDDFAction implements Action {
+public class GFPolyFactorDDF implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -41,15 +41,15 @@ public class GFPolyFactorDDFAction implements Action {
         while (fStar.degree() >= 2 * d) {
             BigLong bigExponent = getExponent(d);
             // X^(q^d) mod f*
-            GFPoly h = GFPolyPowModAction.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
+            GFPoly h = GFPolyPowMod.powMod(GFPoly.DEGREE_ONE_POLY_ONE, bigExponent, fStar);
             // - X
-            h = GFPolyAddAction.add(h, GFPoly.DEGREE_ONE_POLY_ONE);
+            h = GFPolyAdd.add(h, GFPoly.DEGREE_ONE_POLY_ONE);
 
-            GFPoly g = GFPolyGCDAction.gcd(h, fStar);
+            GFPoly g = GFPolyGCD.gcd(h, fStar);
 
             if (!g.equals(GFPoly.DEGREE_ZERO_POLY_ONE)) {
                 tupleList.add(new Tuple<>(g, d));
-                fStar = GFPolyDivModAction.divModQuotient(fStar, g);
+                fStar = GFPolyDivMod.divModQuotient(fStar, g);
             }
             d++;
         }

@@ -13,7 +13,7 @@ import me.seyfu_t.model.Tuple;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyFactorSFFAction implements Action {
+public class GFPolyFactorSFF implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -32,28 +32,28 @@ public class GFPolyFactorSFFAction implements Action {
     }
 
     public static List<Tuple<GFPoly, Integer>> sff(GFPoly f) {
-        GFPoly c = GFPolyGCDAction.gcd(f, GFPolyDiffAction.diff(f));
+        GFPoly c = GFPolyGCD.gcd(f, GFPolyDiff.diff(f));
 
-        f = GFPolyDivModAction.divModQuotient(f, c);
+        f = GFPolyDivMod.divModQuotient(f, c);
 
         List<Tuple<GFPoly, Integer>> tupleList = new ArrayList<>();
 
         int exponent = 1;
 
         while (!f.equals(GFPoly.DEGREE_ZERO_POLY_ONE)) {
-            GFPoly y = GFPolyGCDAction.gcd(f, c);
+            GFPoly y = GFPolyGCD.gcd(f, c);
 
             if (!f.equals(y))
-                tupleList.add(new Tuple<>(GFPolyDivModAction.divModQuotient(f, y), exponent));
+                tupleList.add(new Tuple<>(GFPolyDivMod.divModQuotient(f, y), exponent));
 
             f = y.copy();
-            c = GFPolyDivModAction.divModQuotient(c, y);
+            c = GFPolyDivMod.divModQuotient(c, y);
 
             exponent++;
         }
 
         if (!c.equals(GFPoly.DEGREE_ZERO_POLY_ONE)) {
-            for (Tuple<GFPoly, Integer> tuple : sff(GFPolySqrtAction.sqrt(c))) {
+            for (Tuple<GFPoly, Integer> tuple : sff(GFPolySqrt.sqrt(c))) {
                 tupleList.add(new Tuple<>(tuple.getFirst(), tuple.getSecond() * 2));
             }
         }
