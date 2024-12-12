@@ -88,7 +88,7 @@ public class GFPolyPowModAction implements Action {
             pow = pow.shiftRight(1);
         }
 
-        return result.popLeadingZeros();
+        return result;
     }
 
     public static GFPoly powMod(GFPoly base, BigLong pow, GFPoly mod) {

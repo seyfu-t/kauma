@@ -55,8 +55,8 @@ public class GFPolyMulAction implements Action {
             }
         }
 
-        if (result.isZero())
-            return GFPoly.ZERO_POLY;
+        // if (result.isZero())
+        //     return GFPoly.ZERO_POLY;
 
         return result;
     }

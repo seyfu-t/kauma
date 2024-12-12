@@ -40,9 +40,7 @@ public class GFPolyGCDAction implements Action {
         }
 
         // Normalize the result - make the leading coefficient 1 if possible
-        GFPoly monicResult = GFPolyMakeMonicAction.makeMonic(dividend);
-
-        return monicResult;
+        return GFPolyMakeMonicAction.makeMonic(dividend);
     }
 
 }

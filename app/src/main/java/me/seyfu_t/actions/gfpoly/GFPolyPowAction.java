@@ -46,7 +46,7 @@ public class GFPolyPowAction implements Action {
             exp >>= 1;
         }
 
-        return result.popLeadingZeros();
+        return result;
     }
 
     // Square and multiply algorithm
