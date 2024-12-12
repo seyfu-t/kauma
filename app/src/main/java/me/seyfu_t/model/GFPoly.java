@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import me.seyfu_t.actions.basic.Block2PolyAction;
+import me.seyfu_t.actions.basic.Block2Poly;
 
 // implementing Comparable allows Java's sort() to be used in the context of Lists
 public class GFPoly implements Comparable<GFPoly> {
@@ -144,7 +144,7 @@ public class GFPoly implements Comparable<GFPoly> {
                 continue; // Skip zero coefficients
 
             // Convert the field element to its polynomial representation
-            int[] elementPoly = Block2PolyAction.block2Poly(coefficient.toBase64GCM(), gcm);
+            int[] elementPoly = Block2Poly.block2Poly(coefficient.toBase64GCM(), gcm);
 
             // Build the coefficient representation
             StringBuilder coefStr = new StringBuilder();

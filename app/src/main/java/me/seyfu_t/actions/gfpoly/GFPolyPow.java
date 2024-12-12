@@ -8,7 +8,7 @@ import me.seyfu_t.model.GFPoly;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyPowAction implements Action {
+public class GFPolyPow implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -37,10 +37,10 @@ public class GFPolyPowAction implements Action {
         while (exp > 0) {
             // If odd, multiply
             if ((exp & 1) == 1)
-                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyMul.mul(result, base);
 
             // Square
-            base = GFPolyMulAction.square(base);
+            base = GFPolyMul.square(base);
 
             // Divide exponent by 2
             exp >>= 1;
@@ -66,10 +66,10 @@ public class GFPolyPowAction implements Action {
         while (!exp.isZero()) {
             // If odd, multiply
             if (exp.testBit(0))
-                result = GFPolyMulAction.mul(result, base);
+                result = GFPolyMul.mul(result, base);
 
             // Square
-            base = GFPolyMulAction.square(base);
+            base = GFPolyMul.square(base);
 
             // Divide exponent by 2
             exp = exp.divBy2();

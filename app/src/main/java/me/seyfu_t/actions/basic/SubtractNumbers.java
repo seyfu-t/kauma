@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class SubtractNumbersAction implements Action {
+public class SubtractNumbers implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {

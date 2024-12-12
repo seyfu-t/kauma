@@ -16,7 +16,7 @@ import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class PaddingOracleAction implements Action {
+public class PaddingOracle implements Action {
 
     private static final int Q_BLOCK_COUNT = 256;
     private static final int LENGTH_BYTES_COUNT = 2;

@@ -8,7 +8,7 @@ import me.seyfu_t.model.Action;
 import me.seyfu_t.util.AES;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class SEA128Action implements Action {
+public class SEA128 implements Action {
 
     // c0ffeec0ffeec0ffeec0ffeec0ffee11
     private static final byte[] XOR = new byte[] {

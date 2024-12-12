@@ -17,7 +17,7 @@ import me.seyfu_t.util.MT19937Random;
 import me.seyfu_t.util.ResponseBuilder;
 import me.seyfu_t.util.Util;
 
-public class GFPolyFactorEDFAction implements Action {
+public class GFPolyFactorEDF implements Action {
 
     private static final Gson gson = new Gson();
     private static final MT19937Random random = new MT19937Random(System.currentTimeMillis());
@@ -48,8 +48,8 @@ public class GFPolyFactorEDFAction implements Action {
 
         while (polyList.size() < n) {
             GFPoly h = generateRandomPolynomial(f.degree());
-            GFPoly g = GFPolyPowModAction.powMod(h, bigExponent, f);
-            g = GFPolyAddAction.add(g, GFPoly.DEGREE_ZERO_POLY_ONE);
+            GFPoly g = GFPolyPowMod.powMod(h, bigExponent, f);
+            g = GFPolyAdd.add(g, GFPoly.DEGREE_ZERO_POLY_ONE);
 
             List<GFPoly> newPolys = new ArrayList<>();
             Iterator<GFPoly> iterator = polyList.iterator();
@@ -57,11 +57,11 @@ public class GFPolyFactorEDFAction implements Action {
             while (iterator.hasNext()) {
                 GFPoly u = iterator.next();
                 if (u.degree() > d) {
-                    GFPoly j = GFPolyGCDAction.gcd(u, g);
+                    GFPoly j = GFPolyGCD.gcd(u, g);
                     if (!j.equals(GFPoly.DEGREE_ZERO_POLY_ONE) && !j.equals(u)) {
                         iterator.remove();
                         newPolys.add(j);
-                        newPolys.add(GFPolyDivModAction.divModQuotient(u, j));
+                        newPolys.add(GFPolyDivMod.divModQuotient(u, j));
                     }
                 }
             }

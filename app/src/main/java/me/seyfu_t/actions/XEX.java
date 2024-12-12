@@ -5,13 +5,13 @@ import java.util.Base64;
 
 import com.google.gson.JsonObject;
 
-import me.seyfu_t.actions.basic.SEA128Action;
-import me.seyfu_t.actions.gf.GFMulAction;
+import me.seyfu_t.actions.basic.SEA128;
+import me.seyfu_t.actions.gf.GFMul;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.model.FieldElement;
 import me.seyfu_t.util.ResponseBuilder;
 
-public class XEXAction implements Action {
+public class XEX implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -52,11 +52,11 @@ public class XEXAction implements Action {
 
     private static FieldElement getMasterKeyForRound(int round, byte[] tweak, byte[] keyTwo) {
         // Starter key
-        FieldElement masterKey = new FieldElement(SEA128Action.encryptSEA128(tweak, keyTwo));
+        FieldElement masterKey = new FieldElement(SEA128.encryptSEA128(tweak, keyTwo));
 
         // For every other block, multiply with alpha in GF2^128
         for (int i = 0; i < round; i++)
-            masterKey = GFMulAction.mulAndReduce(masterKey, FieldElement.ALPHA);
+            masterKey = GFMul.mulAndReduce(masterKey, FieldElement.ALPHA);
 
         return masterKey;
     }
@@ -67,7 +67,7 @@ public class XEXAction implements Action {
             text[i] ^= roundKey[i];
 
         // Encrypt or Decrypt
-        text = SEA128Action.sea128(mode, text, keyOne);
+        text = SEA128.sea128(mode, text, keyOne);
 
         // XOR
         for (int i = 0; i < 16; i++)
