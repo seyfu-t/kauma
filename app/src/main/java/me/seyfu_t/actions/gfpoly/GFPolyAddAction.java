@@ -32,6 +32,9 @@ public class GFPolyAddAction implements Action {
         for (int i = minIndex; i < maxIndex; i++)
             result.setCoefficient(i, a.size() > b.size() ? a.getCoefficient(i) : b.getCoefficient(i));
 
+        if (result.isZero())
+            return GFPoly.ZERO_POLY;
+
         return result.popLeadingZeros();
     }
 
