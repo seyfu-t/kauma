@@ -54,19 +54,21 @@ public class GFPoly implements Comparable<GFPoly> {
     }
 
     public boolean isZero() {
-        if (this.coefficients.isEmpty())
-            return true;
-
         // This is an edge case in the for loop for some reason
-        if (this.totalSize() == 1 && this.getCoefficient(0).equals(FieldElement.Zero()))
+        int size = this.totalSize();
+
+        if (size <= 1 && this.getCoefficient(0).equals(FieldElement.Zero()))
             return true;
+        
+        else 
+            return false;
 
-        for (int i = 0; i < this.coefficients.size(); i++) {
-            if (!this.coefficients.get(i).isZero())
-                return false;
-        }
+        // for (int i = this.coefficients.size()-1; i >= 0; i--) {
+        //     if (!this.coefficients.get(i).isZero())
+        //         return false;
+        // }
 
-        return true;
+        // return true;
     }
 
     public int size() { // this method has ambiguity, totalSize() has not
