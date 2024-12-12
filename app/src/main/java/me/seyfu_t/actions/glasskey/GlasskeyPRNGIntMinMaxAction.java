@@ -38,10 +38,10 @@ public class GlasskeyPRNGIntMinMaxAction implements Action {
         long b = Long.bitCount(s);
 
         while (true) {
-            long r = GlasskeyPRNGIntBitsAction.intBits(key, seed, b);
+            // long r = GlasskeyPRNGIntBitsAction.intBits(key, seed, b);
 
-            if (r < max)
-                return r;
+            // if (r < max)
+            //     return r;
         }
     }
 

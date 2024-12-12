@@ -14,14 +14,14 @@ public class GlasskeyPRNGIntBitsAction implements Action {
     public JsonObject execute(JsonObject arguments) {
         byte[] key = Base64.getDecoder().decode(arguments.get("agency_key").getAsString());
         byte[] seed = Base64.getDecoder().decode(arguments.get("seed").getAsString());
-        long[] bitLengths = Util.convertJsonArrayToLongArray(arguments.get("bit_lengths").getAsJsonArray());
+        int[] bitLengths = Util.convertJsonArrayToIntegerArray(arguments.get("bit_lengths").getAsJsonArray());
 
         return ResponseBuilder.singleResponse("ints", intBits(key, seed, bitLengths));
     }
 
-    public static long[] intBits(byte[] key, byte[] seed, long[] lengths) {
+    public static int[] intBits(byte[] key, byte[] seed, int[] lengths) {
         int size = lengths.length;
-        long[] response = new long[size];
+        int[] response = new int[size];
 
         for (int i = 0; i < size; i++)
             response[i] = intBits(key, seed, lengths[i]);
@@ -29,10 +29,12 @@ public class GlasskeyPRNGIntBitsAction implements Action {
         return response;
     }
 
-    public static long intBits(byte[] key, byte[] seed, long lengths) {
-        long l = lengths / 8 + 1;
+    public static int intBits(byte[] key, byte[] seed, int b) {
+        int l = (b + 7) / 8; // seal
         byte[] s = GlasskeyPRNGAction.prngSingle(key, seed, l);
-        long sStar = Util.bytesToLong(s, 0);
-        return 0;
+        int sStar = Util.bytesToInteger(s);
+        int num = ((sStar<<b)-1) & sStar;
+
+        return num;
     }
 }
