@@ -30,6 +30,8 @@ public class GFPoly implements Comparable<GFPoly> {
     }
 
     public GFPoly(String[] base64Array) {
+        if (base64Array.length == 0)
+            this.coefficients.add(FieldElement.Zero());
         for (String base64Coefficient : base64Array)
             this.coefficients.add(FieldElement.fromBase64GCM(base64Coefficient));
     }
@@ -55,20 +57,10 @@ public class GFPoly implements Comparable<GFPoly> {
 
     public boolean isZero() {
         // This is an edge case in the for loop for some reason
-        int size = this.totalSize();
-
-        if (size <= 1 && this.getCoefficient(0).equals(FieldElement.Zero()))
+        if (this.totalSize() == 1 && this.getCoefficient(0).equals(FieldElement.Zero()))
             return true;
-        
-        else 
+        else
             return false;
-
-        // for (int i = this.coefficients.size()-1; i >= 0; i--) {
-        //     if (!this.coefficients.get(i).isZero())
-        //         return false;
-        // }
-
-        // return true;
     }
 
     public int size() { // this method has ambiguity, totalSize() has not
@@ -77,7 +69,7 @@ public class GFPoly implements Comparable<GFPoly> {
         if (size == 0)
             return size;
 
-        while (this.coefficients.get(size - 1) == null || this.coefficients.get(size - 1).isZero()) {
+        while (this.coefficients.get(size - 1).isZero()) {
             // shave off leading zeros except the last
             size--;
             if (size == 0)// return also 0 when [0] or [0,0,0]... etc
