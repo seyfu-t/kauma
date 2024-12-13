@@ -19,7 +19,7 @@ public class GFPolyMul implements Action {
         GFPoly a = new GFPoly(polyA);
         GFPoly b = new GFPoly(polyB);
 
-        return ResponseBuilder.singleResponse("P", mul(a, b).toBase64Array());
+        return ResponseBuilder.single("P", mul(a, b).toBase64Array());
     }
 
     public static GFPoly mul(GFPoly a, GFPoly b) {

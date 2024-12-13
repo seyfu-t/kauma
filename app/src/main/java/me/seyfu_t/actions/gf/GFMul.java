@@ -32,7 +32,7 @@ public class GFMul implements Action {
             response = mulAndReduce(a, b).toBase64XEX();
         }
 
-        return ResponseBuilder.singleResponse("product", response);
+        return ResponseBuilder.single("product", response);
 
     }
 

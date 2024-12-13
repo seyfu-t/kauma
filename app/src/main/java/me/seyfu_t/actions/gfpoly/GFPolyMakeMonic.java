@@ -17,7 +17,7 @@ public class GFPolyMakeMonic implements Action {
 
         GFPoly a = new GFPoly(polyA);
 
-        return ResponseBuilder.singleResponse("A*", makeMonic(a).toBase64Array());
+        return ResponseBuilder.single("A*", makeMonic(a).toBase64Array());
     }
 
     public static GFPoly makeMonic(GFPoly a) {

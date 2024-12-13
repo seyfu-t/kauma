@@ -28,7 +28,7 @@ public class GFPolyDivMod implements Action {
     public static JsonObject divMod(GFPoly dividend, GFPoly divisor) {
         Tuple<GFPoly, GFPoly> result = divModTuple(dividend, divisor);
 
-        return ResponseBuilder.multiResponse(Arrays.asList(
+        return ResponseBuilder.multi(Arrays.asList(
                 new Tuple<>("Q", result.getFirst().toBase64Array()),
                 new Tuple<>("R", result.getSecond().toBase64Array())));
     }

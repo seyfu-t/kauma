@@ -24,7 +24,7 @@ public class GFPolyPowMod implements Action {
         GFPoly a = new GFPoly(poly);
         GFPoly m = new GFPoly(modPoly);
 
-        return ResponseBuilder.singleResponse("Z", powMod(a, k, m).toBase64Array());
+        return ResponseBuilder.single("Z", powMod(a, k, m).toBase64Array());
     }
 
     // Square and multiply algorithm

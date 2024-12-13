@@ -28,7 +28,7 @@ public class PaddingOracle implements Action {
         String iv = arguments.get("iv").getAsString();
         String ciphertext = arguments.get("ciphertext").getAsString();
 
-        return ResponseBuilder.singleResponse("plaintext", paddingOracle(hostname, port, iv, ciphertext));
+        return ResponseBuilder.single("plaintext", paddingOracle(hostname, port, iv, ciphertext));
     }
 
     private static String paddingOracle(String hostname, int port, String base64IV, String base64Ciphertext) {

@@ -35,7 +35,7 @@ public class GFPolyFactorEDF implements Action {
         for (int i = 0; i < resultList.size(); i++)
             array.add(gson.toJsonTree(resultList.get(i).toBase64Array()));
 
-        return ResponseBuilder.singleResponse("factors", array);
+        return ResponseBuilder.single("factors", array);
     }
 
     public static List<GFPoly> edf(GFPoly f, int d) {

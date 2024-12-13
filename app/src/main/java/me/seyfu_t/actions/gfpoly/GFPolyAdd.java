@@ -17,7 +17,7 @@ public class GFPolyAdd implements Action {
         GFPoly a = new GFPoly(polyA);
         GFPoly b = new GFPoly(polyB);
 
-        return ResponseBuilder.singleResponse("S", add(a, b).toBase64Array());
+        return ResponseBuilder.single("S", add(a, b).toBase64Array());
     }
 
     public static GFPoly add(GFPoly a, GFPoly b) {

@@ -17,7 +17,7 @@ public class GFPolyPow implements Action {
 
         GFPoly a = new GFPoly(poly);
 
-        return ResponseBuilder.singleResponse("Z", pow(a, k).toBase64Array());
+        return ResponseBuilder.single("Z", pow(a, k).toBase64Array());
     }
 
     // Square and multiply algorithm

@@ -21,7 +21,7 @@ public class Block2Poly implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        return ResponseBuilder.singleResponse("coefficients", coefficients);
+        return ResponseBuilder.single("coefficients", coefficients);
     }
 
     public static int[] block2Poly(String base64Block, boolean gcm) {
