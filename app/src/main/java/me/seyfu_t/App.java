@@ -23,7 +23,7 @@ import me.seyfu_t.actions.basic.*;
 import me.seyfu_t.actions.gcm.*;
 import me.seyfu_t.actions.gf.*;
 import me.seyfu_t.actions.gfpoly.*;
-// import me.seyfu_t.actions.glasskey.*;
+import me.seyfu_t.actions.glasskey.*;
 import me.seyfu_t.model.Action;
 import me.seyfu_t.util.ResponseBuilder;
 
@@ -197,8 +197,8 @@ public class App {
             case "gfpoly_factor_ddf" -> new GFPolyFactorDDF();
             case "gfpoly_factor_edf" -> new GFPolyFactorEDF();
             case "gcm_crack" -> new GCMCrack();
-            // case "glasskey_prng" -> new GlasskeyPRNGAction();
-            // case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBitsAction();
+            case "glasskey_prng" -> new GlasskeyPRNG();
+            case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBits();
             // case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMaxAction();
             // case "glasskey_genkey" -> new GlasskeyGenkeyAction();
             // case "glasskey_break" -> new GlasskeyBreakAction();

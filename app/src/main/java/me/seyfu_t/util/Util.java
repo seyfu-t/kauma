@@ -105,15 +105,31 @@ public class Util {
         return longArray;
     }
 
-    public static long bytesToLong(byte[] byteArray, int offset) {
-        return (long) ((byteArray[7 + offset] & 0xFF) << 56 |
-                (byteArray[6 + offset] & 0xFF) << 48 |
-                (byteArray[5 + offset] & 0xFF) << 40 |
-                (byteArray[4 + offset] & 0xFF) << 32 |
-                (byteArray[3 + offset] & 0xFF) << 24 |
-                (byteArray[2 + offset] & 0xFF) << 16 |
-                (byteArray[1 + offset] & 0xFF) << 8 |
-                (byteArray[0 + offset] & 0xFF));
+    public static int[] convertJsonArrayToIntegerArray(JsonArray array) {
+        int[] intArray = new int[array.size()];
+
+        for (int i = 0; i < array.size(); i++)
+            intArray[i] = array.get(i).getAsInt();
+
+        return intArray;
+    }
+
+    public static long bytesToLong(byte[] byteArray) {
+        return (long) ((byteArray[7] & 0xFF) << 56 |
+                (byteArray[6] & 0xFF) << 48 |
+                (byteArray[5] & 0xFF) << 40 |
+                (byteArray[4] & 0xFF) << 32 |
+                (byteArray[3] & 0xFF) << 24 |
+                (byteArray[2] & 0xFF) << 16 |
+                (byteArray[1] & 0xFF) << 8 |
+                (byteArray[0] & 0xFF));
+    }
+
+    public static int bytesToInteger(byte[] byteArray) {
+        return (int) ((byteArray[3] & 0xFF) << 24 |
+                (byteArray[2] & 0xFF) << 16 |
+                (byteArray[1] & 0xFF) << 8 |
+                (byteArray[0] & 0xFF));
     }
 
     public static byte[] longToBytesBigEndian(long value) {
@@ -138,6 +154,17 @@ public class Util {
         byteArray[6] = (byte) (value >>> 48);
         byteArray[5] = (byte) (value >>> 40);
         byteArray[4] = (byte) (value >>> 32);
+        byteArray[3] = (byte) (value >>> 24);
+        byteArray[2] = (byte) (value >>> 16);
+        byteArray[1] = (byte) (value >>> 8);
+        byteArray[0] = (byte) (value);
+
+        return byteArray;
+    }
+
+    public static byte[] intToBytesLittleEndian(int value) {
+        byte[] byteArray = new byte[Long.BYTES];
+
         byteArray[3] = (byte) (value >>> 24);
         byteArray[2] = (byte) (value >>> 16);
         byteArray[1] = (byte) (value >>> 8);
@@ -215,4 +242,33 @@ public class Util {
 
         return result;
     }
+
+    public static String toHex(byte[] input) {
+        if (input.length == 0)
+            return "0";
+
+        StringBuilder hex = new StringBuilder();
+        for (int i = input.length - 1; i >= 0; i--)
+            hex.append(String.format("%02x", input[i]));
+
+        while (hex.charAt(0) == '0' && hex.length() > 1)
+            hex.deleteCharAt(0);
+
+        hex.deleteCharAt(hex.length() - 1); // remove final space
+
+        return hex.toString().toUpperCase();
+    }
+
+    public static byte[] hexStringToByteArray(String hexString) {
+        int length = hexString.length();
+        byte[] byteArray = new byte[length / 2];
+
+        for (int i = 0; i < length; i += 2) {
+            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
+        }
+
+        return byteArray;
+    }
+
 }
