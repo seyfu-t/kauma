@@ -3,7 +3,6 @@ package me.seyfu_t.actions.gfpoly;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -27,10 +26,9 @@ public class GFPolySort implements Action {
         List<GFPoly> sortedList = sort(polysList);
 
         JsonArray resultArray = new JsonArray();
-        Gson gson = new Gson();
 
         for (GFPoly poly : sortedList)
-            resultArray.add(gson.toJsonTree(poly.toBase64Array()));
+            resultArray.add(ResponseBuilder.asJSON(poly.toBase64Array()));
 
         return ResponseBuilder.single("sorted_polys", resultArray);
     }

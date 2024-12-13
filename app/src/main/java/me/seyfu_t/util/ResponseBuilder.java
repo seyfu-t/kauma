@@ -12,7 +12,7 @@ import me.seyfu_t.model.Tuple;
 
 public class ResponseBuilder {
 
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
 
     private final Map<String, JsonObject> responses;
 
@@ -38,7 +38,7 @@ public class ResponseBuilder {
 
     public static JsonObject single(String key, Object value) {
         JsonObject object = new JsonObject();
-        object.add(key, parseToJsonElement(value));
+        object.add(key, asJSON(value));
 
         return object;
     }
@@ -46,13 +46,13 @@ public class ResponseBuilder {
     public static JsonObject multi(List<Tuple<String, Object>> response) {
         JsonObject object = new JsonObject();
         for (Tuple<String,Object> tuple : response)
-            object.add(tuple.getFirst(), parseToJsonElement(tuple.getSecond()));
+            object.add(tuple.getFirst(), asJSON(tuple.getSecond()));
 
         return object;
     }
 
-    public static JsonElement parseToJsonElement(Object result) {
-        return gson.toJsonTree(result);
+    public static JsonElement asJSON(Object result) {
+        return GSON.toJsonTree(result);
     }
 
 }

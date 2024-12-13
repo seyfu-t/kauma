@@ -3,14 +3,13 @@ package me.seyfu_t.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
+import me.seyfu_t.util.ResponseBuilder;
 
 public class Tuple<T, U> {
     private final T first;
     private final U second;
-
-    private static final Gson gson = new Gson();
 
     public Tuple(T first, U second) {
         this.first = first;
@@ -31,22 +30,22 @@ public class Tuple<T, U> {
     }
 
     public String toJSONString(String nameFirst, String nameSecond) {
-        return "{" + gson.toJson(nameFirst) + ":" + gson.toJson(this.getFirst()) + "," + gson.toJson(nameSecond) + ":"
-                + gson.toJson(this.getSecond()) + "}";
+        return "{" + ResponseBuilder.asJSON(nameFirst) + ":" + ResponseBuilder.asJSON(this.getFirst()) + "," + ResponseBuilder.asJSON(nameSecond) + ":"
+                + ResponseBuilder.asJSON(this.getSecond()) + "}";
     }
 
     public JsonObject toJSON(String nameFirst, String nameSecond) {
         JsonObject jsonObj = new JsonObject();
 
         if (this.getFirst() instanceof GFPoly gfPoly)
-            jsonObj.add(nameFirst, gson.toJsonTree(gfPoly.toBase64Array()));
+            jsonObj.add(nameFirst, ResponseBuilder.asJSON(gfPoly.toBase64Array()));
         else
-            jsonObj.add(nameFirst, gson.toJsonTree(this.getFirst()));
+            jsonObj.add(nameFirst, ResponseBuilder.asJSON(this.getFirst()));
 
         if (this.getSecond() instanceof GFPoly gfPoly)
-            jsonObj.add(nameSecond, gson.toJsonTree(gfPoly.toBase64Array()));
+            jsonObj.add(nameSecond, ResponseBuilder.asJSON(gfPoly.toBase64Array()));
         else
-            jsonObj.add(nameSecond, gson.toJsonTree(this.getSecond()));
+            jsonObj.add(nameSecond, ResponseBuilder.asJSON(this.getSecond()));
 
         return jsonObj;
     }

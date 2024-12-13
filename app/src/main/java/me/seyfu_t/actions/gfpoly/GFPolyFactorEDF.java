@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -19,8 +18,8 @@ import me.seyfu_t.util.Util;
 
 public class GFPolyFactorEDF implements Action {
 
-    private static final Gson gson = new Gson();
-    private static final MT19937Random random = new MT19937Random(System.currentTimeMillis());
+    private static final MT19937Random RANDOM = new MT19937Random(System.currentTimeMillis());
+    private static final long PATTERN = 0x5555555555555555L;
 
     @Override
     public JsonObject execute(JsonObject arguments) {
@@ -33,7 +32,7 @@ public class GFPolyFactorEDF implements Action {
         JsonArray array = new JsonArray();
 
         for (int i = 0; i < resultList.size(); i++)
-            array.add(gson.toJsonTree(resultList.get(i).toBase64Array()));
+            array.add(ResponseBuilder.asJSON(resultList.get(i).toBase64Array()));
 
         return ResponseBuilder.single("factors", array);
     }
@@ -76,20 +75,19 @@ public class GFPolyFactorEDF implements Action {
     private static GFPoly generateRandomPolynomial(int smallerThan) {
         GFPoly randomPoly = new GFPoly();
 
-        int newDegree = random.nextInt(smallerThan + 1);
+        int newDegree = RANDOM.nextInt(smallerThan + 1);
 
         for (int i = 0; i < newDegree; i++)
-            randomPoly.setCoefficient(i, new FieldElement(random.nextLong(), random.nextLong()));
+            randomPoly.setCoefficient(i, new FieldElement(RANDOM.nextLong(), RANDOM.nextLong()));
 
         return randomPoly;
     }
 
     private static BigLong getExponent(int d) {
-        long pattern = 0x5555555555555555L;
-        List<Long> list = new ArrayList<>(Arrays.asList(pattern, pattern));
+        List<Long> list = new ArrayList<>(Arrays.asList(PATTERN, PATTERN));
         for (int i = 1; i < d; i++){
-            list.add(pattern);
-            list.add(pattern);
+            list.add(PATTERN);
+            list.add(PATTERN);
         }
 
         return new BigLong(list);
