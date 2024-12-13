@@ -16,7 +16,7 @@ public class GlasskeyPRNGIntMinMax implements Action {
         byte[] seed = Base64.getDecoder().decode(arguments.get("seed").getAsString());
         JsonArray array = arguments.get("specification").getAsJsonArray();
 
-        return ResponseBuilder.single("ints", intMinMax(key, seed, array));
+        return ResponseBuilder.single("ints", null ); //intMinMax(key, seed, array));
     }
 
     public static long[] intMinMax(byte[] key, byte[] seed, JsonArray specification) {
@@ -42,6 +42,7 @@ public class GlasskeyPRNGIntMinMax implements Action {
 
             // if (r < max)
             //     return r;
+            
         }
     }
 

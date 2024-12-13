@@ -9,8 +9,8 @@ public class GlasskeyBreak implements Action {
 
     @Override
     public JsonObject execute(JsonObject arguments) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'execute'");
+        
+        return null;
     }
 
     public static Tuple<Long, Long> genkey(byte[] key, byte[] seed, long bitLength) {
