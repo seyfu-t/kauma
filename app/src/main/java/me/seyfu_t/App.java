@@ -199,9 +199,9 @@ public class App {
             case "gcm_crack" -> new GCMCrack();
             case "glasskey_prng" -> new GlasskeyPRNG();
             case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBits();
-            // case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMaxAction();
-            // case "glasskey_genkey" -> new GlasskeyGenkeyAction();
-            // case "glasskey_break" -> new GlasskeyBreakAction();
+            case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMax();
+            case "glasskey_genkey" -> new GlasskeyGenkey();
+            case "glasskey_break" -> new GlasskeyBreak();
             default -> null;
         };
     }
