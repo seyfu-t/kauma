@@ -24,7 +24,7 @@ public class SEA128 implements Action {
         byte[] key = Base64.getDecoder().decode(arguments.get("key").getAsString());
         byte[] input = Base64.getDecoder().decode(arguments.get("input").getAsString());
 
-        return ResponseBuilder.singleResponse("output", Base64.getEncoder().encodeToString(sea128(mode, input, key)));
+        return ResponseBuilder.single("output", Base64.getEncoder().encodeToString(sea128(mode, input, key)));
     }
 
     public static byte[] sea128(String mode, byte[] input, byte[] key) {

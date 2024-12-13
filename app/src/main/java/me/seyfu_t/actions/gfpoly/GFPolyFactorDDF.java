@@ -30,7 +30,7 @@ public class GFPolyFactorDDF implements Action {
         for (Tuple<GFPoly, Integer> tuple : tupleList)
             array.add(tuple.toJSON("factor", "degree"));
 
-        return ResponseBuilder.singleResponse("factors", array);
+        return ResponseBuilder.single("factors", array);
     }
 
     public static List<Tuple<GFPoly, Integer>> ddf(GFPoly f) {

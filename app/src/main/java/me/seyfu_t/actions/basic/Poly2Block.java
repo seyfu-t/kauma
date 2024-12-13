@@ -23,7 +23,7 @@ public class Poly2Block implements Action {
             default -> throw new IllegalArgumentException(semantic + " is not a valid semantic");
         };
 
-        return ResponseBuilder.singleResponse("block", block);
+        return ResponseBuilder.single("block", block);
     }
 
     private static String poly2Block(int[] coefficients, boolean gcm) {

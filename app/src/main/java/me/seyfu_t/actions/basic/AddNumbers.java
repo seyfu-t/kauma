@@ -12,7 +12,7 @@ public class AddNumbers implements Action {
         int a = arguments.get("number1").getAsInt();
         int b = arguments.get("number2").getAsInt();
 
-        return ResponseBuilder.singleResponse("sum", a+b);
+        return ResponseBuilder.single("sum", a+b);
     }
 
 }

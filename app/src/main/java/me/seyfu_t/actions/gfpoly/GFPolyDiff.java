@@ -15,7 +15,7 @@ public class GFPolyDiff implements Action {
 
         GFPoly q = new GFPoly(poly);
 
-        return ResponseBuilder.singleResponse("F'", diff(q).toBase64Array());
+        return ResponseBuilder.single("F'", diff(q).toBase64Array());
     }
 
     public static GFPoly diff(GFPoly poly) {

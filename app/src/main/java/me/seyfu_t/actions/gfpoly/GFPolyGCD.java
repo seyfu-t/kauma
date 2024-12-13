@@ -17,7 +17,7 @@ public class GFPolyGCD implements Action {
         GFPoly a = new GFPoly(polyA);
         GFPoly b = new GFPoly(polyB);
 
-        return ResponseBuilder.singleResponse("G", gcd(a, b).toBase64Array());
+        return ResponseBuilder.single("G", gcd(a, b).toBase64Array());
     }
 
     public static GFPoly gcd(GFPoly a, GFPoly b) {

@@ -42,7 +42,7 @@ public class GCMCrack implements Action {
 
         FieldElement forgedTag = forgeTag(authKey, mask, forgery);
 
-        return ResponseBuilder.multiResponse(Arrays.asList(
+        return ResponseBuilder.multi(Arrays.asList(
                 new Tuple<String, Object>("tag", forgedTag.toBase64XEX()),
                 new Tuple<String, Object>("H", authKey.toBase64XEX()),
                 new Tuple<String, Object>("mask", mask.toBase64XEX())));

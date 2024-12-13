@@ -39,7 +39,7 @@ public class GCMEncrypt implements Action {
         FieldElement ghash = ghash(ciphertext, ad, authKey, lengthBlock);
         FieldElement authTag = authTagMask.xor(ghash);
 
-        return ResponseBuilder.multiResponse(Arrays.asList(
+        return ResponseBuilder.multi(Arrays.asList(
                 new Tuple<>("ciphertext", Base64.getEncoder().encodeToString(ciphertext)),
                 new Tuple<>("tag", authTag.toBase64XEX()),
                 new Tuple<>("L", lengthBlock.toBase64XEX()),

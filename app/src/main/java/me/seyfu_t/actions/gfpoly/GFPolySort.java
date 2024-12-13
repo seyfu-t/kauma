@@ -32,7 +32,7 @@ public class GFPolySort implements Action {
         for (GFPoly poly : sortedList)
             resultArray.add(gson.toJsonTree(poly.toBase64Array()));
 
-        return ResponseBuilder.singleResponse("sorted_polys", resultArray);
+        return ResponseBuilder.single("sorted_polys", resultArray);
     }
 
     public static List<GFPoly> sort(List<GFPoly> listOfPolysToSort) {

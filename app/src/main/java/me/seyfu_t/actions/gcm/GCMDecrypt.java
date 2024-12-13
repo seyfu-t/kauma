@@ -38,7 +38,7 @@ public class GCMDecrypt implements Action {
                 GCMEncrypt.mask(algorithm, key, nonce, GCMEncrypt.AUTH_TAG_COUNTER));
         FieldElement actualAuthTag = actualAuthTagMask.xor(ghash);
 
-        return ResponseBuilder.multiResponse(Arrays.asList(
+        return ResponseBuilder.multi(Arrays.asList(
                 new Tuple<>("authentic", new FieldElement(expectedAuthTag).equals(actualAuthTag)),
                 new Tuple<>("plaintext", Base64.getEncoder().encodeToString(plaintextBytes))));
     }

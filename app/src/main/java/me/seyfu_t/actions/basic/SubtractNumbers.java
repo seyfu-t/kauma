@@ -12,7 +12,7 @@ public class SubtractNumbers implements Action {
         int a = arguments.get("number1").getAsInt();
         int b = arguments.get("number2").getAsInt();
 
-        return ResponseBuilder.singleResponse("difference", a - b);
+        return ResponseBuilder.single("difference", a - b);
     }
 
 }

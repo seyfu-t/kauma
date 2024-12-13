@@ -36,14 +36,14 @@ public class ResponseBuilder {
         return finalObject;
     }
 
-    public static JsonObject singleResponse(String key, Object value) {
+    public static JsonObject single(String key, Object value) {
         JsonObject object = new JsonObject();
         object.add(key, parseToJsonElement(value));
 
         return object;
     }
 
-    public static JsonObject multiResponse(List<Tuple<String, Object>> response) {
+    public static JsonObject multi(List<Tuple<String, Object>> response) {
         JsonObject object = new JsonObject();
         for (Tuple<String,Object> tuple : response)
             object.add(tuple.getFirst(), parseToJsonElement(tuple.getSecond()));

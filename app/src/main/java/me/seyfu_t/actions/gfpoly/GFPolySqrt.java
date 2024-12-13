@@ -16,7 +16,7 @@ public class GFPolySqrt implements Action {
 
         GFPoly q = new GFPoly(poly);
 
-        return ResponseBuilder.singleResponse("S", sqrt(q).toBase64Array());
+        return ResponseBuilder.single("S", sqrt(q).toBase64Array());
     }
 
     public static GFPoly sqrt(GFPoly poly) {

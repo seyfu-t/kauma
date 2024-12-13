@@ -20,7 +20,7 @@ public class XEX implements Action {
         byte[] tweak = Base64.getDecoder().decode(arguments.get("tweak").getAsString());
         byte[] input = Base64.getDecoder().decode(arguments.get("input").getAsString());
 
-        return ResponseBuilder.singleResponse("output", xex(mode, key, tweak, input));
+        return ResponseBuilder.single("output", xex(mode, key, tweak, input));
     }
 
     private static String xex(String mode, byte[] key, byte[] tweak, byte[] input) {
