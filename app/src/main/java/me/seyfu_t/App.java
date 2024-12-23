@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,27 +97,18 @@ public class App {
             return responseBuilder.build();
 
         // Process other cases concurrently
-        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            List<Future<ProcessedTestCase>> futures = new ArrayList<>();
 
-            // Submit tasks to the virtual thread executor
-            for (Entry<String, JsonElement> singleCase : concurrentCases) {
-                Future<ProcessedTestCase> future = executor.submit(() -> processTestCase(singleCase));
-                futures.add(future);
-            }
+        try (ForkJoinPool pool = new ForkJoinPool()) {
+            List<ProcessedTestCase> results = pool.submit(() -> concurrentCases.parallelStream()
+                    .map(App::processTestCase)
+                    .filter(result -> result != null && result.result() != null)
+                    .toList()).join();
 
-            // Collect results
-            for (Future<ProcessedTestCase> future : futures) {
-                ProcessedTestCase result = future.get(); // This will block until the task completes
-                if (result != null && result.result() != null)
-                    responseBuilder.addResponse(result.hash(), result.result());
+            results.forEach(result -> responseBuilder.addResponse(result.hash(), result.result()));
 
-            }
-
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             log.severe("Error processing test cases: " + e.getMessage());
             e.printStackTrace();
-            Thread.currentThread().interrupt();
         }
 
         return responseBuilder.build();
