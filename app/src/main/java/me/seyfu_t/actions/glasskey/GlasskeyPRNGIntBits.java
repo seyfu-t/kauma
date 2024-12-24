@@ -22,24 +22,23 @@ public class GlasskeyPRNGIntBits implements Action {
     public static int[] intBits(byte[] key, byte[] seed, int[] lengths) {
         int size = lengths.length;
         int[] response = new int[size];
-        
-        // Convert lengths to bytes needed
-        int[] byteRequests = new int[size];
+
         for (int i = 0; i < size; i++)
-            byteRequests[i] = (lengths[i] + 7) / 8;  // ceil(bits/8)
-        
-        // Get all required bytes using PRNG (stream)
-        String[] randomBytes = GlasskeyPRNG.prngAll(key, seed, byteRequests);
-        
-        // Process each request
-        for (int i = 0; i < size; i++) {
-            byte[] bytes = Base64.getDecoder().decode(randomBytes[i]);
-            int value = Util.bytesToInteger(bytes);
-            // Create mask for required bits: (1 << bits) - 1
-            int mask = (1 << lengths[i]) - 1;
-            response[i] = value & mask;
-        }
+            response[i] = intBits(key, seed, lengths[i]);
 
         return response;
     }
+
+    public static int intBits(byte[] key, byte[] seed, int b) {
+        int l = (b + 7) / 8; // seal
+
+        String[] randomBytes = GlasskeyPRNG.prngAll(key, seed, new int[] { l });
+        byte[] s = Base64.getDecoder().decode(randomBytes[0]);
+
+        int sStar = Util.bytesToInteger(s);
+
+        int mask = (1 << b) - 1;
+        return sStar & mask;
+    }
+
 }
