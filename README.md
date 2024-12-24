@@ -1,8 +1,8 @@
 # Kauma
 
-This is a project for the course **"Kryptographische Analyse und Methoden-Audit"** at [Your University Name]. 
+This is a project for the course **"Kryptographische Analyse und Methoden-Audit"** at my uni. 
 
-The goal of this project is to implement a series of cryptographic functions provided by the professor. These functions are analyzed, tested, and implemented with a focus on correctness, efficiency, and security.
+The goal of this project is to implement a series of cryptographic functions provided by my professor.
 
 ## Building
 ```bash
