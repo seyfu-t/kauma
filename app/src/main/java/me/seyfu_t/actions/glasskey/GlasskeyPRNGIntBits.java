@@ -14,14 +14,14 @@ public class GlasskeyPRNGIntBits implements Action {
     public JsonObject execute(JsonObject arguments) {
         byte[] key = Base64.getDecoder().decode(arguments.get("agency_key").getAsString());
         byte[] seed = Base64.getDecoder().decode(arguments.get("seed").getAsString());
-        int[] bitLengths = Util.convertJsonArrayToIntegerArray(arguments.get("bit_lengths").getAsJsonArray());
+        long[] bitLengths = Util.convertJsonArrayToLongArray(arguments.get("bit_lengths").getAsJsonArray());
 
         return ResponseBuilder.single("ints", intBits(key, seed, bitLengths));
     }
 
-    public static int[] intBits(byte[] key, byte[] seed, int[] lengths) {
+    public static long[] intBits(byte[] key, byte[] seed, long[] lengths) {
         int size = lengths.length;
-        int[] response = new int[size];
+        long[] response = new long[size];
 
         for (int i = 0; i < size; i++)
             response[i] = intBits(key, seed, lengths[i]);
@@ -29,16 +29,16 @@ public class GlasskeyPRNGIntBits implements Action {
         return response;
     }
 
-    public static int intBits(byte[] key, byte[] seed, int b) {
-        int l = (b + 7) / 8; // seal
+    public static long intBits(byte[] key, byte[] seed, long b) {
+        long l = (b + 7) / 8; // seal
 
-        String[] randomBytes = GlasskeyPRNG.prngAll(key, seed, new int[] { l });
+        String[] randomBytes = GlasskeyPRNG.prngAll(key, seed, new int[] { (int) l });
         byte[] s = Base64.getDecoder().decode(randomBytes[0]);
 
-        int sStar = Util.bytesToInteger(s);
+        long sStar = Util.bytesToLong(s);
 
-        int mask = (1 << b) - 1;
-        return sStar & mask;
+        long mask = (1 << b) - 1;
+        return (int) ((sStar & mask) & 0xFF);
     }
 
 }
