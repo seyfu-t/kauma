@@ -1,6 +1,5 @@
 package me.seyfu_t.actions.glasskey;
 
-import java.util.Arrays;
 import java.util.Base64;
 
 import com.google.gson.JsonObject;
@@ -26,20 +25,36 @@ public class GlasskeyPRNG implements Action {
     public static String[] prngAll(byte[] key, byte[] seed, int[] nums) {
         String[] result = new String[nums.length];
 
-        byte[] buffer = new byte[nums.length * BLOCK_SIZE];
+        int currentBlock = 0;
+        byte[] currentData = new byte[0];
+        int currentPosition = 0;
 
         for (int i = 0; i < nums.length; i++) {
-            byte[] block = prngSingle(key, seed, i);
-            System.arraycopy(block, 0, buffer, i * BLOCK_SIZE, block.length);
-        }
+            byte[] resultBytes = new byte[nums[i]];
+            int bytesNeeded = nums[i];
+            int bytesCollected = 0;
 
-        for (int i = 0; i < nums.length; i++) {
-            result[i] = Base64.getEncoder().encodeToString(Arrays.copyOfRange(buffer, 0, nums[i]));
-            buffer = Arrays.copyOfRange(buffer, nums[i], buffer.length);
+            while (bytesCollected < bytesNeeded) {
+                // If we've used all current data, generate new block
+                if (currentPosition >= currentData.length) {
+                    currentData = prngSingle(key, seed, currentBlock++);
+                    currentPosition = 0;
+                }
+
+                // Calculate how many bytes we can take from current block
+                int bytesToTake = Math.min(currentData.length - currentPosition, bytesNeeded - bytesCollected);
+
+                // Copy bytes to result
+                System.arraycopy(currentData, currentPosition, resultBytes, bytesCollected, bytesToTake);
+
+                currentPosition += bytesToTake;
+                bytesCollected += bytesToTake;
+            }
+
+            result[i] = Base64.getEncoder().encodeToString(resultBytes);
         }
 
         return result;
-
     }
 
     public static byte[] prngSingle(byte[] key, byte[] seed, int num) {
