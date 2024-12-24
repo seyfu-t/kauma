@@ -41,10 +41,8 @@ public class GlasskeyPRNG implements Action {
                     currentPosition = 0;
                 }
 
-                // Calculate how many bytes we can take from current block
                 int bytesToTake = Math.min(currentData.length - currentPosition, bytesNeeded - bytesCollected);
 
-                // Copy bytes to result
                 System.arraycopy(currentData, currentPosition, resultBytes, bytesCollected, bytesToTake);
 
                 currentPosition += bytesToTake;
