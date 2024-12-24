@@ -115,21 +115,21 @@ public class Util {
     }
 
     public static long bytesToLong(byte[] byteArray) {
-        return (long) ((byteArray[7] & 0xFF) << 56 |
-                (byteArray[6] & 0xFF) << 48 |
-                (byteArray[5] & 0xFF) << 40 |
-                (byteArray[4] & 0xFF) << 32 |
-                (byteArray[3] & 0xFF) << 24 |
-                (byteArray[2] & 0xFF) << 16 |
-                (byteArray[1] & 0xFF) << 8 |
-                (byteArray[0] & 0xFF));
+        long result = 0;
+
+        for (int i = 0; i < Math.min(byteArray.length, 8); i++)
+            result |= ((long) byteArray[i] & 0xFF) << (i * 8);
+
+        return result;
     }
 
     public static int bytesToInteger(byte[] byteArray) {
-        return (int) ((byteArray[3] & 0xFF) << 24 |
-                (byteArray[2] & 0xFF) << 16 |
-                (byteArray[1] & 0xFF) << 8 |
-                (byteArray[0] & 0xFF));
+        int result = 0;
+
+        for (int i = 0; i < Math.min(byteArray.length, 4); i++)
+            result |= (byteArray[i] & 0xFF) << (i * 8);
+
+        return result;
     }
 
     public static byte[] longToBytesBigEndian(long value) {
