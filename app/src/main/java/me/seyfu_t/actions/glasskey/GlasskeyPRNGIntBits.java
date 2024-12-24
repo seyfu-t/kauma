@@ -19,6 +19,7 @@ public class GlasskeyPRNGIntBits implements Action {
         return ResponseBuilder.single("ints", intBits(key, seed, bitLengths));
     }
 
+    // broken
     public static long[] intBits(byte[] key, byte[] seed, long[] lengths) {
         int size = lengths.length;
         long[] response = new long[size];
