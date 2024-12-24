@@ -186,7 +186,7 @@ public class App {
             case "gfpoly_factor_edf" -> new GFPolyFactorEDF();
             case "gcm_crack" -> new GCMCrack();
             case "glasskey_prng" -> new GlasskeyPRNG();
-            // case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBits();
+            case "glasskey_prng_int_bits" -> new GlasskeyPRNGIntBits();
             // case "glasskey_prng_int_min_max" -> new GlasskeyPRNGIntMinMax();
             // case "glasskey_genkey" -> new GlasskeyGenkey();
             // case "glasskey_break" -> new GlasskeyBreak();
