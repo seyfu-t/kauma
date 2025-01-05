@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-java -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport -jar "$script_dir/app/build/libs/app.jar" "$@"
+"$script_dir/app/build/custom-runtime/bin/kauma" \
+  # -XX:+UnlockExperimentalVMOptions \
+  # -XX:+UseContainerSupport \
+  # "$script_dir/app/build/libs/app.jar"\
+  "$@"
