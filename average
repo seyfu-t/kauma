@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+total_time=0
+upper_bound=10
+for i in $(seq 1 "$upper_bound");
+do
+  # Capture the output of the 'time' command
+  result=$( (time ./kauma "$@") 2>&1 )
+  
+  # Extract the real time from the result
+  real_time=$(echo "$result" | grep real | awk '{print $2}')
+  
+  # Convert the time to seconds (if necessary, depending on format)
+  mins=$(echo $real_time | cut -d'm' -f1)
+  secs=$(echo $real_time | cut -d'm' -f2 | cut -d's' -f1)
+  
+  # Convert everything to seconds
+  total_seconds=$(echo "$mins*60 + $secs" | bc)
+  
+  # Add to total time
+  total_time=$(echo "$total_time + $total_seconds" | bc)
+done
+
+# Calculate average time
+avg_time=$(echo "scale=3; $total_time / $upper_bound" | bc -l)
+
+echo "Average time: $avg_time seconds"

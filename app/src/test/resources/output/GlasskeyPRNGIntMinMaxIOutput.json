@@ -1,0 +1,14 @@
+{
+    "responses": {
+        "glasskey_prng_int_min_max1": {
+            "ints": [
+                6,
+                13,
+                2,
+                0,
+                0,
+                84
+            ]
+        }
+    }
+}

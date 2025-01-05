@@ -1,37 +1,58 @@
 package me.seyfu_t.util;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import me.seyfu_t.model.Tuple;
+
 public class ResponseBuilder {
 
-    private final JsonObject responses;
+    private static final Gson GSON = new Gson();
+
+    private final Map<String, JsonObject> responses;
 
     public ResponseBuilder() {
-        responses = new JsonObject();
+        responses = new ConcurrentHashMap<>();
     }
 
-    public void addResponse(String hash, Map<String, Object> response) {
-        JsonObject innerJson = new JsonObject(); // e.g. {"sum":"300"}
-
-        for (String actionResultName : response.keySet()) {
-            innerJson.add(actionResultName, parseResultToJsonElement(response.get(actionResultName)));
-
-        }
-
-        responses.add(hash, innerJson); // e.g. {"HASH":<innerJson>}
-    }
-
-    private static JsonElement parseResultToJsonElement(Object result) {
-        return new Gson().toJsonTree(result);
+    public void addResponse(String hash, JsonObject response) {
+        responses.put(hash, response); // Thread-safe put in ConcurrentHashMap
     }
 
     public JsonObject build() {
         JsonObject finalObject = new JsonObject();
-        finalObject.add("responses", responses); // final {"responses":{<each response>}} structure
+        JsonObject responsesObject = new JsonObject();
+
+        // Transfer the responses into the final JsonObject
+        for (Map.Entry<String, JsonObject> entry : responses.entrySet())
+            responsesObject.add(entry.getKey(), entry.getValue());
+
+        finalObject.add("responses", responsesObject);
         return finalObject;
     }
+
+    public static JsonObject single(String key, Object value) {
+        JsonObject object = new JsonObject();
+        object.add(key, asJSON(value));
+
+        return object;
+    }
+
+    public static JsonObject multi(List<Tuple<String, Object>> response) {
+        JsonObject object = new JsonObject();
+        for (Tuple<String,Object> tuple : response)
+            object.add(tuple.getFirst(), asJSON(tuple.getSecond()));
+
+        return object;
+    }
+
+    public static JsonElement asJSON(Object result) {
+        return GSON.toJsonTree(result);
+    }
+
 }

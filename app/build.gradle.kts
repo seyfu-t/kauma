@@ -15,8 +15,6 @@ repositories {
 }
 
 dependencies {
-    // implementation(files("/usr/share/java/gson.jar"))
-    // implementation(files("libs/guava.jar"))
     implementation("com.google.code.gson:gson:2.11.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3") // JUnit Jupiter API
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.3") // JUnit Jupiter Engine
@@ -35,7 +33,7 @@ testing {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     modularity.inferModulePath.set(true)
 }

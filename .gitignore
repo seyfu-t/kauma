@@ -15,3 +15,7 @@ gradlew*
 gradlew.bat
 
 tmp/
+*.jfr
+app/jfr/
+
+*.py
