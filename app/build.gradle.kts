@@ -7,6 +7,7 @@ plugins {
 
 application {
     mainClass.set("me.seyfu_t.App")
+    mainModule.set("me.seyfu_t.App")
 }
 
 repositories {
@@ -16,6 +17,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
+    runtimeOnly("com.google.errorprone:error_prone_annotations:2.36.0") 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3") // JUnit Jupiter API
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.3") // JUnit Jupiter Engine
 }
@@ -41,7 +43,7 @@ java {
 jlink {
     imageName.set("custom-runtime")
     customImage {
-        appModules = listOf("com.google.gson")
+        appModules = listOf("com.google.gson", "me.seyfu_t.kauma")
     }
     launcher {
         name = "kauma"
